@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>R&amp;B — Research and Beyond</title>
+  <meta name="description" content="The AI operating system for clinical research. From your first idea to your residency CV — in one intelligent workspace." />
+  <meta property="og:title" content="R&amp;B — Research and Beyond" />
+  <meta property="og:description" content="AI-native platform for early-career clinical researchers. Idea to publication to residency CV." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <header class="rb-nav" id="rb-nav" role="banner">
+    <div class="rb-nav__inner">
+      <a href="#" class="rb-logo" aria-label="R&B — Research and Beyond home">R&amp;B</a>
+
+      <nav class="rb-nav__links" aria-label="Primary navigation">
+        <a href="#how-it-works">How it works</a>
+        <a href="#modes">Modes</a>
+        <a href="#academy">Academy</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+
+      <div class="rb-nav__actions">
+        <button class="rb-theme-toggle" id="rb-theme-toggle" aria-label="Toggle dark mode">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-sun" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-moon" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        </button>
+        <a href="#" class="rb-signin">Sign in</a>
+        <a href="#pricing" class="rb-btn rb-btn--amber">Join Free</a>
+        <button class="rb-hamburger" id="rb-hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="rb-mobile-menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+
+  </header>
+
+  <!-- Mobile menu sits outside <header> so backdrop-filter on the nav
+       cannot become its CSS containing block when fixed positioning is used -->
+  <div class="rb-mobile-menu" id="rb-mobile-menu" role="dialog" aria-modal="true" aria-label="Mobile navigation">
+    <nav aria-label="Mobile navigation links">
+      <a href="#how-it-works">How it works</a>
+      <a href="#modes">Modes</a>
+      <a href="#academy">Academy</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+      <a href="#" class="rb-mobile-signin">Sign in</a>
+      <a href="#pricing" class="rb-btn rb-btn--amber rb-mobile-cta">Join Free</a>
+    </nav>
+  </div>
+
+  <main>
+
+    <!-- HERO -->
+    <section class="rb-hero" id="rb-hero" aria-labelledby="rb-hero-heading">
+      <canvas id="rb-hero-network" aria-hidden="true"></canvas>
+      <div class="rb-container rb-hero__inner">
+        <div class="rb-hero__content">
+          <p class="rb-eyebrow">For early-career clinical researchers</p>
+          <h1 class="rb-hero__heading" id="rb-hero-heading">
+            The AI operating system<br />for clinical research
+          </h1>
+          <p class="rb-hero__subhead">From your first idea to your residency CV — in one intelligent workspace.</p>
+          <div class="rb-hero__ctas">
+            <a href="#pricing" class="rb-btn rb-btn--amber rb-btn--lg">Start Free</a>
+            <a href="#" class="rb-btn rb-btn--outline rb-btn--lg" aria-label="Watch the demo video">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+              Watch the Demo
+            </a>
+          </div>
+          <p class="rb-hero__trust">Built by a researcher with 65+ publications &middot; Used by students across 20+ countries</p>
+        </div>
+
+        <div class="rb-mockup" aria-hidden="true">
+          <div class="rb-mockup__chrome">
+            <div class="rb-mockup__dots">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="rb-mockup__url">app.rb-research.io</div>
+          </div>
+          <div class="rb-mockup__body">
+            <div class="rb-mockup__search-wrap">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <span class="rb-mockup__query" id="rb-typing-query"></span>
+              <span class="rb-cursor" aria-hidden="true">|</span>
+            </div>
+            <p class="rb-mockup__label">Topic Scout &mdash; 3 suggestions ready</p>
+            <div class="rb-mockup__results" id="rb-mockup-results">
+              <div class="rb-result-card">
+                <span class="rb-result-card__tag">Meta-analysis</span>
+                <p class="rb-result-card__title">Corticosteroid dosing and neurodevelopmental outcomes in preterm neonates: a systematic review</p>
+                <span class="rb-novelty-badge">Novelty score: 87/100</span>
+              </div>
+              <div class="rb-result-card">
+                <span class="rb-result-card__tag">Cohort Study</span>
+                <p class="rb-result-card__title">Long-term seizure outcomes in pediatric CNS infections: meta-analytic evidence gaps</p>
+                <span class="rb-novelty-badge">Novelty score: 82/100</span>
+              </div>
+              <div class="rb-result-card">
+                <span class="rb-result-card__tag">Cross-sectional</span>
+                <p class="rb-result-card__title">Screening practices for autism spectrum disorder in LMIC outpatient pediatric clinics</p>
+                <span class="rb-novelty-badge">Novelty score: 79/100</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHY WE EXIST -->
+    <section class="rb-why rb-section rb-section--paper50" id="why" aria-labelledby="rb-why-heading">
+      <div class="rb-container rb-why__inner">
+        <div class="rb-why__text">
+          <p class="rb-eyebrow">The Problem</p>
+          <h2 class="rb-section-heading" id="rb-why-heading">Most medical students never publish.</h2>
+          <div class="rb-why__body">
+            <p>Not because they lack curiosity or intelligence — they have both in abundance. But the path from "I want to do research" to an accepted manuscript is scattered across a dozen YouTube tutorials, three different textbooks, and a senior resident who might respond to your message in two weeks if you're lucky. The tools you need are either locked behind institutional licenses, buried in 400-page methodology guides, or simply absent.</p>
+            <p>Statistics software intimidates. Screening thousands of abstracts alone exhausts. Writing an IMRaD manuscript for the first time, without a mentor who has done it before, feels like assembling furniture with instructions in a language you half-learned. And for students in Pakistan, India, Egypt, or Nigeria — where mentors are overstretched and research culture is still growing — the barriers compound. By the time most students find the right guidance, their residency application deadline has passed.</p>
+            <p>Good research skills shouldn't be a privilege of geography or institutional prestige. Every student who can frame a clinical question deserves a clear, supported path to publication — with the right tools, the right feedback, and someone in their corner at every step.</p>
+          </div>
+          <blockquote class="rb-pullquote">
+            "We built R&amp;B so that doesn't have to happen anymore."
+          </blockquote>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS — 13 PHASES -->
+    <section class="rb-phases rb-section" id="how-it-works" aria-labelledby="rb-phases-heading">
+      <div class="rb-container">
+        <p class="rb-eyebrow">The Journey</p>
+        <h2 class="rb-section-heading" id="rb-phases-heading">Your research, end to end</h2>
+        <p class="rb-section-subhead">Thirteen phases. One workspace. An AI mentor at every step.</p>
+      </div>
+      <div class="rb-phases__scroll-wrap" role="list" aria-label="Research phases">
+        <div class="rb-phases__track">
+          <article class="rb-phase-card" role="listitem">
+            <span class="rb-phase-card__num">01</span>
+            <h3 class="rb-phase-card__name">Mentor &amp; Goal Match</h3>
+            <p class="rb-phase-card__agent">Compass</p>
+            <p class="rb-phase-card__desc">Align your goals with the right mentor profile and research path.</p>
+          </article>
+          <article class="rb-phase-card" role="listitem">
+            <span class="rb-phase-card__num">02</span>
+            <h3 class="rb-phase-card__name">Topic Discovery</h3>
+            <p class="rb-phase-card__agent">Topic Scout</p>
+            <p class="rb-phase-card__desc">Generate viable, novel topics tailored to your specialty in seconds.</p>
+          </article>
+          <article class="rb-phase-card" role="listitem">
+            <span class="rb-phase-card__num">03</span>
+            <h3 class="rb-phase-card__name">Viability Check</h3>
+            <p class="rb-phase-card__agent">Gap Analyzer</p>
+            <p class="rb-phase-card__desc">Confirm your topic fills a real gap — before you invest weeks of work.</p>
+          </article>
+          <article class="rb-phase-card" role="listitem">
+            <span class="rb-phase-card__num">04</span>
+            <h3 class="rb-phase-card__name">PICO &amp; Search Strategy</h3>
+            <p class="rb-phase-card__agent">Strategist</p>
+            <p class="rb-phase-card__desc">Build a rigorous, reproducible PICO framework and database search string.</p>
+          </article>
+          <article class="rb-phase-card" role="listitem">
+            <span class="rb-phase-card__num">05</span>
+            <h3 class="rb-phase-card__name">Literature Search</h3>
+            <p class="rb-phase-card__agent">Hunter</p>
+            <p class="rb-phase-card__desc">Execute multi-database searches and de-duplicate results automatically.</p>
+          </article>
+          <article class="rb-phase-card" role="listitem">
+            <span class="rb-phase-card__num">06</span>
+            <h3 class="rb-phase-card__name">Title &amp; Abstract Screening</h3>
+            <p class="rb-phase-card__agent">First Pass</p>
+            <p class="rb-phase-card__desc">Screen hundreds of citations against your inclusion criteria at speed.</p>
+          </article>
+          <article class="rb-phase-card" role="listitem">
+            <span class="rb-phase-card__num">07</span>
+            <h3 class="rb-phase-card__name">Full-text Screening</h3>
+            <p class="rb-phase-card__agent">Second Pass</p>
+            <p class="rb-phase-card__desc">Deep review of full texts with reasoning logged for your PRISMA flowchart.</p>
+          </article>
+          <article class="rb-phase-card" role="listitem">
+            <span class="rb-phase-card__num">08</span>
+            <h3 class="rb-phase-card__name">Data Extraction</h3>
+            <p class="rb-phase-card__agent">Extractor</p>
+            <p class="rb-phase-card__desc">Structured extraction into clean tables ready for analysis.</p>
+          </article>
+          <article class="rb-phase-card" role="listitem">
+            <span class="rb-phase-card__num">09</span>
+            <h3 class="rb-phase-card__name">Risk of Bias</h3>
+            <p class="rb-phase-card__agent">ROB Auditor</p>
+            <p class="rb-phase-card__desc">Walk through ROB2, ROBINS-I, or NOS with guided AI mentorship.</p>
+          </article>
+          <article class="rb-phase-card" role="listitem">
+            <span class="rb-phase-card__num">10</span>
+            <h3 class="rb-phase-card__name">Statistical Analysis</h3>
+            <p class="rb-phase-card__agent">Statsmith</p>
+            <p class="rb-phase-card__desc">Upload your data, get analysis, interpretation, and forest plots explained.</p>
+          </article>
+          <article class="rb-phase-card" role="listitem">
+            <span class="rb-phase-card__num">11</span>
+            <h3 class="rb-phase-card__name">Manuscript Drafting</h3>
+            <p class="rb-phase-card__agent">Scribe</p>
+            <p class="rb-phase-card__desc">IMRaD drafts structured to PRISMA, CONSORT, STROBE, or CARE.</p>
+          </article>
+          <article class="rb-phase-card" role="listitem">
+            <span class="rb-phase-card__num">12</span>
+            <h3 class="rb-phase-card__name">Journal &amp; Submission</h3>
+            <p class="rb-phase-card__agent">Submitter</p>
+            <p class="rb-phase-card__desc">Match your paper to the right journal and format it to their guidelines.</p>
+          </article>
+          <article class="rb-phase-card" role="listitem">
+            <span class="rb-phase-card__num">13</span>
+            <h3 class="rb-phase-card__name">Post-publication</h3>
+            <p class="rb-phase-card__agent">Amplifier</p>
+            <p class="rb-phase-card__desc">Share your work, respond to citations, and log it to your residency CV.</p>
+          </article>
+        </div>
+      </div>
+      <div class="rb-phases__scroll-hint" aria-hidden="true">Scroll to explore all 13 phases &rarr;</div>
+    </section>
+
+    <!-- MODES -->
+    <section class="rb-modes rb-section rb-section--paper50" id="modes" aria-labelledby="rb-modes-heading">
+      <div class="rb-container">
+        <p class="rb-eyebrow">Research Modes</p>
+        <h2 class="rb-section-heading" id="rb-modes-heading">Pick the journey that fits your paper</h2>
+        <p class="rb-section-subhead">Whether it's your first case report or your tenth meta-analysis, R&amp;B has a Mode for it.</p>
+        <div class="rb-modes__grid">
+          <article class="rb-mode-card rb-mode-card--featured">
+            <div class="rb-mode-card__badge">Most popular</div>
+            <div class="rb-mode-card__icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+            </div>
+            <h3 class="rb-mode-card__name">Meta-analysis</h3>
+            <p class="rb-mode-card__desc">The gold standard of evidence synthesis — guided from PICO to forest plot.</p>
+          </article>
+          <article class="rb-mode-card">
+            <div class="rb-mode-card__icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/></svg>
+            </div>
+            <h3 class="rb-mode-card__name">Systematic Review</h3>
+            <p class="rb-mode-card__desc">PRISMA-compliant protocol to final manuscript, fully documented.</p>
+          </article>
+          <article class="rb-mode-card">
+            <div class="rb-mode-card__icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            </div>
+            <h3 class="rb-mode-card__name">Cross-sectional</h3>
+            <p class="rb-mode-card__desc">Survey design, STROBE reporting, and prevalence analysis in one flow.</p>
+          </article>
+          <article class="rb-mode-card">
+            <div class="rb-mode-card__icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <h3 class="rb-mode-card__name">Case Report</h3>
+            <p class="rb-mode-card__desc">CARE-formatted case reports with literature context built in.</p>
+          </article>
+          <article class="rb-mode-card">
+            <div class="rb-mode-card__icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 12 11 14l4-4"/><path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.51 0 2.93.37 4.18 1.03"/><path d="M21 3 9 15"/></svg>
+            </div>
+            <h3 class="rb-mode-card__name">RCT</h3>
+            <p class="rb-mode-card__desc">Protocol design through CONSORT-compliant reporting for trials.</p>
+          </article>
+          <article class="rb-mode-card">
+            <div class="rb-mode-card__icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 20h.01M7 20v-4"/><path d="M12 20v-8"/><path d="M17 20V8"/><path d="M22 4v16"/></svg>
+            </div>
+            <h3 class="rb-mode-card__name">Clinical Audit</h3>
+            <p class="rb-mode-card__desc">Measure practice against standards, identify gaps, present findings.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURED AGENTS -->
+    <section class="rb-agents rb-section" id="agents" aria-labelledby="rb-agents-heading">
+      <div class="rb-container">
+        <p class="rb-eyebrow">Featured Agents</p>
+        <h2 class="rb-section-heading" id="rb-agents-heading">Specialized intelligence at every phase</h2>
+        <p class="rb-section-subhead">Each agent is purpose-built for one job — and does it better than a general AI ever could.</p>
+        <div class="rb-agents__grid">
+          <article class="rb-agent-card rb-agent-card--wide">
+            <div class="rb-agent-card__icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            </div>
+            <h3 class="rb-agent-card__name">Topic Scout</h3>
+            <p class="rb-agent-card__tagline"><em>Tell us your specialty. Get viable, novel topics in 60 seconds.</em></p>
+            <p class="rb-agent-card__body">Topic Scout cross-references your chosen specialty with publication gaps in PubMed, surfaces under-explored PICO frameworks, and scores each suggestion by novelty, feasibility, and impact — so you start with a topic worth writing, not just a question worth asking.</p>
+            <a href="#pricing" class="rb-agent-card__link">Try it free &rarr;</a>
+          </article>
+          <article class="rb-agent-card rb-agent-card--wide">
+            <div class="rb-agent-card__icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+            </div>
+            <h3 class="rb-agent-card__name">Statistics Lab</h3>
+            <p class="rb-agent-card__tagline"><em>Upload your CSV. We run the analysis and explain it in plain English.</em></p>
+            <p class="rb-agent-card__body">No SPSS license. No R syntax errors at midnight. Upload your dataset, describe what you're measuring, and Statsmith runs the right tests — t-tests, chi-square, logistic regression, meta-analytic pooling — then explains every output the way a good supervisor would, not the way a textbook does.</p>
+            <a href="#pricing" class="rb-agent-card__link">Try it free &rarr;</a>
+          </article>
+          <article class="rb-agent-card">
+            <div class="rb-agent-card__icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+            </div>
+            <h3 class="rb-agent-card__name">Manuscript Scribe</h3>
+            <p class="rb-agent-card__tagline"><em>IMRaD drafts in PRISMA, CONSORT, STROBE, or CARE format.</em></p>
+            <p class="rb-agent-card__body">Scribe builds journal-ready drafts from your data and notes, structured to the right reporting guideline — then flags every section that needs your clinical judgment before submission.</p>
+            <a href="#pricing" class="rb-agent-card__link">Try it free &rarr;</a>
+          </article>
+          <article class="rb-agent-card">
+            <div class="rb-agent-card__icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 12 11 14l4-4"/><circle cx="12" cy="12" r="10"/></svg>
+            </div>
+            <h3 class="rb-agent-card__name">ROB Auditor</h3>
+            <p class="rb-agent-card__tagline"><em>Walk through ROB2, ROBINS-I, or NOS with an AI mentor.</em></p>
+            <p class="rb-agent-card__body">Risk of bias assessment is where most student reviews falter. ROB Auditor guides you through each signalling question, explains the reasoning for each judgment, and produces a summary table ready for peer review.</p>
+            <a href="#pricing" class="rb-agent-card__link">Try it free &rarr;</a>
+          </article>
+          <article class="rb-agent-card">
+            <div class="rb-agent-card__icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            </div>
+            <h3 class="rb-agent-card__name">Residency Tracker</h3>
+            <p class="rb-agent-card__tagline"><em>Your live Match-readiness score, updated as you publish.</em></p>
+            <p class="rb-agent-card__body">Residency Tracker maps your publications, in-progress work, and academic activities to the research benchmarks programs actually look for — and tells you exactly what to finish before your application goes out.</p>
+            <a href="#pricing" class="rb-agent-card__link">Try it free &rarr;</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- R&B ACADEMY -->
+    <section class="rb-academy rb-section rb-section--paper50" id="academy" aria-labelledby="rb-academy-heading">
+      <div class="rb-container">
+        <p class="rb-eyebrow">R&amp;B Academy</p>
+        <h2 class="rb-section-heading" id="rb-academy-heading">A lecture library that actually teaches you to publish</h2>
+        <p class="rb-section-subhead">Hundreds of focused lessons by working researchers — not influencers.</p>
+        <div class="rb-courses__grid">
+          <article class="rb-course-card">
+            <div class="rb-course-card__thumb rb-course-thumb--1" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            </div>
+            <div class="rb-course-card__body">
+              <h3 class="rb-course-card__title">Basics of Clinical Research</h3>
+              <p class="rb-course-card__meta">10 lessons &middot; 1h 55m</p>
+            </div>
+          </article>
+          <article class="rb-course-card">
+            <div class="rb-course-card__thumb rb-course-thumb--2" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            </div>
+            <div class="rb-course-card__body">
+              <h3 class="rb-course-card__title">Meta-analysis Masterclass</h3>
+              <p class="rb-course-card__meta">18 lessons &middot; 4h 10m</p>
+            </div>
+          </article>
+          <article class="rb-course-card">
+            <div class="rb-course-card__thumb rb-course-thumb--3" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            </div>
+            <div class="rb-course-card__body">
+              <h3 class="rb-course-card__title">Cross-sectional Studies</h3>
+              <p class="rb-course-card__meta">9 lessons &middot; 2h 05m</p>
+            </div>
+          </article>
+          <article class="rb-course-card">
+            <div class="rb-course-card__thumb rb-course-thumb--4" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            </div>
+            <div class="rb-course-card__body">
+              <h3 class="rb-course-card__title">SPSS for Beginners</h3>
+              <p class="rb-course-card__meta">12 lessons &middot; 2h 40m</p>
+            </div>
+          </article>
+          <article class="rb-course-card">
+            <div class="rb-course-card__thumb rb-course-thumb--5" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            </div>
+            <div class="rb-course-card__body">
+              <h3 class="rb-course-card__title">R for Researchers</h3>
+              <p class="rb-course-card__meta">15 lessons &middot; 3h 20m</p>
+            </div>
+          </article>
+          <article class="rb-course-card">
+            <div class="rb-course-card__thumb rb-course-thumb--6" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            </div>
+            <div class="rb-course-card__body">
+              <h3 class="rb-course-card__title">Manuscript Writing</h3>
+              <p class="rb-course-card__meta">11 lessons &middot; 2h 30m</p>
+            </div>
+          </article>
+          <article class="rb-course-card">
+            <div class="rb-course-card__thumb rb-course-thumb--7" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            </div>
+            <div class="rb-course-card__body">
+              <h3 class="rb-course-card__title">Biostatistics Demystified</h3>
+              <p class="rb-course-card__meta">14 lessons &middot; 3h 15m</p>
+            </div>
+          </article>
+          <article class="rb-course-card">
+            <div class="rb-course-card__thumb rb-course-thumb--8" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            </div>
+            <div class="rb-course-card__body">
+              <h3 class="rb-course-card__title">Publication Strategy</h3>
+              <p class="rb-course-card__meta">8 lessons &middot; 1h 50m</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- SOCIAL PROOF -->
+    <section class="rb-proof rb-section" id="proof" aria-labelledby="rb-proof-heading">
+      <div class="rb-container">
+        <p class="rb-eyebrow">By the Numbers</p>
+        <h2 class="rb-section-heading" id="rb-proof-heading">Built on real research, for real researchers</h2>
+        <div class="rb-stats">
+          <div class="rb-stat">
+            <span class="rb-stat__num" data-target="65" data-suffix="+">0</span>
+            <p class="rb-stat__label">peer-reviewed papers from the founder</p>
+          </div>
+          <div class="rb-stat">
+            <span class="rb-stat__num" data-target="20" data-suffix="+">0</span>
+            <p class="rb-stat__label">countries with active members</p>
+          </div>
+          <div class="rb-stat">
+            <span class="rb-stat__num" data-target="13" data-suffix="">0</span>
+            <p class="rb-stat__label">AI agents across the full research journey</p>
+          </div>
+        </div>
+        <div class="rb-testimonial-placeholder">
+          <div class="rb-testimonial-card">
+            <p class="rb-testimonial-card__quote">"Testimonials from early members will appear here. We're collecting them now — join the community and you might be first."</p>
+            <div class="rb-testimonial-card__author">
+              <div class="rb-testimonial-card__avatar" aria-hidden="true"></div>
+              <div>
+                <p class="rb-testimonial-card__name">Early Member</p>
+                <p class="rb-testimonial-card__detail">Medical Student &middot; Karachi, Pakistan</p>
+              </div>
+            </div>
+          </div>
+          <p class="rb-proof__journals">Members have published in <strong>PLOS ONE &middot; Cureus &middot; BMJ Open &middot; Annals of Medicine</strong> and more.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section class="rb-pricing rb-section rb-section--paper50" id="pricing" aria-labelledby="rb-pricing-heading">
+      <div class="rb-container">
+        <p class="rb-eyebrow">Pricing</p>
+        <h2 class="rb-section-heading" id="rb-pricing-heading">Honest pricing. Built for students.</h2>
+        <p class="rb-section-subhead">Purchasing power parity for LMIC researchers — pay what's fair where you live.</p>
+        <div class="rb-pricing__grid">
+          <article class="rb-plan-card">
+            <div class="rb-plan-card__header">
+              <h3 class="rb-plan-card__name">Free</h3>
+              <div class="rb-plan-card__price">
+                <span class="rb-plan-card__amount">$0</span>
+                <span class="rb-plan-card__period">forever</span>
+              </div>
+              <p class="rb-plan-card__price-alt">PKR 0</p>
+            </div>
+            <ul class="rb-plan-card__features" aria-label="Free plan features">
+              <li>3 intro lectures from the Academy</li>
+              <li>Discord community access</li>
+              <li>Topic Scout — 5 prompts/day</li>
+              <li>Basic research templates</li>
+            </ul>
+            <a href="#" class="rb-btn rb-btn--outline rb-btn--full">Get started free</a>
+          </article>
+          <article class="rb-plan-card rb-plan-card--featured" aria-label="Most popular plan">
+            <div class="rb-plan-card__badge">Most popular</div>
+            <div class="rb-plan-card__header">
+              <h3 class="rb-plan-card__name">R&amp;B Scholar</h3>
+              <div class="rb-plan-card__price">
+                <span class="rb-plan-card__amount">$9</span>
+                <span class="rb-plan-card__period">/month</span>
+              </div>
+              <p class="rb-plan-card__price-alt">PKR 800/mo &middot; or $79/yr (PKR 7,000/yr)</p>
+            </div>
+            <ul class="rb-plan-card__features" aria-label="Scholar plan features">
+              <li>All Academy lectures, all 13 agents</li>
+              <li>All 6 Research Modes</li>
+              <li>Full template library</li>
+              <li>Community posting &amp; peer review</li>
+              <li>Monthly group mentor call</li>
+              <li>Residency Tracker (live score)</li>
+            </ul>
+            <a href="#" class="rb-btn rb-btn--amber rb-btn--full">Join as Scholar</a>
+          </article>
+          <article class="rb-plan-card">
+            <div class="rb-plan-card__header">
+              <h3 class="rb-plan-card__name">R&amp;B Pro</h3>
+              <div class="rb-plan-card__price">
+                <span class="rb-plan-card__amount">$25</span>
+                <span class="rb-plan-card__period">/month</span>
+              </div>
+              <p class="rb-plan-card__price-alt">PKR 2,500/month</p>
+            </div>
+            <ul class="rb-plan-card__features" aria-label="Pro plan features">
+              <li>Everything in Scholar</li>
+              <li>1:1 mentor matching</li>
+              <li>Manuscript pre-submission review</li>
+              <li>Priority Discord channel</li>
+            </ul>
+            <a href="#" class="rb-btn rb-btn--outline rb-btn--full">Go Pro</a>
+          </article>
+        </div>
+        <p class="rb-pricing__note">
+          Launch promo: First 100 paying users get lifetime 50% off. Payments accepted via JazzCash, Easypaisa, bank transfer, or Wise — confirmation within 24 hours.
+        </p>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="rb-faq rb-section" id="faq" aria-labelledby="rb-faq-heading">
+      <div class="rb-container rb-faq__inner">
+        <div class="rb-faq__header">
+          <p class="rb-eyebrow">Questions</p>
+          <h2 class="rb-section-heading" id="rb-faq-heading">Common questions, honest answers</h2>
+        </div>
+        <div class="rb-accordion" role="list">
+          <div class="rb-accordion__item" role="listitem">
+            <button class="rb-accordion__trigger" aria-expanded="false" aria-controls="faq-1">
+              How is R&amp;B different from ChatGPT or Elicit?
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="rb-accordion__icon"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="rb-accordion__panel" id="faq-1" role="region">
+              <p>ChatGPT is a general assistant — it can write anything but knows nothing specifically about clinical research methodology, PRISMA compliance, or ROB2 assessment. Elicit helps with literature search but stops there. R&amp;B is purpose-built for the entire research lifecycle: each of the 13 agents is trained on research methodology, reporting guidelines, and publication norms. It's the difference between a general practitioner and a specialist who has done your exact procedure hundreds of times.</p>
+            </div>
+          </div>
+          <div class="rb-accordion__item" role="listitem">
+            <button class="rb-accordion__trigger" aria-expanded="false" aria-controls="faq-2">
+              Do I need to know how to code?
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="rb-accordion__icon"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="rb-accordion__panel" id="faq-2" role="region">
+              <p>Not at all. R&amp;B was designed from day one for researchers who are not programmers — you upload data in familiar formats (Excel, CSV, SPSS .sav) and the platform handles the analysis. The Academy does include R and SPSS tutorials for students who want to build those skills independently, but they're entirely optional for using the platform.</p>
+            </div>
+          </div>
+          <div class="rb-accordion__item" role="listitem">
+            <button class="rb-accordion__trigger" aria-expanded="false" aria-controls="faq-3">
+              How does payment work? Why manually?
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="rb-accordion__icon"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="rb-accordion__panel" id="faq-3" role="region">
+              <p>We currently process payments manually — via JazzCash, Easypaisa, bank transfer, or Wise — because we serve students in countries where Stripe and PayPal often don't work or carry prohibitive fees. Once you send payment, your account is activated within 24 hours. We're working on automated infrastructure, but we won't switch until it genuinely works better for our users in LMIC countries, not just for us.</p>
+            </div>
+          </div>
+          <div class="rb-accordion__item" role="listitem">
+            <button class="rb-accordion__trigger" aria-expanded="false" aria-controls="faq-4">
+              Will this help my US residency application?
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="rb-accordion__icon"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="rb-accordion__panel" id="faq-4" role="region">
+              <p>Publications remain one of the strongest differentiators in the USMLE Match — especially for IMGs. R&amp;B helps you build a real publication record (not AI-generated noise), and the Residency Tracker shows you exactly where your research portfolio stands relative to competitive Match benchmarks. We can't guarantee a match, but we can help you arrive at interview season with publications that programs actually value.</p>
+            </div>
+          </div>
+          <div class="rb-accordion__item" role="listitem">
+            <button class="rb-accordion__trigger" aria-expanded="false" aria-controls="faq-5">
+              Can I cancel anytime?
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="rb-accordion__icon"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="rb-accordion__panel" id="faq-5" role="region">
+              <p>Yes. Monthly subscribers can cancel before the next billing date with no penalty. Annual subscribers can request a pro-rated refund within 30 days of purchase if R&amp;B isn't right for you. Message us on Discord or email and we'll sort it out — no automated cancellation maze, no tricks.</p>
+            </div>
+          </div>
+          <div class="rb-accordion__item" role="listitem">
+            <button class="rb-accordion__trigger" aria-expanded="false" aria-controls="faq-6">
+              Who's behind R&amp;B?
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="rb-accordion__icon"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="rb-accordion__panel" id="faq-6" role="region">
+              <p>R&amp;B was founded by a clinical researcher with 65+ peer-reviewed publications who grew up in the same research environment our users are navigating now. The platform was built because good mentorship shouldn't depend on which city or institution you happen to be in. Every feature was designed by someone who has personally sat through the frustrations it's meant to solve.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FINAL CTA STRIP -->
+    <section class="rb-cta-strip rb-section" id="cta" aria-labelledby="rb-cta-heading">
+      <div class="rb-container rb-cta-strip__inner">
+        <h2 class="rb-cta-strip__heading" id="rb-cta-heading">Your first paper is closer than you think.</h2>
+        <p class="rb-cta-strip__sub">Join hundreds of students learning to publish — start free, no card required.</p>
+        <a href="#pricing" class="rb-btn rb-btn--amber rb-btn--lg">Start Free</a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="rb-footer" role="contentinfo">
+    <div class="rb-container rb-footer__inner">
+      <div class="rb-footer__brand">
+        <a href="#" class="rb-logo" aria-label="R&B home">R&amp;B</a>
+        <p class="rb-footer__tagline">Research and Beyond</p>
+      </div>
+      <nav class="rb-footer__col" aria-label="Product links">
+        <h4 class="rb-footer__col-heading">Product</h4>
+        <a href="#how-it-works">How it works</a>
+        <a href="#modes">Modes</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#academy">Academy</a>
+      </nav>
+      <nav class="rb-footer__col" aria-label="Company links">
+        <h4 class="rb-footer__col-heading">Company</h4>
+        <a href="#">About</a>
+        <a href="#">Founder</a>
+        <a href="#">Contact</a>
+        <a href="#">Discord</a>
+      </nav>
+      <nav class="rb-footer__col" aria-label="Legal links">
+        <h4 class="rb-footer__col-heading">Legal</h4>
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Refund Policy</a>
+      </nav>
+    </div>
+    <div class="rb-footer__bottom">
+      <div class="rb-container">
+        <p>&copy; 2026 R&amp;B &mdash; Research and Beyond. Built by researchers, for researchers.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
