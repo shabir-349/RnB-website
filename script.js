@@ -468,11 +468,74 @@
   })();
 
   /* ============================================================
-     SIGNUP FORM VALIDATION
+     PAYMENT PAGE — read ?plan= from URL and update content
+  ============================================================ */
+  (function initPaymentPlanDisplay() {
+    // Only run on payment page
+    if (!document.getElementById('rb-plan-name')) return;
+
+    var PLANS = {
+      scholar: {
+        name: 'R&B Scholar',
+        badge: 'Most popular',
+        amount: '$9',
+        period: '/month  ·  PKR 800/month',
+        note: 'or $79/year (PKR 7,000/yr) — save 27%',
+        pkr: 'PKR 800',
+        usd: '$9.00 USD'
+      },
+      pro: {
+        name: 'R&B Pro',
+        badge: '',
+        amount: '$25',
+        period: '/month  ·  PKR 2,500/month',
+        note: '',
+        pkr: 'PKR 2,500',
+        usd: '$25.00 USD'
+      }
+    };
+
+    var param = new URLSearchParams(window.location.search).get('plan') || 'scholar';
+    var plan = PLANS[param] || PLANS.scholar;
+
+    // Update summary card
+    var elName   = document.getElementById('rb-plan-name');
+    var elBadge  = document.getElementById('rb-plan-badge');
+    var elAmount = document.getElementById('rb-plan-amount');
+    var elPeriod = document.getElementById('rb-plan-period');
+    var elNote   = document.getElementById('rb-plan-note');
+
+    if (elName)   elName.textContent  = plan.name;
+    if (elAmount) elAmount.textContent = plan.amount;
+    if (elPeriod) elPeriod.textContent = plan.period;
+    if (elNote)   elNote.textContent   = plan.note;
+
+    if (elBadge) {
+      elBadge.textContent = plan.badge;
+      elBadge.style.display = plan.badge ? '' : 'none';
+    }
+
+    // Update "Amount to send" cells inside each payment option
+    document.querySelectorAll('.rb-amount-pkr').forEach(function (el) {
+      el.textContent = plan.pkr;
+    });
+    document.querySelectorAll('.rb-amount-usd').forEach(function (el) {
+      el.textContent = plan.usd;
+    });
+
+    // Update page <title>
+    document.title = 'Pay for ' + plan.name + ' — R&B Research and Beyond';
+  })();
+
+  /* ============================================================
+     SIGNUP FORM — Supabase auth
   ============================================================ */
   (function initSignupForm() {
     var form = document.getElementById('rb-signup-form');
     if (!form) return;
+
+    // Redirect to dashboard if already logged in
+    if (typeof rbRedirectIfLoggedIn === 'function') rbRedirectIfLoggedIn();
 
     function setError(id, msg) {
       var el = document.getElementById(id);
@@ -486,7 +549,7 @@
       });
     }
 
-    form.addEventListener('submit', function (e) {
+    form.addEventListener('submit', async function (e) {
       e.preventDefault();
       clearErrors();
 
@@ -495,6 +558,8 @@
       var password = document.getElementById('signup-password');
       var confirm  = document.getElementById('signup-confirm');
       var terms    = document.getElementById('signup-terms');
+      var msg      = document.getElementById('rb-signup-msg');
+      var btn      = form.querySelector('[type="submit"]');
       var valid    = true;
 
       if (!name || !name.value.trim()) {
@@ -523,57 +588,100 @@
         valid = false;
       }
 
-      if (valid) {
-        var msg = document.getElementById('rb-signup-msg');
-        if (msg) {
-          msg.textContent = 'Account created! Redirecting to payment…';
-          msg.className = 'rb-form__msg rb-form__msg--success';
-        }
-        setTimeout(function () { window.location.href = 'payment.html'; }, 1400);
+      if (!valid) return;
+
+      if (btn) { btn.disabled = true; btn.textContent = 'Creating account…'; }
+
+      if (typeof rbSignUp !== 'function') {
+        if (msg) { msg.textContent = 'Auth not configured — add your credentials to supabase.js.'; msg.className = 'rb-form__msg rb-form__msg--error'; }
+        if (btn) { btn.disabled = false; btn.textContent = 'Create account'; }
+        return;
+      }
+
+      var result = await rbSignUp(name.value.trim(), email.value.trim(), password.value);
+
+      if (result.error) {
+        if (msg) { msg.textContent = result.error.message; msg.className = 'rb-form__msg rb-form__msg--error'; }
+        if (btn) { btn.disabled = false; btn.textContent = 'Create account'; }
+        return;
+      }
+
+      // data.session is null when Supabase requires email confirmation (default)
+      if (result.data && result.data.session) {
+        // Email confirmation disabled — user is immediately signed in
+        if (msg) { msg.textContent = 'Account created! Redirecting to payment…'; msg.className = 'rb-form__msg rb-form__msg--success'; }
+        var plan = new URLSearchParams(window.location.search).get('plan') || 'scholar';
+        setTimeout(function () { window.location.href = 'payment.html?plan=' + plan; }, 1200);
+      } else {
+        // Email confirmation required — prompt user to check inbox
+        if (msg) { msg.textContent = 'Almost there! Check your inbox and confirm your email, then sign in.'; msg.className = 'rb-form__msg rb-form__msg--success'; }
+        if (btn) { btn.disabled = false; btn.textContent = 'Create account'; }
       }
     });
   })();
 
   /* ============================================================
-     SIGNIN FORM VALIDATION
+     SIGNIN FORM
   ============================================================ */
   (function initSigninForm() {
     var form = document.getElementById('rb-signin-form');
     if (!form) return;
 
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
+    if (typeof rbRedirectIfLoggedIn === 'function') rbRedirectIfLoggedIn();
 
-      var email    = document.getElementById('signin-email');
-      var password = document.getElementById('signin-password');
-      var valid    = true;
+    function setError(id, text) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = text;
+    }
 
+    function clearErrors() {
       ['signin-email-err', 'signin-password-err'].forEach(function (id) {
         var el = document.getElementById(id);
         if (el) el.textContent = '';
       });
+    }
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      clearErrors();
+
+      var email    = document.getElementById('signin-email');
+      var password = document.getElementById('signin-password');
+      var msg      = document.getElementById('rb-signin-msg');
+      var btn      = form.querySelector('button[type="submit"]');
+      var valid    = true;
 
       var emailVal = email ? email.value.trim() : '';
       if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
-        var emailErr = document.getElementById('signin-email-err');
-        if (emailErr) emailErr.textContent = 'Please enter a valid email address.';
+        setError('signin-email-err', 'Please enter a valid email address.');
         valid = false;
       }
 
       if (!password || !password.value) {
-        var passErr = document.getElementById('signin-password-err');
-        if (passErr) passErr.textContent = 'Password is required.';
+        setError('signin-password-err', 'Password is required.');
         valid = false;
       }
 
-      if (valid) {
-        var msg = document.getElementById('rb-signin-msg');
-        if (msg) {
-          msg.textContent = 'Signing you in…';
-          msg.className = 'rb-form__msg rb-form__msg--success';
-        }
-        setTimeout(function () { window.location.href = 'dashboard.html'; }, 1000);
+      if (!valid) return;
+
+      if (btn) { btn.disabled = true; btn.textContent = 'Signing in…'; }
+
+      if (typeof rbSignIn !== 'function') {
+        if (msg) { msg.textContent = 'Auth not configured — add your credentials to supabase.js.'; msg.className = 'rb-form__msg rb-form__msg--error'; }
+        if (btn) { btn.disabled = false; btn.textContent = 'Sign in'; }
+        return;
       }
+
+      var result = await rbSignIn(email.value.trim(), password.value);
+
+      if (result.error) {
+        if (msg) { msg.textContent = result.error.message; msg.className = 'rb-form__msg rb-form__msg--error'; }
+        if (btn) { btn.disabled = false; btn.textContent = 'Sign in'; }
+        return;
+      }
+
+      if (msg) { msg.textContent = 'Signed in! Redirecting…'; msg.className = 'rb-form__msg rb-form__msg--success'; }
+      setTimeout(function () { window.location.replace('dashboard.html'); }, 800);
     });
   })();
 
@@ -675,6 +783,48 @@
         sidebar.classList.remove('rb-dash__sidebar--open');
         toggle.setAttribute('aria-expanded', 'false');
       }
+    });
+  })();
+
+  /* ============================================================
+     DASHBOARD AUTH GUARD + USER DISPLAY
+  ============================================================ */
+  (function initDashboard() {
+    if (!document.getElementById('rb-dash')) return;
+    if (typeof rbRequireAuth !== 'function') return;
+
+    rbRequireAuth().then(function (session) {
+      if (!session) return;
+
+      var name = (session.user.user_metadata && session.user.user_metadata.full_name)
+        ? session.user.user_metadata.full_name
+        : session.user.email;
+
+      var usernameEl = document.querySelector('.rb-dash-nav__username');
+      if (usernameEl) usernameEl.textContent = name;
+
+      var avatarEl = document.querySelector('.rb-dash-nav__avatar');
+      if (avatarEl) avatarEl.textContent = name.charAt(0).toUpperCase();
+
+      var welcomeEl = document.querySelector('.rb-dash__welcome-heading');
+      if (welcomeEl) {
+        var firstName = name.split(' ')[0];
+        welcomeEl.textContent = 'Welcome back, ' + firstName + '.';
+      }
+    });
+  })();
+
+  /* ============================================================
+     LOGOUT HANDLER
+  ============================================================ */
+  (function initLogout() {
+    var btn = document.getElementById('rb-signout-btn');
+    if (!btn) return;
+
+    btn.addEventListener('click', async function (e) {
+      e.preventDefault();
+      if (typeof rbSignOut === 'function') await rbSignOut();
+      window.location.replace('signin.html');
     });
   })();
 
