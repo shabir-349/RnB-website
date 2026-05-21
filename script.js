@@ -467,4 +467,215 @@
     });
   })();
 
+  /* ============================================================
+     SIGNUP FORM VALIDATION
+  ============================================================ */
+  (function initSignupForm() {
+    var form = document.getElementById('rb-signup-form');
+    if (!form) return;
+
+    function setError(id, msg) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = msg;
+    }
+
+    function clearErrors() {
+      ['signup-name-err', 'signup-email-err', 'signup-password-err', 'signup-confirm-err', 'signup-terms-err'].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = '';
+      });
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      clearErrors();
+
+      var name     = document.getElementById('signup-name');
+      var email    = document.getElementById('signup-email');
+      var password = document.getElementById('signup-password');
+      var confirm  = document.getElementById('signup-confirm');
+      var terms    = document.getElementById('signup-terms');
+      var valid    = true;
+
+      if (!name || !name.value.trim()) {
+        setError('signup-name-err', 'Full name is required.');
+        valid = false;
+      }
+
+      var emailVal = email ? email.value.trim() : '';
+      if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+        setError('signup-email-err', 'Please enter a valid email address.');
+        valid = false;
+      }
+
+      if (!password || password.value.length < 8) {
+        setError('signup-password-err', 'Password must be at least 8 characters.');
+        valid = false;
+      }
+
+      if (confirm && password && confirm.value !== password.value) {
+        setError('signup-confirm-err', 'Passwords do not match.');
+        valid = false;
+      }
+
+      if (terms && !terms.checked) {
+        setError('signup-terms-err', 'You must agree to the terms to continue.');
+        valid = false;
+      }
+
+      if (valid) {
+        var msg = document.getElementById('rb-signup-msg');
+        if (msg) {
+          msg.textContent = 'Account created! Redirecting to payment…';
+          msg.className = 'rb-form__msg rb-form__msg--success';
+        }
+        setTimeout(function () { window.location.href = 'payment.html'; }, 1400);
+      }
+    });
+  })();
+
+  /* ============================================================
+     SIGNIN FORM VALIDATION
+  ============================================================ */
+  (function initSigninForm() {
+    var form = document.getElementById('rb-signin-form');
+    if (!form) return;
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      var email    = document.getElementById('signin-email');
+      var password = document.getElementById('signin-password');
+      var valid    = true;
+
+      ['signin-email-err', 'signin-password-err'].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = '';
+      });
+
+      var emailVal = email ? email.value.trim() : '';
+      if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+        var emailErr = document.getElementById('signin-email-err');
+        if (emailErr) emailErr.textContent = 'Please enter a valid email address.';
+        valid = false;
+      }
+
+      if (!password || !password.value) {
+        var passErr = document.getElementById('signin-password-err');
+        if (passErr) passErr.textContent = 'Password is required.';
+        valid = false;
+      }
+
+      if (valid) {
+        var msg = document.getElementById('rb-signin-msg');
+        if (msg) {
+          msg.textContent = 'Signing you in…';
+          msg.className = 'rb-form__msg rb-form__msg--success';
+        }
+        setTimeout(function () { window.location.href = 'dashboard.html'; }, 1000);
+      }
+    });
+  })();
+
+  /* ============================================================
+     PASSWORD SHOW / HIDE TOGGLE
+  ============================================================ */
+  document.querySelectorAll('.rb-form__pw-toggle').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var targetId = this.getAttribute('data-target');
+      var input = document.getElementById(targetId);
+      if (!input) return;
+      var showing = input.type !== 'password';
+      input.type = showing ? 'password' : 'text';
+      this.classList.toggle('rb-pw--visible', !showing);
+      this.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+    });
+  });
+
+  /* ============================================================
+     PAYMENT METHOD SELECTOR
+  ============================================================ */
+  (function initPaymentOptions() {
+    var options = document.querySelectorAll('.rb-payment-option');
+    if (!options.length) return;
+
+    function selectOption(chosen) {
+      options.forEach(function (opt) {
+        opt.classList.remove('rb-payment-option--selected');
+        opt.setAttribute('aria-checked', 'false');
+      });
+      chosen.classList.add('rb-payment-option--selected');
+      chosen.setAttribute('aria-checked', 'true');
+    }
+
+    options.forEach(function (option) {
+      option.addEventListener('click', function () { selectOption(this); });
+      option.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectOption(this); }
+      });
+    });
+  })();
+
+  /* ============================================================
+     COPY TO CLIPBOARD — payment page account numbers
+  ============================================================ */
+  (function initCopyables() {
+    var copyables = document.querySelectorAll('.rb-copyable');
+    if (!copyables.length) return;
+
+    var toast = document.createElement('div');
+    toast.className = 'rb-copy-toast';
+    toast.textContent = 'Copied to clipboard!';
+    document.body.appendChild(toast);
+
+    var toastTimer;
+
+    function showToast() {
+      clearTimeout(toastTimer);
+      toast.classList.add('rb-copy-toast--show');
+      toastTimer = setTimeout(function () { toast.classList.remove('rb-copy-toast--show'); }, 2000);
+    }
+
+    copyables.forEach(function (el) {
+      el.addEventListener('click', function () {
+        var text = this.getAttribute('data-copy') || this.textContent.trim();
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(text).then(showToast);
+        } else {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.setAttribute('readonly', '');
+          ta.style.cssText = 'position:fixed;top:-9999px;opacity:0';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          showToast();
+        }
+      });
+    });
+  })();
+
+  /* ============================================================
+     DASHBOARD SIDEBAR TOGGLE (mobile)
+  ============================================================ */
+  (function initDashSidebar() {
+    var toggle  = document.getElementById('rb-dash-sidebar-toggle');
+    var sidebar = document.getElementById('rb-dash-sidebar');
+    if (!toggle || !sidebar) return;
+
+    toggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var isOpen = sidebar.classList.toggle('rb-dash__sidebar--open');
+      toggle.setAttribute('aria-expanded', String(isOpen));
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+        sidebar.classList.remove('rb-dash__sidebar--open');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  })();
+
 })();

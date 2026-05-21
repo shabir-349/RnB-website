@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — R&amp;B Research and Beyond</title>
+  <meta name="description" content="Your R&B research dashboard." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Dashboard top nav (replaces landing-page nav) -->
+  <header class="rb-nav rb-dash-nav" id="rb-nav" role="banner">
+    <div class="rb-nav__inner">
+      <button class="rb-dash-nav__sidebar-toggle" id="rb-dash-sidebar-toggle" aria-label="Toggle sidebar" aria-expanded="false" aria-controls="rb-dash-sidebar">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+      </button>
+      <a href="index.html" class="rb-logo" aria-label="R&B — Research and Beyond home">R&amp;B</a>
+
+      <div class="rb-dash-nav__breadcrumb" aria-label="Current page">Dashboard</div>
+
+      <div class="rb-nav__actions rb-dash-nav__actions">
+        <button class="rb-theme-toggle" id="rb-theme-toggle" aria-label="Toggle dark mode">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-sun" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-moon" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        </button>
+        <div class="rb-dash-nav__user">
+          <div class="rb-dash-nav__avatar" aria-hidden="true">A</div>
+          <span class="rb-dash-nav__username">Ahmed</span>
+        </div>
+        <a href="signin.html" class="rb-btn rb-btn--outline rb-dash-nav__signout">Sign out</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Dashboard layout -->
+  <div class="rb-dash" id="rb-dash">
+
+    <!-- Sidebar -->
+    <aside class="rb-dash__sidebar" id="rb-dash-sidebar" aria-label="Dashboard navigation">
+      <nav class="rb-dash__sidebar-nav">
+        <a href="dashboard.html" class="rb-dash__nav-link rb-dash__nav-link--active" aria-current="page">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+          Dashboard
+        </a>
+        <a href="#" class="rb-dash__nav-link rb-dash__nav-link--locked" aria-label="Academy — upgrade required">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          Academy
+          <span class="rb-dash__nav-lock" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </span>
+        </a>
+        <a href="#" class="rb-dash__nav-link rb-dash__nav-link--locked" aria-label="Research Modes — upgrade required">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+          Research Modes
+          <span class="rb-dash__nav-lock" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </span>
+        </a>
+        <a href="#" class="rb-dash__nav-link rb-dash__nav-link--locked" aria-label="My Projects — upgrade required">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+          My Projects
+          <span class="rb-dash__nav-lock" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </span>
+        </a>
+        <a href="#" class="rb-dash__nav-link rb-dash__nav-link--locked" aria-label="Residency Tracker — upgrade required">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 20h.01M7 20v-4"/><path d="M12 20v-8"/><path d="M17 20V8"/><path d="M22 4v16"/></svg>
+          Residency Tracker
+          <span class="rb-dash__nav-lock" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </span>
+        </a>
+      </nav>
+
+      <div class="rb-dash__sidebar-footer">
+        <a href="payment.html" class="rb-btn rb-btn--amber rb-btn--full">Upgrade to Scholar</a>
+        <p class="rb-dash__plan-label">You are on the <strong>Free plan</strong></p>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="rb-dash__main" id="rb-dash-main">
+
+      <!-- Upgrade banner -->
+      <div class="rb-dash-upgrade-banner" role="banner" aria-label="Upgrade prompt">
+        <div class="rb-dash-upgrade-banner__content">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span>Unlock all 97 lessons, 13 AI agents &amp; 6 research modes.</span>
+        </div>
+        <a href="payment.html" class="rb-dash-upgrade-banner__cta">Upgrade to Scholar &rarr;</a>
+      </div>
+
+      <!-- Welcome -->
+      <div class="rb-dash__welcome">
+        <div>
+          <h1 class="rb-dash__welcome-heading">Welcome back, Ahmed</h1>
+          <p class="rb-dash__welcome-sub">Your research journey starts here. 3 free lessons available to begin.</p>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="rb-dash-stats" aria-label="Your statistics">
+        <div class="rb-dash-stat">
+          <span class="rb-dash-stat__num">0</span>
+          <span class="rb-dash-stat__label">Publications</span>
+        </div>
+        <div class="rb-dash-stat">
+          <span class="rb-dash-stat__num">0</span>
+          <span class="rb-dash-stat__label">In Progress</span>
+        </div>
+        <div class="rb-dash-stat rb-dash-stat--locked">
+          <span class="rb-dash-stat__num">&mdash;</span>
+          <span class="rb-dash-stat__label">Match Score</span>
+          <span class="rb-dash-stat__lock-label">Scholar only</span>
+        </div>
+        <div class="rb-dash-stat">
+          <span class="rb-dash-stat__num">3/97</span>
+          <span class="rb-dash-stat__label">Lessons Unlocked</span>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <section class="rb-dash-section">
+        <div class="rb-dash-section__head">
+          <h2 class="rb-dash-section__title">Quick start</h2>
+        </div>
+        <div class="rb-dash-actions">
+          <a href="#" class="rb-dash-action rb-dash-action--free" aria-label="Browse free lessons">
+            <div class="rb-dash-action__icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            </div>
+            <div class="rb-dash-action__body">
+              <p class="rb-dash-action__title">Browse Academy</p>
+              <p class="rb-dash-action__sub">3 free lessons available now</p>
+            </div>
+          </a>
+          <a href="payment.html" class="rb-dash-action rb-dash-action--locked" aria-label="Find a research topic — requires Scholar plan">
+            <div class="rb-dash-action__icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            </div>
+            <div class="rb-dash-action__body">
+              <p class="rb-dash-action__title">Find a Topic</p>
+              <p class="rb-dash-action__sub">AI topic scout &mdash; Scholar</p>
+            </div>
+            <svg class="rb-dash-action__lock" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </a>
+          <a href="payment.html" class="rb-dash-action rb-dash-action--locked" aria-label="Start a meta-analysis — requires Scholar plan">
+            <div class="rb-dash-action__icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+            </div>
+            <div class="rb-dash-action__body">
+              <p class="rb-dash-action__title">Start Meta-analysis</p>
+              <p class="rb-dash-action__sub">Full 13-phase workflow &mdash; Scholar</p>
+            </div>
+            <svg class="rb-dash-action__lock" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </a>
+          <a href="payment.html" class="rb-dash-action rb-dash-action--locked" aria-label="Track residency readiness — requires Scholar plan">
+            <div class="rb-dash-action__icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 20h.01M7 20v-4"/><path d="M12 20v-8"/><path d="M17 20V8"/><path d="M22 4v16"/></svg>
+            </div>
+            <div class="rb-dash-action__body">
+              <p class="rb-dash-action__title">Residency Tracker</p>
+              <p class="rb-dash-action__sub">Live match-readiness score &mdash; Scholar</p>
+            </div>
+            <svg class="rb-dash-action__lock" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </a>
+        </div>
+      </section>
+
+      <!-- Academy section -->
+      <section class="rb-dash-section" id="rb-dash-academy">
+        <div class="rb-dash-section__head">
+          <h2 class="rb-dash-section__title">R&amp;B Academy</h2>
+          <a href="payment.html" class="rb-dash-section__cta">Unlock all 97 lessons &rarr;</a>
+        </div>
+        <p class="rb-dash-section__sub">3 lessons free on the Free plan. Upgrade to Scholar for the full library.</p>
+
+        <div class="rb-dash-courses">
+
+          <!-- Free lesson 1 -->
+          <article class="rb-dash-course rb-dash-course--free">
+            <div class="rb-dash-course__thumb rb-course-thumb--1" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            </div>
+            <div class="rb-dash-course__body">
+              <span class="rb-dash-course__free-badge">Free</span>
+              <h3 class="rb-dash-course__title">Basics of Clinical Research</h3>
+              <p class="rb-dash-course__meta">10 lessons &middot; 1h 55m &middot; Beginner</p>
+              <div class="rb-dash-course__progress" aria-label="0% complete">
+                <div class="rb-dash-course__progress-bar"></div>
+              </div>
+            </div>
+            <a href="#" class="rb-btn rb-btn--outline rb-dash-course__btn">Start</a>
+          </article>
+
+          <!-- Free lesson 2 -->
+          <article class="rb-dash-course rb-dash-course--free">
+            <div class="rb-dash-course__thumb rb-course-thumb--2" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            </div>
+            <div class="rb-dash-course__body">
+              <span class="rb-dash-course__free-badge">Free</span>
+              <h3 class="rb-dash-course__title">How to Choose a Research Topic</h3>
+              <p class="rb-dash-course__meta">6 lessons &middot; 1h 10m &middot; Beginner</p>
+              <div class="rb-dash-course__progress" aria-label="0% complete">
+                <div class="rb-dash-course__progress-bar"></div>
+              </div>
+            </div>
+            <a href="#" class="rb-btn rb-btn--outline rb-dash-course__btn">Start</a>
+          </article>
+
+          <!-- Free lesson 3 -->
+          <article class="rb-dash-course rb-dash-course--free">
+            <div class="rb-dash-course__thumb rb-course-thumb--3" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            </div>
+            <div class="rb-dash-course__body">
+              <span class="rb-dash-course__free-badge">Free</span>
+              <h3 class="rb-dash-course__title">Understanding Study Designs</h3>
+              <p class="rb-dash-course__meta">8 lessons &middot; 1h 30m &middot; Beginner</p>
+              <div class="rb-dash-course__progress" aria-label="0% complete">
+                <div class="rb-dash-course__progress-bar"></div>
+              </div>
+            </div>
+            <a href="#" class="rb-btn rb-btn--outline rb-dash-course__btn">Start</a>
+          </article>
+
+          <!-- Locked courses -->
+          <article class="rb-dash-course rb-dash-course--locked" aria-label="Meta-analysis Masterclass — locked">
+            <div class="rb-dash-course__thumb rb-course-thumb--2" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            </div>
+            <div class="rb-dash-course__lock-overlay" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <div class="rb-dash-course__body">
+              <span class="rb-dash-course__scholar-badge">Scholar</span>
+              <h3 class="rb-dash-course__title">Meta-analysis Masterclass</h3>
+              <p class="rb-dash-course__meta">18 lessons &middot; 4h 10m &middot; Intermediate</p>
+            </div>
+            <a href="payment.html" class="rb-btn rb-btn--amber rb-dash-course__btn">Unlock</a>
+          </article>
+
+          <article class="rb-dash-course rb-dash-course--locked" aria-label="SPSS for Beginners — locked">
+            <div class="rb-dash-course__thumb rb-course-thumb--4" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            </div>
+            <div class="rb-dash-course__lock-overlay" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <div class="rb-dash-course__body">
+              <span class="rb-dash-course__scholar-badge">Scholar</span>
+              <h3 class="rb-dash-course__title">SPSS for Beginners</h3>
+              <p class="rb-dash-course__meta">12 lessons &middot; 2h 40m &middot; Beginner</p>
+            </div>
+            <a href="payment.html" class="rb-btn rb-btn--amber rb-dash-course__btn">Unlock</a>
+          </article>
+
+          <article class="rb-dash-course rb-dash-course--locked" aria-label="Manuscript Writing — locked">
+            <div class="rb-dash-course__thumb rb-course-thumb--6" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            </div>
+            <div class="rb-dash-course__lock-overlay" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <div class="rb-dash-course__body">
+              <span class="rb-dash-course__scholar-badge">Scholar</span>
+              <h3 class="rb-dash-course__title">Manuscript Writing (IMRaD)</h3>
+              <p class="rb-dash-course__meta">11 lessons &middot; 2h 30m &middot; Intermediate</p>
+            </div>
+            <a href="payment.html" class="rb-btn rb-btn--amber rb-dash-course__btn">Unlock</a>
+          </article>
+
+          <article class="rb-dash-course rb-dash-course--locked" aria-label="Biostatistics Demystified — locked">
+            <div class="rb-dash-course__thumb rb-course-thumb--7" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            </div>
+            <div class="rb-dash-course__lock-overlay" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <div class="rb-dash-course__body">
+              <span class="rb-dash-course__scholar-badge">Scholar</span>
+              <h3 class="rb-dash-course__title">Biostatistics Demystified</h3>
+              <p class="rb-dash-course__meta">14 lessons &middot; 3h 15m &middot; Intermediate</p>
+            </div>
+            <a href="payment.html" class="rb-btn rb-btn--amber rb-dash-course__btn">Unlock</a>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- Research Modes (all locked) -->
+      <section class="rb-dash-section">
+        <div class="rb-dash-section__head">
+          <h2 class="rb-dash-section__title">Research Modes</h2>
+          <a href="payment.html" class="rb-dash-section__cta">Unlock all 6 modes &rarr;</a>
+        </div>
+        <p class="rb-dash-section__sub">All research modes require the Scholar plan.</p>
+        <div class="rb-dash-modes">
+          <a href="payment.html" class="rb-dash-mode" aria-label="Meta-analysis mode — Scholar required">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+            <span>Meta-analysis</span>
+            <svg class="rb-dash-mode__lock" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </a>
+          <a href="payment.html" class="rb-dash-mode" aria-label="Systematic Review mode — Scholar required">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span>Systematic Review</span>
+            <svg class="rb-dash-mode__lock" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </a>
+          <a href="payment.html" class="rb-dash-mode" aria-label="Cross-sectional mode — Scholar required">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            <span>Cross-sectional</span>
+            <svg class="rb-dash-mode__lock" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </a>
+          <a href="payment.html" class="rb-dash-mode" aria-label="Case Report mode — Scholar required">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>Case Report</span>
+            <svg class="rb-dash-mode__lock" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </a>
+          <a href="payment.html" class="rb-dash-mode" aria-label="RCT mode — Scholar required">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 12 11 14l4-4"/><path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9"/></svg>
+            <span>RCT</span>
+            <svg class="rb-dash-mode__lock" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </a>
+          <a href="payment.html" class="rb-dash-mode" aria-label="Clinical Audit mode — Scholar required">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 20h.01M7 20v-4"/><path d="M12 20v-8"/><path d="M17 20V8"/><path d="M22 4v16"/></svg>
+            <span>Clinical Audit</span>
+            <svg class="rb-dash-mode__lock" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </a>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
