@@ -38,7 +38,10 @@ async function rbSignUp(name, email, password) {
   return rbSupabase.auth.signUp({
     email,
     password,
-    options: { data: { full_name: name } },
+    options: {
+      data: { full_name: name },
+      emailRedirectTo: 'https://rn-b-website.vercel.app/dashboard.html',
+    },
   });
 }
 
