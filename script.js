@@ -528,14 +528,37 @@
   })();
 
   /* ============================================================
+     PLAN BUTTONS — save selection + redirect through auth
+     Intercepts clicks on pricing links that go to payment.html.
+     Stores plan in localStorage so it survives the auth redirect.
+  ============================================================ */
+  (function initPlanButtons() {
+    document.querySelectorAll('a[href^="payment.html?plan="]').forEach(function (link) {
+      link.addEventListener('click', async function (e) {
+        e.preventDefault();
+        var href = link.getAttribute('href');
+        var plan = new URLSearchParams(href.split('?')[1]).get('plan');
+        if (!plan) return;
+        localStorage.setItem('rb-pending-plan', plan);
+
+        if (typeof rbGetSession === 'function') {
+          var session = await rbGetSession();
+          if (session) {
+            window.location.href = 'payment.html?plan=' + plan;
+            return;
+          }
+        }
+        window.location.href = 'signin.html';
+      });
+    });
+  })();
+
+  /* ============================================================
      SIGNUP FORM — Supabase auth
   ============================================================ */
   (function initSignupForm() {
     var form = document.getElementById('rb-signup-form');
     if (!form) return;
-
-    // Redirect to dashboard if already logged in
-    if (typeof rbRedirectIfLoggedIn === 'function') rbRedirectIfLoggedIn();
 
     function setError(id, msg) {
       var el = document.getElementById(id);
@@ -608,12 +631,16 @@
 
       // data.session is null when Supabase requires email confirmation (default)
       if (result.data && result.data.session) {
-        // Email confirmation disabled — user is immediately signed in
-        if (msg) { msg.textContent = 'Account created! Redirecting to payment…'; msg.className = 'rb-form__msg rb-form__msg--success'; }
-        var plan = new URLSearchParams(window.location.search).get('plan') || 'scholar';
-        setTimeout(function () { window.location.href = 'payment.html?plan=' + plan; }, 1200);
+        if (msg) { msg.textContent = 'Account created! Redirecting…'; msg.className = 'rb-form__msg rb-form__msg--success'; }
+        var pendingPlan = localStorage.getItem('rb-pending-plan');
+        if (pendingPlan) {
+          localStorage.removeItem('rb-pending-plan');
+          setTimeout(function () { window.location.replace('payment.html?plan=' + pendingPlan); }, 1200);
+        } else {
+          setTimeout(function () { window.location.replace('dashboard.html'); }, 1200);
+        }
       } else {
-        // Email confirmation required — prompt user to check inbox
+        // Email confirmation required — plan stays in localStorage until they sign in
         if (msg) { msg.textContent = 'Almost there! Check your inbox and confirm your email, then sign in.'; msg.className = 'rb-form__msg rb-form__msg--success'; }
         if (btn) { btn.disabled = false; btn.textContent = 'Create account'; }
       }
@@ -626,8 +653,6 @@
   (function initSigninForm() {
     var form = document.getElementById('rb-signin-form');
     if (!form) return;
-
-    if (typeof rbRedirectIfLoggedIn === 'function') rbRedirectIfLoggedIn();
 
     function setError(id, text) {
       var el = document.getElementById(id);
@@ -681,7 +706,13 @@
       }
 
       if (msg) { msg.textContent = 'Signed in! Redirecting…'; msg.className = 'rb-form__msg rb-form__msg--success'; }
-      setTimeout(function () { window.location.replace('dashboard.html'); }, 800);
+      var pendingPlan = localStorage.getItem('rb-pending-plan');
+      if (pendingPlan) {
+        localStorage.removeItem('rb-pending-plan');
+        setTimeout(function () { window.location.replace('payment.html?plan=' + pendingPlan); }, 800);
+      } else {
+        setTimeout(function () { window.location.replace('dashboard.html'); }, 800);
+      }
     });
   })();
 
@@ -765,6 +796,178 @@
   })();
 
   /* ============================================================
+     PAYMENT SUBMIT — auth guard, image preview, upload to Supabase
+  ============================================================ */
+  (function initPaymentSubmit() {
+    var form = document.getElementById('rb-payment-form');
+    if (!form) return;
+
+    // Auth guard + payment status check
+    if (typeof rbGetSession === 'function') {
+      rbGetSession().then(function (session) {
+        if (!session) {
+          var plan = new URLSearchParams(window.location.search).get('plan');
+          if (plan) localStorage.setItem('rb-pending-plan', plan);
+          window.location.replace('signin.html');
+          return;
+        }
+        // Logged in — check their latest payment status
+        rbSupabase.from('payments')
+          .select('status')
+          .eq('user_id', session.user.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .then(function (result) {
+            var payment = result.data && result.data.length ? result.data[0] : null;
+            var payStatus = payment ? payment.status : null;
+            if (payStatus === 'approved') {
+              window.location.replace('dashboard.html');
+              return;
+            }
+            if (payStatus === 'pending') {
+              var paymentOptions = document.querySelector('.rb-payment-options');
+              var paymentSteps   = document.querySelector('.rb-payment-steps');
+              var proofSection   = document.getElementById('rb-proof-section');
+              var confirmCard    = document.getElementById('rb-payment-confirm');
+              if (paymentOptions) paymentOptions.style.display = 'none';
+              if (paymentSteps)   paymentSteps.style.display   = 'none';
+              if (proofSection)   proofSection.style.display   = 'none';
+              if (confirmCard)    confirmCard.hidden = false;
+            }
+            // null or 'rejected' → leave normal form visible
+          });
+      });
+    }
+
+    var fileInput  = document.getElementById('rb-proof-file');
+    var uploadZone = document.getElementById('rb-upload-zone');
+    var previewEl  = document.getElementById('rb-upload-preview');
+    var previewImg = document.getElementById('rb-upload-preview-img');
+    var removeBtn  = document.getElementById('rb-upload-remove');
+    var selectedFile = null;
+
+    function showPreview(file) {
+      var url = URL.createObjectURL(file);
+      if (previewImg) previewImg.src = url;
+      if (uploadZone) uploadZone.classList.add('rb-upload-zone--has-file');
+    }
+
+    function clearPreview() {
+      selectedFile = null;
+      if (previewImg) previewImg.src = '';
+      if (fileInput) fileInput.value = '';
+      if (uploadZone) uploadZone.classList.remove('rb-upload-zone--has-file');
+    }
+
+    if (removeBtn) {
+      removeBtn.addEventListener('click', function (e) {
+        e.stopPropagation(); // prevent zone click from opening file picker
+        clearPreview();
+      });
+    }
+
+    if (fileInput) {
+      fileInput.addEventListener('change', function () {
+        selectedFile = fileInput.files[0] || null;
+        if (selectedFile) showPreview(selectedFile);
+      });
+    }
+
+    if (uploadZone && fileInput) {
+      // Forward clicks on the zone (icon, text, preview) to the file input
+      uploadZone.addEventListener('click', function (e) {
+        if (e.target !== fileInput) fileInput.click();
+      });
+      uploadZone.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        uploadZone.classList.add('rb-upload-zone--dragover');
+      });
+      uploadZone.addEventListener('dragleave', function () {
+        uploadZone.classList.remove('rb-upload-zone--dragover');
+      });
+      uploadZone.addEventListener('drop', function (e) {
+        e.preventDefault();
+        uploadZone.classList.remove('rb-upload-zone--dragover');
+        var file = e.dataTransfer && e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+          selectedFile = file;
+          showPreview(file);
+        }
+      });
+    }
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      var proofErr = document.getElementById('rb-proof-err');
+      var msg      = document.getElementById('rb-payment-msg');
+      var btn      = document.getElementById('rb-payment-submit');
+
+      if (proofErr) proofErr.textContent = '';
+      if (msg) { msg.textContent = ''; msg.className = 'rb-form__msg'; }
+
+      // Re-check auth at submit time
+      if (typeof rbGetSession !== 'function') {
+        if (msg) { msg.textContent = 'Auth not configured.'; msg.className = 'rb-form__msg rb-form__msg--error'; }
+        return;
+      }
+      var session = await rbGetSession();
+      if (!session) { window.location.replace('signin.html'); return; }
+
+      // File check
+      if (!selectedFile) {
+        if (proofErr) proofErr.textContent = 'Please select your payment screenshot.';
+        return;
+      }
+
+      // Plan + payment method
+      var plan = new URLSearchParams(window.location.search).get('plan') || 'scholar';
+      var selectedOpt = document.querySelector('.rb-payment-option--selected');
+      var methodMap = { 'opt-easypaisa': 'easypaisa', 'opt-jazzcash': 'jazzcash', 'opt-bank': 'bank' };
+      var method = selectedOpt ? (methodMap[selectedOpt.id] || selectedOpt.id) : 'unknown';
+
+      if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
+
+      // Upload screenshot to Supabase Storage
+      var safeName = selectedFile.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      var storagePath = session.user.id + '/' + Date.now() + '_' + safeName;
+      var uploadResult = await rbSupabase.storage.from('payment-proofs').upload(storagePath, selectedFile);
+
+      if (uploadResult.error) {
+        if (msg) { msg.textContent = uploadResult.error.message; msg.className = 'rb-form__msg rb-form__msg--error'; }
+        if (btn) { btn.disabled = false; btn.textContent = 'Submit Payment Proof'; }
+        return;
+      }
+
+      // Get public URL
+      var urlData = rbSupabase.storage.from('payment-proofs').getPublicUrl(storagePath);
+      var screenshotUrl = urlData.data ? urlData.data.publicUrl : '';
+
+      // Insert payment record
+      var insertResult = await rbSupabase.from('payments').insert({
+        user_id: session.user.id,
+        email: session.user.email,
+        plan: plan,
+        payment_method: method,
+        screenshot_url: screenshotUrl,
+        status: 'pending',
+      });
+
+      if (insertResult.error) {
+        if (msg) { msg.textContent = insertResult.error.message; msg.className = 'rb-form__msg rb-form__msg--error'; }
+        if (btn) { btn.disabled = false; btn.textContent = 'Submit Payment Proof'; }
+        return;
+      }
+
+      // Success — hide form, show confirmation card
+      var proofSection = document.getElementById('rb-proof-section');
+      var confirmCard  = document.getElementById('rb-payment-confirm');
+      if (proofSection) proofSection.hidden = true;
+      if (confirmCard)  confirmCard.hidden = false;
+    });
+  })();
+
+  /* ============================================================
      DASHBOARD SIDEBAR TOGGLE (mobile)
   ============================================================ */
   (function initDashSidebar() {
@@ -787,7 +990,7 @@
   })();
 
   /* ============================================================
-     DASHBOARD AUTH GUARD + USER DISPLAY
+     DASHBOARD AUTH GUARD + USER DISPLAY + PLAN STATE
   ============================================================ */
   (function initDashboard() {
     if (!document.getElementById('rb-dash')) return;
@@ -811,6 +1014,196 @@
         var firstName = name.split(' ')[0];
         welcomeEl.textContent = 'Welcome back, ' + firstName + '.';
       }
+
+      // Query the payments table for this user's latest payment record
+      rbSupabase.from('payments')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .then(function (result) {
+          var payment = result.data && result.data.length ? result.data[0] : null;
+          applyPlanState(payment ? payment.status : null, payment ? payment.plan : null);
+        });
+    });
+
+    function applyPlanState(status, plan) {
+      var dash         = document.getElementById('rb-dash');
+      var pendingCard  = document.getElementById('rb-dash-pending');
+      var rejectedCard = document.getElementById('rb-dash-rejected');
+      var freeCard     = document.getElementById('rb-dash-free');
+      var upgradeBtn   = document.querySelector('#rb-dash-sidebar-footer .rb-btn--amber');
+      var planLabel    = document.querySelector('.rb-dash__plan-label');
+      var welcomeSub   = document.querySelector('.rb-dash__welcome-sub');
+
+      // Add CSS state class so existing stylesheet rules still fire
+      if (dash && status) dash.classList.add('rb-dash--' + status);
+
+      if (!status) {
+        // No payment record — free plan
+        if (freeCard) freeCard.style.display = 'block';
+
+      } else if (status === 'pending') {
+        if (pendingCard) pendingCard.style.display = 'block';
+        if (planLabel) planLabel.innerHTML = 'Payment is <strong>under review</strong>';
+        if (welcomeSub) welcomeSub.textContent = 'Your payment is being verified. Free lessons are available while you wait.';
+        if (upgradeBtn) {
+          upgradeBtn.textContent = 'Payment Under Review';
+          upgradeBtn.href = '#';
+          upgradeBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (!pendingCard) return;
+            pendingCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            pendingCard.classList.add('rb-dash-status-card--pulse');
+            setTimeout(function () { pendingCard.classList.remove('rb-dash-status-card--pulse'); }, 1000);
+          });
+        }
+
+      } else if (status === 'rejected') {
+        if (rejectedCard) rejectedCard.style.display = 'block';
+        if (planLabel) planLabel.innerHTML = 'Payment was <strong>not verified</strong>';
+
+      } else if (status === 'approved') {
+        var isScholar = (plan !== 'pro');
+        var planDisplayName = isScholar ? 'Scholar Plan' : 'Pro Plan';
+
+        if (planLabel) planLabel.innerHTML = 'You\'re on the <strong>' + planDisplayName + '</strong>';
+
+        if (welcomeSub) {
+          welcomeSub.textContent = isScholar
+            ? 'You\'re on the Scholar Plan. All Academy content and research modes are unlocked.'
+            : 'You\'re on the Pro Plan. Everything is unlocked including 1:1 mentorship.';
+        }
+
+        // Plan badge next to welcome heading
+        var welcomeHeadingEl = document.querySelector('.rb-dash__welcome-heading');
+        if (welcomeHeadingEl) {
+          var planBadge = document.createElement('span');
+          planBadge.className = 'rb-plan-badge rb-plan-badge--' + (isScholar ? 'scholar' : 'pro');
+          planBadge.textContent = planDisplayName;
+          welcomeHeadingEl.appendChild(planBadge);
+        }
+
+        // Scholar: show sidebar with "Upgrade to Pro" CTA + upsell card
+        // Pro: sidebar footer stays hidden via .rb-dash--approved CSS rule
+        var sidebarFooter = document.getElementById('rb-dash-sidebar-footer');
+        if (isScholar) {
+          if (sidebarFooter) sidebarFooter.style.display = 'flex';
+          if (upgradeBtn) {
+            upgradeBtn.textContent = 'Upgrade to Pro';
+            upgradeBtn.href = 'payment.html?plan=pro';
+          }
+          var proUpsellCard = document.getElementById('rb-dash-pro-upsell');
+          if (proUpsellCard) proUpsellCard.removeAttribute('hidden');
+        }
+
+        // Unlock sidebar nav — remove locked class and lock icon spans
+        document.querySelectorAll('.rb-dash__nav-link--locked').forEach(function (link) {
+          link.classList.remove('rb-dash__nav-link--locked');
+          link.removeAttribute('aria-label');
+          var lock = link.querySelector('.rb-dash__nav-lock');
+          if (lock) lock.remove();
+        });
+
+        // Unlock locked courses
+        document.querySelectorAll('.rb-dash-course--locked').forEach(function (course) {
+          course.classList.remove('rb-dash-course--locked');
+          var overlay = course.querySelector('.rb-dash-course__lock-overlay');
+          if (overlay) overlay.remove();
+          var badge = course.querySelector('.rb-dash-course__scholar-badge');
+          if (badge) { badge.className = 'rb-dash-course__free-badge'; badge.textContent = 'Unlocked'; }
+          var btn = course.querySelector('.rb-btn');
+          if (btn) { btn.textContent = 'Start'; btn.href = '#'; btn.className = 'rb-btn rb-btn--outline rb-dash-course__btn'; }
+        });
+
+        // Unlock research modes
+        document.querySelectorAll('.rb-dash-mode__lock').forEach(function (lock) { lock.remove(); });
+
+        // Unlock quick actions
+        document.querySelectorAll('.rb-dash-action--locked').forEach(function (action) {
+          action.classList.remove('rb-dash-action--locked');
+          var lock = action.querySelector('.rb-dash-action__lock');
+          if (lock) lock.remove();
+          action.href = '#';
+        });
+
+        // Update stats
+        document.querySelectorAll('.rb-dash-stat').forEach(function (stat) {
+          var label = stat.querySelector('.rb-dash-stat__label');
+          if (!label) return;
+          var text = label.textContent.trim();
+          if (text === 'Lessons Unlocked') {
+            var numEl = stat.querySelector('.rb-dash-stat__num');
+            if (numEl) numEl.textContent = '97/97';
+          }
+          if (text === 'Match Score') {
+            stat.classList.remove('rb-dash-stat--locked');
+            var lockLabel = stat.querySelector('.rb-dash-stat__lock-label');
+            if (lockLabel) lockLabel.remove();
+          }
+        });
+
+        // Update section subtitles
+        var academySub = document.querySelector('#rb-dash-academy .rb-dash-section__sub');
+        if (academySub) academySub.textContent = 'All 97 lessons unlocked.';
+        var modesSub = document.querySelector('.rb-dash-section:last-of-type .rb-dash-section__sub');
+        if (modesSub) modesSub.textContent = 'All 6 research modes unlocked.';
+      }
+    }
+  })();
+
+  /* ============================================================
+     PRICING BUTTONS — update based on current plan when logged in
+     Runs only on pages with a #pricing section (index.html)
+  ============================================================ */
+  (function initPricingButtons() {
+    if (!document.getElementById('pricing')) return;
+    if (typeof rbGetSession !== 'function') return;
+
+    rbGetSession().then(function (session) {
+      if (!session) return;
+
+      rbSupabase.from('payments')
+        .select('status, plan')
+        .eq('user_id', session.user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+        .then(function (result) {
+          var payment = result.data;
+          var status = payment ? payment.status : null;
+          var plan   = payment ? payment.plan   : null;
+          if (!status) return;
+
+          var scholarBtn = document.querySelector('a[href="payment.html?plan=scholar"]');
+          var proBtn     = document.querySelector('a[href="payment.html?plan=pro"]');
+
+          function makeCurrentPlan(btn, label) {
+            if (!btn) return;
+            btn.textContent = label;
+            btn.className = btn.className.replace('rb-btn--amber', 'rb-btn--outline');
+            btn.classList.add('rb-btn--current-plan');
+            btn.removeAttribute('href');
+          }
+
+          if (status === 'pending') {
+            if (plan === 'scholar' && scholarBtn) makeCurrentPlan(scholarBtn, 'Under Review…');
+            if (plan === 'pro'     && proBtn)     makeCurrentPlan(proBtn,     'Under Review…');
+
+          } else if (status === 'approved') {
+            if (plan === 'scholar') {
+              makeCurrentPlan(scholarBtn, 'Current Plan ✓');
+              if (proBtn) {
+                proBtn.textContent = 'Upgrade to Pro →';
+                proBtn.className = proBtn.className.replace('rb-btn--outline', 'rb-btn--amber');
+                proBtn.href = 'payment.html?plan=pro';
+              }
+            } else if (plan === 'pro') {
+              makeCurrentPlan(proBtn,     'Current Plan ✓');
+              makeCurrentPlan(scholarBtn, 'Included in Pro ✓');
+            }
+          }
+        });
     });
   })();
 
@@ -825,6 +1218,59 @@
       e.preventDefault();
       if (typeof rbSignOut === 'function') await rbSignOut();
       window.location.replace('signin.html');
+    });
+  })();
+
+  /* ============================================================
+     NAV AUTH STATE — swap Sign in / Join Free for user info
+     Runs on every page except the dashboard (which has its own).
+  ============================================================ */
+  (function initNavAuthState() {
+    if (document.getElementById('rb-dash')) return;
+    if (typeof rbGetSession !== 'function') return;
+
+    rbGetSession().then(function (session) {
+      if (!session) return;
+
+      var fullName = (session.user.user_metadata && session.user.user_metadata.full_name)
+        ? session.user.user_metadata.full_name
+        : session.user.email;
+      var firstName = fullName.split(' ')[0];
+      var initial   = firstName.charAt(0).toUpperCase();
+
+      // Desktop: replace Sign in link with avatar + name linking to dashboard
+      var signinLink = document.querySelector('.rb-nav__actions .rb-signin');
+      if (signinLink) {
+        var userEl = document.createElement('a');
+        userEl.href = 'dashboard.html';
+        userEl.className = 'rb-nav__user';
+        userEl.setAttribute('aria-label', firstName + ' — go to dashboard');
+        userEl.innerHTML =
+          '<span class="rb-nav__user-avatar" aria-hidden="true">' + initial + '</span>' +
+          '<span class="rb-nav__user-name">' + firstName + '</span>';
+        signinLink.replaceWith(userEl);
+      }
+
+      // Desktop: swap "Join Free" button → "Dashboard"
+      var joinBtn = document.querySelector('.rb-nav__actions .rb-btn--amber');
+      if (joinBtn) {
+        joinBtn.textContent = 'Dashboard';
+        joinBtn.href = 'dashboard.html';
+      }
+
+      // Mobile: update Sign in link
+      var mobileSignin = document.querySelector('.rb-mobile-signin');
+      if (mobileSignin) {
+        mobileSignin.href = 'dashboard.html';
+        mobileSignin.textContent = firstName;
+      }
+
+      // Mobile: update CTA button
+      var mobileCta = document.querySelector('.rb-mobile-cta');
+      if (mobileCta) {
+        mobileCta.href = 'dashboard.html';
+        mobileCta.textContent = 'Dashboard';
+      }
     });
   })();
 

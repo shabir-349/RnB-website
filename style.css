@@ -379,6 +379,37 @@ p { line-height: 1.7; }
 
 .rb-signin:hover { color: var(--navy-900); }
 
+/* Logged-in nav user pill */
+.rb-nav__user {
+  display: none;
+  align-items: center;
+  gap: var(--space-2);
+  text-decoration: none;
+  color: inherit;
+}
+
+@media (min-width: 768px) { .rb-nav__user { display: flex; } }
+
+.rb-nav__user-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--navy-700), var(--amber-500));
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rb-nav__user-name {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
 /* Theme toggle */
 .rb-theme-toggle {
   width: 36px;
@@ -2721,3 +2752,401 @@ p { line-height: 1.7; }
 }
 
 .rb-copy-toast.rb-copy-toast--show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── Payment plan state classes (added to #rb-dash by JS) ─────────── */
+.rb-dash-pending-banner {
+  display: none;
+  background-color: rgba(232,163,61,0.07);
+  border: 1px solid rgba(232,163,61,0.25);
+  border-radius: var(--radius-2);
+  padding: var(--space-4) var(--space-6);
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-8);
+}
+
+.rb-dash-pending-banner__content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: 0.9375rem;
+  color: var(--text);
+}
+
+.rb-dash-pending-banner__content svg { color: var(--amber-500); flex-shrink: 0; }
+
+.rb-dash-pending-banner__status {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--amber-500);
+  white-space: nowrap;
+}
+
+.rb-dash--pending .rb-dash-pending-banner { display: flex; }
+
+.rb-dash--pending .rb-dash-upgrade-banner,
+.rb-dash--scholar .rb-dash-upgrade-banner,
+.rb-dash--pro .rb-dash-upgrade-banner { display: none; }
+
+.rb-dash--scholar #rb-dash-sidebar-footer,
+.rb-dash--pro #rb-dash-sidebar-footer { display: none; }
+
+/* ── Payment page — upload proof + confirmation card ─────────────── */
+.rb-proof-heading {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: var(--space-4);
+  text-align: center;
+}
+
+#rb-proof-section { text-align: center; }
+
+.rb-upload-zone {
+  position: relative;
+  border: 2px dashed var(--amber-500);
+  border-radius: var(--radius-2);
+  background-color: var(--paper);
+  min-height: 180px;
+  max-width: 360px;
+  margin: 0 auto var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color var(--transition), background-color var(--transition);
+}
+
+.rb-upload-zone:hover,
+.rb-upload-zone--dragover {
+  border-color: var(--amber-400);
+  background-color: rgba(232,163,61,0.08);
+}
+
+.rb-upload-zone__input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.rb-upload-zone__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-6);
+  text-align: center;
+  pointer-events: none;
+}
+
+.rb-upload-zone__icon { color: var(--amber-500); opacity: 0.6; }
+
+.rb-upload-zone__text {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.rb-upload-zone__hint { font-size: 0.8125rem; color: var(--text-muted); opacity: 0.7; }
+
+.rb-upload-zone__preview {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--paper);
+  padding: var(--space-3);
+}
+
+.rb-upload-zone__preview img {
+  max-width: 100%;
+  max-height: 160px;
+  object-fit: contain;
+  border-radius: var(--radius-1);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+
+.rb-upload-zone__remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(180, 30, 30, 0.88);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  transition: background var(--transition);
+  flex-shrink: 0;
+}
+
+.rb-upload-zone__remove:hover { background: #DC3545; }
+
+.rb-upload-zone__preview-hint {
+  font-size: 0.725rem;
+  color: var(--text-muted);
+  opacity: 0.75;
+  text-align: center;
+  margin-top: var(--space-2);
+  pointer-events: none;
+}
+
+.rb-upload-zone--has-file { min-height: 200px; }
+.rb-upload-zone--has-file .rb-upload-zone__content { display: none; }
+.rb-upload-zone--has-file .rb-upload-zone__preview { display: flex; }
+
+.rb-proof-actions {
+  margin-top: var(--space-4);
+  display: flex;
+  justify-content: center;
+}
+
+#rb-proof-err {
+  display: block;
+  text-align: center;
+  margin-top: var(--space-2);
+}
+
+#rb-payment-msg { text-align: center; }
+
+.rb-payment-confirm {
+  background-color: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2);
+  padding: var(--space-10) var(--space-8);
+  text-align: center;
+  max-width: 540px;
+  margin: 0 auto var(--space-8);
+}
+
+.rb-payment-confirm__icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: rgba(232,163,61,0.12);
+  color: var(--amber-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--space-6);
+}
+
+.rb-payment-confirm__heading {
+  font-family: 'Lora', Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--navy-900);
+  margin-bottom: var(--space-3);
+}
+
+[data-theme="dark"] .rb-payment-confirm__heading { color: var(--text); }
+
+.rb-payment-confirm__text {
+  font-size: 1rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+  margin-bottom: var(--space-8);
+}
+
+.rb-payment-confirm__support {
+  background-color: rgba(30,58,95,0.05);
+  border-radius: var(--radius-1);
+  padding: var(--space-5) var(--space-6);
+  margin-bottom: var(--space-8);
+  text-align: left;
+}
+
+[data-theme="dark"] .rb-payment-confirm__support { background-color: rgba(255,255,255,0.04); }
+
+.rb-payment-confirm__support-heading {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: var(--space-3);
+}
+
+.rb-payment-confirm__channels {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.rb-payment-confirm__channel {
+  font-size: 0.875rem;
+  color: var(--amber-500);
+  transition: color var(--transition);
+}
+
+/* ── Payment status cards (pending / rejected / free) ────────────── */
+.rb-dash-status-card {
+  display: none;
+  border-radius: var(--radius-2);
+  padding: var(--space-6);
+  margin-bottom: var(--space-8);
+  background: var(--paper);
+  border: 1px solid var(--border);
+}
+
+.rb-dash-status-card--pending {
+  border-left: 4px solid var(--amber-500);
+  background: rgba(232,163,61,0.04);
+  border-color: rgba(232,163,61,0.2);
+}
+
+.rb-dash-status-card--rejected {
+  border-left: 4px solid #DC3545;
+  background: rgba(220,53,69,0.04);
+  border-color: rgba(220,53,69,0.2);
+}
+
+.rb-dash-status-card__icon { margin-bottom: var(--space-3); }
+.rb-dash-status-card--pending .rb-dash-status-card__icon { color: var(--amber-500); }
+.rb-dash-status-card--rejected .rb-dash-status-card__icon { color: #DC3545; }
+
+.rb-dash-status-card__heading {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: var(--space-2);
+}
+
+.rb-dash-status-card__text {
+  font-size: 0.9375rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-4);
+}
+
+.rb-dash-status-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  margin-bottom: var(--space-4);
+}
+
+.rb-dash-status-card__support {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+}
+
+.rb-dash-status-card__support-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: color var(--transition);
+}
+
+.rb-dash-status-card__support-link:hover { color: var(--amber-500); }
+
+/* pulse-glow animation — triggered by JS when sidebar button is clicked while pending */
+@keyframes rb-pulse-glow {
+  0%   { box-shadow: 0 0 0 0   rgba(232,163,61,0.55); }
+  55%  { box-shadow: 0 0 0 12px rgba(232,163,61,0); }
+  100% { box-shadow: 0 0 0 0   rgba(232,163,61,0); }
+}
+
+.rb-dash-status-card--pulse { animation: rb-pulse-glow 1s ease-out; }
+
+/* hide old banners for approved/rejected states */
+.rb-dash--approved .rb-dash-upgrade-banner,
+.rb-dash--approved .rb-dash-pending-banner,
+.rb-dash--rejected .rb-dash-upgrade-banner,
+.rb-dash--approved #rb-dash-sidebar-footer { display: none; }
+
+.rb-payment-confirm__channel:hover { color: var(--amber-400); }
+
+/* ============================================================
+   PLAN BADGE — inline badge in dashboard welcome heading
+   ============================================================ */
+.rb-plan-badge {
+  display: inline-block;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: var(--radius-1);
+  vertical-align: middle;
+  margin-left: var(--space-3);
+  line-height: 1.6;
+}
+
+.rb-plan-badge--scholar {
+  background-color: rgba(232,163,61,0.12);
+  color: var(--amber-500);
+  border: 1.5px solid var(--amber-500);
+}
+
+.rb-plan-badge--pro {
+  background: linear-gradient(135deg, var(--navy-700) 0%, var(--amber-500) 100%);
+  color: #fff;
+}
+
+/* ============================================================
+   PRO UPSELL CARD — shown for Scholar-plan users
+   ============================================================ */
+.rb-dash-pro-upsell {
+  background-color: var(--paper);
+  border: 1.5px solid var(--amber-500);
+  border-radius: var(--radius-2);
+  padding: var(--space-5) var(--space-6);
+  margin-bottom: var(--space-8);
+}
+
+.rb-dash-pro-upsell__content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+}
+
+.rb-dash-pro-upsell__title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: var(--space-1);
+}
+
+.rb-dash-pro-upsell__body {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  max-width: 480px;
+}
+
+/* ============================================================
+   PRICING BUTTONS — current plan / included state
+   ============================================================ */
+.rb-btn--current-plan {
+  background-color: transparent;
+  border-color: var(--amber-500);
+  color: var(--amber-500);
+  cursor: default;
+  pointer-events: none;
+}
+
+[data-theme="dark"] .rb-btn--current-plan {
+  border-color: var(--amber-400);
+  color: var(--amber-400);
+}

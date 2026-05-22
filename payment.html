@@ -47,7 +47,7 @@
       <div class="rb-payment-header">
         <p class="rb-eyebrow">Step 2 of 2 &mdash; Payment</p>
         <h1 class="rb-payment-header__title">Complete your subscription</h1>
-        <p class="rb-payment-header__sub">Choose a method below, send payment, then forward your screenshot. Your account activates within 24 hours.</p>
+        <p class="rb-payment-header__sub">Choose a method below, send the exact amount, then upload your transaction screenshot to confirm. Your account activates within 24 hours.</p>
       </div>
 
       <!-- Plan summary -->
@@ -183,37 +183,54 @@
           <li class="rb-payment-step">
             <span class="rb-payment-step__num">4</span>
             <div>
-              <strong>Send proof to us</strong> with your registered email address. Use any of the options below.
+              <strong>Upload a screenshot</strong> of your transaction confirmation in the section below.
             </div>
           </li>
         </ol>
       </div>
 
-      <!-- Screenshot/proof notice -->
-      <div class="rb-payment-notice">
-        <p class="rb-payment-notice__heading">Send your payment screenshot to:</p>
-        <div class="rb-payment-notice__channels">
-          <a href="https://wa.me/923001234567" class="rb-payment-notice__channel" target="_blank" rel="noopener noreferrer">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            WhatsApp: +92 300-1234567
-          </a>
-          <a href="mailto:pay@rb-research.io" class="rb-payment-notice__channel">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-            pay@rb-research.io
-          </a>
-        </div>
-        <p class="rb-payment-notice__reminder">
-          Include your <strong>registered email address</strong> in the message so we can activate the correct account. Activation happens within 24 hours — usually much faster.
-        </p>
+      <!-- Upload payment proof -->
+      <div id="rb-proof-section">
+        <h2 class="rb-proof-heading">Upload Payment Proof</h2>
+        <form id="rb-payment-form" novalidate>
+          <div class="rb-upload-zone" id="rb-upload-zone">
+            <input type="file" id="rb-proof-file" class="rb-upload-zone__input" accept="image/*" aria-label="Choose payment screenshot" />
+            <div class="rb-upload-zone__content">
+              <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="rb-upload-zone__icon" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+              <p class="rb-upload-zone__text">Click or drag to upload your payment screenshot</p>
+              <p class="rb-upload-zone__hint">PNG, JPG, or WEBP accepted</p>
+            </div>
+            <div class="rb-upload-zone__preview" id="rb-upload-preview">
+              <button type="button" class="rb-upload-zone__remove" id="rb-upload-remove" aria-label="Remove uploaded screenshot">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+              <img id="rb-upload-preview-img" src="" alt="Payment screenshot preview" />
+              <p class="rb-upload-zone__preview-hint">Click &times; to remove and upload a different screenshot</p>
+            </div>
+          </div>
+          <span class="rb-form__error" id="rb-proof-err" role="alert"></span>
+          <div class="rb-proof-actions">
+            <button type="submit" class="rb-btn rb-btn--amber rb-btn--lg" id="rb-payment-submit">Submit Payment Proof</button>
+          </div>
+          <p class="rb-form__msg" id="rb-payment-msg" role="alert" aria-live="polite"></p>
+        </form>
       </div>
 
-      <!-- Confirmation action -->
-      <div class="rb-payment-actions">
-        <a href="dashboard.html" class="rb-btn rb-btn--amber rb-btn--lg">
-          I've sent payment — go to dashboard
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-        </a>
-        <a href="index.html#faq" class="rb-btn rb-btn--outline">Got a question?</a>
+      <!-- Confirmation card (shown after submission) -->
+      <div class="rb-payment-confirm" id="rb-payment-confirm" hidden>
+        <div class="rb-payment-confirm__icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <h2 class="rb-payment-confirm__heading">Payment Under Review</h2>
+        <p class="rb-payment-confirm__text">We're verifying your payment. This usually takes less than 24 hours.</p>
+        <div class="rb-payment-confirm__support">
+          <p class="rb-payment-confirm__support-heading">Taking longer than expected?</p>
+          <div class="rb-payment-confirm__channels">
+            <a href="https://wa.me/923001234567" class="rb-payment-confirm__channel" target="_blank" rel="noopener noreferrer">WhatsApp: +92 300-1234567</a>
+            <a href="mailto:support@rb-research.io" class="rb-payment-confirm__channel">support@rb-research.io</a>
+          </div>
+        </div>
+        <a href="dashboard.html" class="rb-btn rb-btn--outline">Go to Dashboard</a>
       </div>
 
       <p class="rb-payment-footer-note">
@@ -224,6 +241,8 @@
     </div>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="supabase.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

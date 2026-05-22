@@ -69,6 +69,47 @@ async function rbGetSession() {
   return session;
 }
 
+/* ── Payment helpers ─────────────────────────────────────────────── */
+
+/**
+ * Insert a payment request row with status 'pending'.
+ * Requires a `payment_requests` table with columns:
+ *   user_id uuid, plan text, payment_method text, transaction_id text,
+ *   status text, created_at timestamptz (default now())
+ */
+async function rbSubmitPayment(plan, method, transactionId) {
+  const session = await rbGetSession();
+  if (!session) return { error: { message: 'Not logged in.' } };
+  return rbSupabase.from('payment_requests').insert({
+    user_id: session.user.id,
+    plan: plan,
+    payment_method: method,
+    transaction_id: transactionId,
+    status: 'pending',
+  });
+}
+
+/**
+ * Return the effective plan status for the current user.
+ * Possible return values: 'free' | 'pending' | 'scholar' | 'pro'
+ * Reads the most recent payment_request row for this user.
+ */
+async function rbGetPaymentStatus() {
+  const session = await rbGetSession();
+  if (!session) return 'free';
+  const { data, error } = await rbSupabase
+    .from('payment_requests')
+    .select('plan, status')
+    .eq('user_id', session.user.id)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error || !data) return 'free';
+  if (data.status === 'pending') return 'pending';
+  if (data.status === 'approved') return data.plan; // 'scholar' or 'pro'
+  return 'free';
+}
+
 /* ── Page guards ─────────────────────────────────────────────────── */
 
 /**
