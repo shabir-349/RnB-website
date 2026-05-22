@@ -87,8 +87,19 @@
 
 html {
   scroll-behavior: smooth;
+  /* Reserve space for the sticky/fixed nav so anchor targets aren't hidden beneath it.
+     Applies to native browser anchor navigation (cross-page links, hash changes)
+     and to scrollIntoView() calls. window.scrollTo() is handled separately in JS. */
+  scroll-padding-top: calc(var(--nav-height) + 16px);
   font-size: 16px;
   overflow-x: hidden;
+}
+
+/* scroll-margin-top on each anchor target is the element-side counterpart.
+   Covers browsers that implement one property but not the other, and also
+   makes scrollIntoView({ block: 'start' }) respect the nav offset. */
+section[id] {
+  scroll-margin-top: calc(var(--nav-height) + 16px);
 }
 
 body {

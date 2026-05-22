@@ -64,10 +64,9 @@
       // Close mobile menu if open
       closeMobileMenu();
 
-      const navHeight = nav ? nav.getBoundingClientRect().height : 0;
-      const top = target.getBoundingClientRect().top + window.scrollY - navHeight - 16;
-
-      window.scrollTo({ top: top, behavior: 'smooth' });
+      // scroll-margin-top on the target (set in CSS) handles the nav offset;
+      // scrollIntoView respects it automatically on all modern browsers.
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   });
 
