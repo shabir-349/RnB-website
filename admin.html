@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — R&amp;B Research and Beyond</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="rb-nav rb-nav--scrolled" id="rb-nav" role="banner">
+    <div class="rb-nav__inner">
+      <a href="index.html" class="rb-logo" aria-label="R&B home">R&amp;B</a>
+      <span class="rb-admin-nav-badge">Admin</span>
+      <div class="rb-admin-nav-actions">
+        <button class="rb-theme-toggle" id="rb-theme-toggle" aria-label="Toggle dark mode">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-sun" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-moon" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        </button>
+        <button class="rb-btn rb-btn--outline" id="rb-admin-signout">Sign out</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Full-page loading overlay — visible during auth check + initial fetch -->
+  <div class="rb-admin-overlay" id="rb-admin-loading" role="status" aria-live="polite">
+    <div class="rb-spinner" aria-hidden="true"></div>
+    <p class="rb-admin-overlay__text">Loading…</p>
+  </div>
+
+  <!-- Error overlay — replaces loading if fetch fails -->
+  <div class="rb-admin-overlay rb-admin-overlay--hidden" id="rb-admin-error" role="alert">
+    <p class="rb-admin-overlay__text rb-admin-overlay__text--error" id="rb-admin-error-msg">Something went wrong.</p>
+    <button class="rb-btn rb-btn--amber" id="rb-admin-retry">Try again</button>
+  </div>
+
+  <!-- Main content — revealed after data loads -->
+  <main class="rb-admin-main" id="rb-admin-main" style="display:none">
+    <div class="rb-container">
+
+      <div class="rb-admin-page-header">
+        <p class="rb-eyebrow">Internal Tool</p>
+        <h1 class="rb-admin-heading">Payment Dashboard</h1>
+      </div>
+
+      <!-- Stats cards -->
+      <div class="rb-admin-stats" id="rb-admin-stats" aria-label="Payment statistics"></div>
+
+      <!-- Filter tabs -->
+      <div class="rb-admin-filters" role="tablist" aria-label="Filter payments by status">
+        <button class="rb-admin-tab rb-admin-tab--active" data-filter="all"      role="tab" aria-selected="true">All</button>
+        <button class="rb-admin-tab"                       data-filter="pending"  role="tab" aria-selected="false">Pending</button>
+        <button class="rb-admin-tab"                       data-filter="approved" role="tab" aria-selected="false">Approved</button>
+        <button class="rb-admin-tab"                       data-filter="rejected" role="tab" aria-selected="false">Rejected</button>
+      </div>
+
+      <p class="rb-admin-count" id="rb-admin-count" aria-live="polite"></p>
+
+      <!-- Table -->
+      <div class="rb-admin-table-wrap">
+        <table class="rb-admin-table" id="rb-admin-table" aria-label="Payments">
+          <thead>
+            <tr>
+              <th scope="col">Email</th>
+              <th scope="col">Plan</th>
+              <th scope="col">Method</th>
+              <th scope="col">Date</th>
+              <th scope="col">Screenshot</th>
+              <th scope="col">Status</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="rb-admin-tbody"></tbody>
+        </table>
+        <p class="rb-admin-empty" id="rb-admin-empty" style="display:none">No payments match this filter.</p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Screenshot lightbox -->
+  <div class="rb-admin-modal rb-admin-overlay--hidden" id="rb-admin-modal" role="dialog" aria-modal="true" aria-label="Payment screenshot">
+    <button class="rb-admin-modal__close" id="rb-admin-modal-close" aria-label="Close screenshot">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <img class="rb-admin-modal__img" id="rb-admin-modal-img" src="" alt="Payment proof screenshot" />
+  </div>
+
+  <!-- Confirm dialog -->
+  <div class="rb-admin-confirm rb-admin-overlay--hidden" id="rb-admin-confirm" role="dialog" aria-modal="true">
+    <div class="rb-admin-confirm__box">
+      <h2 class="rb-admin-confirm__heading">Confirm action</h2>
+      <p class="rb-admin-confirm__msg" id="rb-admin-confirm-msg"></p>
+      <div class="rb-admin-confirm__actions">
+        <button class="rb-btn rb-btn--outline" id="rb-admin-confirm-cancel">Cancel</button>
+        <button class="rb-btn" id="rb-admin-confirm-ok">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="supabase.js"></script>
+  <script src="script.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

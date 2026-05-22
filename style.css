@@ -3161,3 +3161,476 @@ p { line-height: 1.7; }
   border-color: var(--amber-400);
   color: var(--amber-400);
 }
+
+/* ============================================================
+   ADMIN PAGE
+   ============================================================ */
+
+/* Utility: hide overlays / dialogs without display:none on element */
+.rb-admin-overlay--hidden { display: none !important; }
+
+/* ── Nav additions ─────────────────────────────────────────── */
+.rb-admin-nav-badge {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: var(--radius-1);
+  background: var(--amber-500);
+  color: var(--navy-900);
+  flex-shrink: 0;
+}
+
+.rb-admin-nav-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* ── Full-page overlays (loading / error) ─────────────────── */
+.rb-admin-overlay {
+  position: fixed;
+  inset: 0;
+  top: var(--nav-height);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  background: var(--bg);
+  z-index: 50;
+}
+
+@keyframes rb-spin {
+  to { transform: rotate(360deg); }
+}
+
+.rb-spinner {
+  width: 44px;
+  height: 44px;
+  border: 3px solid var(--border);
+  border-top-color: var(--amber-500);
+  border-radius: 50%;
+  animation: rb-spin 0.75s linear infinite;
+}
+
+.rb-admin-overlay__text {
+  font-size: 0.9375rem;
+  color: var(--text-muted);
+}
+.rb-admin-overlay__text--error { color: #E53E3E; }
+
+/* ── Main layout ──────────────────────────────────────────── */
+.rb-admin-main {
+  padding: var(--space-8) 0 var(--space-32);
+  min-height: calc(100vh - var(--nav-height));
+}
+
+/* ── Page header ──────────────────────────────────────────── */
+.rb-admin-page-header {
+  padding-bottom: var(--space-6);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: var(--space-8);
+}
+
+.rb-admin-heading {
+  font-family: 'Lora', Georgia, serif;
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 600;
+  color: var(--navy-900);
+  margin-top: var(--space-2);
+}
+[data-theme="dark"] .rb-admin-heading { color: var(--text); }
+
+/* ── Stats grid ───────────────────────────────────────────── */
+.rb-admin-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+  margin-bottom: var(--space-8);
+}
+
+@media (min-width: 640px) {
+  .rb-admin-stats { grid-template-columns: repeat(6, 1fr); }
+}
+
+.rb-admin-stat {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--border);
+  border-radius: var(--radius-2);
+  padding: var(--space-4) var(--space-3);
+  text-align: center;
+}
+.rb-admin-stat--pending  { border-top-color: var(--amber-500); }
+.rb-admin-stat--approved { border-top-color: #38A169; }
+.rb-admin-stat--rejected { border-top-color: #E53E3E; }
+.rb-admin-stat--scholar  { border-top-color: var(--navy-700); }
+.rb-admin-stat--pro      { border-top-color: var(--amber-400); }
+
+.rb-admin-stat__value {
+  display: block;
+  font-size: 1.625rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text);
+  margin-bottom: var(--space-1);
+}
+.rb-admin-stat__label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+/* ── Filter tabs ──────────────────────────────────────────── */
+.rb-admin-filters {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-3);
+}
+
+.rb-admin-tab {
+  padding: 7px 16px;
+  border-radius: var(--radius-1);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: border-color var(--transition), color var(--transition), background-color var(--transition);
+}
+.rb-admin-tab:hover {
+  border-color: var(--amber-500);
+  color: var(--text);
+}
+.rb-admin-tab--active {
+  background: var(--navy-900);
+  border-color: var(--navy-900);
+  color: #fff;
+}
+[data-theme="dark"] .rb-admin-tab--active {
+  background: var(--amber-500);
+  border-color: var(--amber-500);
+  color: var(--navy-900);
+}
+
+/* Results count */
+.rb-admin-count {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-3);
+}
+
+/* ── Table wrapper ────────────────────────────────────────── */
+.rb-admin-table-wrap {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2);
+  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.rb-admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  min-width: 680px;
+}
+
+.rb-admin-table th {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+  background: var(--paper-100);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+[data-theme="dark"] .rb-admin-table th { background: var(--paper-50); }
+
+.rb-admin-table td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+  color: var(--text);
+}
+.rb-admin-table tr:last-child td     { border-bottom: none; }
+.rb-admin-table tbody tr:hover td    { background: rgba(232, 163, 61, 0.03); }
+
+.rb-admin-td--email {
+  max-width: 190px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8125rem;
+}
+.rb-admin-td--date {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* ── Status badges ────────────────────────────────────────── */
+.rb-admin-status,
+.rb-admin-plan {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.rb-admin-status--pending  { background: rgba(232,163,61,.14); color: #92610E; }
+.rb-admin-status--approved { background: rgba(56,161,105,.12); color: #1E6B42; }
+.rb-admin-status--rejected { background: rgba(229,62,62,.10);  color: #B91C1C; }
+
+[data-theme="dark"] .rb-admin-status--pending  { background: rgba(232,163,61,.18); color: var(--amber-400); }
+[data-theme="dark"] .rb-admin-status--approved { background: rgba(56,161,105,.18); color: #6EE7B7; }
+[data-theme="dark"] .rb-admin-status--rejected { background: rgba(229,62,62,.15);  color: #FCA5A5; }
+
+/* ── Plan badges ──────────────────────────────────────────── */
+.rb-admin-plan--scholar { background: rgba(30,58,95,.08);    color: var(--navy-700); }
+.rb-admin-plan--pro     { background: rgba(232,163,61,.14);  color: #92610E; }
+.rb-admin-plan--free    { background: rgba(148,163,184,.12); color: var(--text-muted); }
+
+[data-theme="dark"] .rb-admin-plan--scholar { background: rgba(144,202,249,.1);  color: #90CAF9; }
+[data-theme="dark"] .rb-admin-plan--pro     { background: rgba(232,163,61,.18);  color: var(--amber-400); }
+
+/* ── Screenshot thumbnail ─────────────────────────────────── */
+.rb-admin-thumb-btn {
+  display: block;
+  padding: 2px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-1);
+  cursor: pointer;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.rb-admin-thumb-btn:hover {
+  border-color: var(--amber-500);
+  box-shadow: 0 0 0 2px rgba(232, 163, 61, 0.2);
+}
+.rb-admin-thumb {
+  display: block;
+  width: 60px;
+  height: 42px;
+  object-fit: cover;
+  border-radius: 3px;
+}
+.rb-admin-no-img { color: var(--text-muted); }
+
+/* ── Row action buttons ───────────────────────────────────── */
+.rb-admin-row-actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.rb-admin-action-btn {
+  padding: 5px 12px;
+  border-radius: var(--radius-1);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  white-space: nowrap;
+  transition: background-color var(--transition), color var(--transition), border-color var(--transition);
+}
+
+.rb-admin-action-btn--approve {
+  background: rgba(56,161,105,.10);
+  color: #1E6B42;
+  border-color: rgba(56,161,105,.25);
+}
+.rb-admin-action-btn--approve:hover {
+  background: #38A169;
+  color: #fff;
+  border-color: #38A169;
+}
+.rb-admin-action-btn--reject {
+  background: rgba(229,62,62,.08);
+  color: #B91C1C;
+  border-color: rgba(229,62,62,.20);
+}
+.rb-admin-action-btn--reject:hover {
+  background: #EF4444;
+  color: #fff;
+  border-color: #EF4444;
+}
+
+[data-theme="dark"] .rb-admin-action-btn--approve { background: rgba(56,161,105,.12); color: #6EE7B7; border-color: rgba(56,161,105,.25); }
+[data-theme="dark"] .rb-admin-action-btn--approve:hover { background: #38A169; color: #fff; border-color: #38A169; }
+[data-theme="dark"] .rb-admin-action-btn--reject  { background: rgba(229,62,62,.10);  color: #FCA5A5; border-color: rgba(229,62,62,.20); }
+[data-theme="dark"] .rb-admin-action-btn--reject:hover  { background: #EF4444; color: #fff; border-color: #EF4444; }
+
+.rb-admin-no-action { color: var(--text-muted); }
+
+/* ── Empty state ──────────────────────────────────────────── */
+.rb-admin-empty {
+  padding: var(--space-16) var(--space-4);
+  text-align: center;
+  color: var(--text-muted);
+}
+
+/* ── Screenshot lightbox ──────────────────────────────────── */
+.rb-admin-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+}
+
+.rb-admin-modal__close {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.rb-admin-modal__close:hover { background: rgba(255, 255, 255, 0.25); }
+
+.rb-admin-modal__img {
+  display: block;
+  max-width: 100%;
+  max-height: 88vh;
+  border-radius: var(--radius-2);
+  object-fit: contain;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+}
+
+/* ── Confirm dialog ───────────────────────────────────────── */
+.rb-admin-confirm {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+}
+
+.rb-admin-confirm__box {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-3);
+  padding: var(--space-8);
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+.rb-admin-confirm__heading {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: var(--space-3);
+}
+
+.rb-admin-confirm__msg {
+  font-size: 0.9375rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: var(--space-6);
+}
+
+.rb-admin-confirm__actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+}
+
+/* Confirm OK button — class swapped by JS per action */
+.rb-admin-confirm-ok {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 22px;
+  border-radius: var(--radius-1);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: background-color var(--transition);
+}
+.rb-admin-confirm-ok--approved { background: #38A169; color: #fff; }
+.rb-admin-confirm-ok--approved:hover { background: #276749; }
+.rb-admin-confirm-ok--rejected { background: #EF4444; color: #fff; }
+.rb-admin-confirm-ok--rejected:hover { background: #B91C1C; }
+
+/* ── Mobile: stacked card layout below 680 px ─────────────── */
+@media (max-width: 680px) {
+  .rb-admin-table-wrap {
+    border: none;
+    background: transparent;
+    overflow-x: visible;
+  }
+
+  .rb-admin-table { min-width: unset; }
+  .rb-admin-table thead { display: none; }
+
+  .rb-admin-table tbody tr {
+    display: block;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-2);
+    padding: var(--space-3) var(--space-4);
+    margin-bottom: var(--space-3);
+  }
+  .rb-admin-table tbody tr:last-child { margin-bottom: 0; }
+
+  .rb-admin-table td {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.8125rem;
+  }
+  .rb-admin-table td:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .rb-admin-table td::before {
+    content: attr(data-label);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    width: 84px;
+    padding-top: 3px;
+  }
+
+  .rb-admin-td--email {
+    max-width: unset;
+    white-space: normal;
+    word-break: break-all;
+  }
+}
