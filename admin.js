@@ -7,7 +7,7 @@
   'use strict';
 
   /* ── Config ────────────────────────────────────────────── */
-  var ADMIN_EMAIL = 'APNI_EMAIL_DAAL'; // replace with your email address
+  var ADMIN_EMAIL = 'shabirahmaddir598@gmail.com'; // replace with your email address
 
   /* ── State ─────────────────────────────────────────────── */
   var allPayments   = [];
