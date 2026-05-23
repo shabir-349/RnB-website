@@ -4068,6 +4068,105 @@ p { line-height: 1.7; }
 [data-theme="dark"] .rb-admin-lec-badge--pro     { background: rgba(232,163,61,.18); color: var(--amber-400); }
 
 /* ============================================================
+   USER MANAGEMENT
+   ============================================================ */
+.rb-admin-users-section { margin-top: var(--space-12); }
+
+.rb-admin-users-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.rb-admin-users-count {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.rb-admin-users-search {
+  flex: 1;
+  max-width: 340px;
+  min-width: 180px;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-1);
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.rb-admin-users-search:focus {
+  border-color: var(--amber-500);
+  box-shadow: 0 0 0 3px rgba(232,163,61,.12);
+}
+
+.rb-admin-users-search::placeholder { color: var(--ink-400); }
+
+.rb-admin-plan-select {
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-1);
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.rb-admin-plan-select:focus { border-color: var(--amber-500); }
+.rb-admin-plan-select:disabled { opacity: .55; cursor: not-allowed; }
+
+/* ── Toast ────────────────────────────────────────────── */
+.rb-toast {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 9000;
+  background: var(--navy-700);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: var(--radius-2);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  box-shadow: 0 8px 24px rgba(0,0,0,.22);
+  border-left: 3px solid var(--amber-500);
+  max-width: 320px;
+  word-break: break-word;
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+
+.rb-toast--fade { opacity: 0; transform: translateY(8px); }
+
+@media (max-width: 600px) {
+  .rb-toast {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+    max-width: unset;
+  }
+  .rb-admin-users-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .rb-admin-users-search {
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+/* ============================================================
    LECTURE VIDEO MODAL
    ============================================================ */
 .rb-video-modal {

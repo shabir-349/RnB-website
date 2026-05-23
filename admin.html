@@ -148,6 +148,37 @@
 
       </section>
 
+      <!-- ── User Management ──────────────────────────────── -->
+      <section class="rb-admin-users-section" id="rb-admin-users" aria-label="User Management">
+
+        <div class="rb-admin-section-divider">
+          <h2 class="rb-admin-section-title">User Management</h2>
+        </div>
+
+        <div class="rb-admin-users-header">
+          <p class="rb-admin-users-count" id="rb-users-count" aria-live="polite"></p>
+          <input class="rb-admin-users-search" id="rb-users-search" type="search"
+            placeholder="Search by name or email…" aria-label="Search users by name or email" />
+        </div>
+
+        <div class="rb-admin-table-wrap">
+          <table class="rb-admin-table" id="rb-users-table" aria-label="Users">
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Plan</th>
+                <th scope="col">Joined</th>
+                <th scope="col">Change Plan</th>
+              </tr>
+            </thead>
+            <tbody id="rb-users-tbody"></tbody>
+          </table>
+          <p class="rb-admin-empty" id="rb-users-empty" style="display:none">No users match your search.</p>
+        </div>
+
+      </section>
+
     </div>
   </main>
 
@@ -169,6 +200,11 @@
         <button class="rb-btn" id="rb-admin-confirm-ok">Confirm</button>
       </div>
     </div>
+  </div>
+
+  <!-- Toast notification -->
+  <div class="rb-toast rb-admin-overlay--hidden" id="rb-toast" role="status" aria-live="polite">
+    <span id="rb-toast-msg"></span>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>

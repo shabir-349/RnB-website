@@ -276,6 +276,24 @@
     return '<span class="rb-admin-plan rb-admin-plan--' + (p || 'free') + '">' + cap(p || 'Free') + '</span>';
   }
 
+  /* ── Toast ───────────────────────────────────────────── */
+  var toastTimer = null;
+  function showToast(msg) {
+    var toastEl   = document.getElementById('rb-toast');
+    var toastMsgEl = document.getElementById('rb-toast-msg');
+    if (!toastEl || !toastMsgEl) return;
+    clearTimeout(toastTimer);
+    toastMsgEl.textContent = msg;
+    toastEl.classList.remove('rb-admin-overlay--hidden', 'rb-toast--fade');
+    toastTimer = setTimeout(function () {
+      toastEl.classList.add('rb-toast--fade');
+      toastTimer = setTimeout(function () {
+        toastEl.classList.add('rb-admin-overlay--hidden');
+        toastEl.classList.remove('rb-toast--fade');
+      }, 320);
+    }, 2800);
+  }
+
   /* ── Lecture Management ─────────────────────────────────── */
   (function initLectureAdmin() {
     var lectureForm   = document.getElementById('rb-lecture-form');
@@ -449,6 +467,114 @@
       return '<span class="rb-admin-lec-badge rb-admin-lec-badge--' + (level || 'free') + '">'
         + cap(level || 'free') + '</span>';
     }
+  })();
+
+  /* ── User Management ────────────────────────────────── */
+  (function initUserManagement() {
+    var usersSection = document.getElementById('rb-admin-users');
+    if (!usersSection) return;
+
+    var usersCountEl  = document.getElementById('rb-users-count');
+    var usersSearchEl = document.getElementById('rb-users-search');
+    var usersTableEl  = document.getElementById('rb-users-table');
+    var usersTbodyEl  = document.getElementById('rb-users-tbody');
+    var usersEmptyEl  = document.getElementById('rb-users-empty');
+
+    var allUsers    = [];
+    var searchQuery = '';
+
+    fetchUsers();
+
+    async function fetchUsers() {
+      var r = await rbSupabase
+        .from('profiles')
+        .select('id, user_id, full_name, email, plan, created_at')
+        .order('created_at', { ascending: false });
+
+      if (r.error) {
+        console.error('users fetch', r.error);
+        usersCountEl.textContent = 'Failed to load users.';
+        return;
+      }
+      allUsers = r.data || [];
+      renderUsers();
+    }
+
+    function renderUsers() {
+      var q    = searchQuery.toLowerCase().trim();
+      var rows = q
+        ? allUsers.filter(function (u) {
+            return (u.full_name || '').toLowerCase().includes(q)
+                || (u.email    || '').toLowerCase().includes(q);
+          })
+        : allUsers;
+
+      usersCountEl.textContent = allUsers.length + ' user' + (allUsers.length !== 1 ? 's' : '') + ' total'
+        + (q ? ' · ' + rows.length + ' match' + (rows.length !== 1 ? 'es' : '') : '');
+
+      if (!rows.length) {
+        usersTableEl.style.display = 'none';
+        usersEmptyEl.style.display = 'block';
+        return;
+      }
+      usersTableEl.style.display = '';
+      usersEmptyEl.style.display = 'none';
+
+      usersTbodyEl.innerHTML = rows.map(function (user) {
+        var date  = new Date(user.created_at).toLocaleDateString('en-US', {
+          year: 'numeric', month: 'short', day: 'numeric'
+        });
+        var plan  = user.plan || 'free';
+        var name  = user.full_name || '—';
+        var email = user.email || '—';
+
+        var select =
+          '<select class="rb-admin-plan-select" data-uid="' + ea(user.id) + '" aria-label="Change plan for ' + ea(name) + '">'
+          + ['free', 'scholar', 'pro'].map(function (p) {
+              return '<option value="' + p + '"' + (plan === p ? ' selected' : '') + '>' + cap(p) + '</option>';
+            }).join('')
+          + '</select>';
+
+        return '<tr>'
+          + '<td data-label="Name">'                             + eh(name)        + '</td>'
+          + '<td data-label="Email" class="rb-admin-td--email">' + eh(email)       + '</td>'
+          + '<td data-label="Plan">'                             + planBadge(plan) + '</td>'
+          + '<td data-label="Joined" class="rb-admin-td--date">' + date            + '</td>'
+          + '<td data-label="Change Plan">'                      + select          + '</td>'
+          + '</tr>';
+      }).join('');
+    }
+
+    usersTbodyEl.addEventListener('change', async function (e) {
+      var sel = e.target.closest('.rb-admin-plan-select');
+      if (!sel) return;
+      var uid     = sel.dataset.uid;
+      var newPlan = sel.value;
+      sel.disabled = true;
+
+      var r = await rbSupabase
+        .from('profiles')
+        .update({ plan: newPlan })
+        .eq('id', uid);
+
+      sel.disabled = false;
+
+      if (r.error) {
+        console.error('plan update', r.error);
+        showToast('Update failed: ' + r.error.message);
+        return;
+      }
+
+      var user = allUsers.find(function (u) { return u.id === uid; });
+      if (user) user.plan = newPlan;
+      renderUsers();
+      showToast('Plan updated to ' + cap(newPlan) + '.');
+    });
+
+    usersSearchEl.addEventListener('input', function () {
+      searchQuery = usersSearchEl.value;
+      renderUsers();
+    });
   })();
 
   /* ── Boot ────────────────────────────────────────────────── */
