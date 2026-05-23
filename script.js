@@ -1043,8 +1043,125 @@
         .then(function (result) {
           var payment = result.data && result.data.length ? result.data[0] : null;
           applyPlanState(payment ? payment.status : null, payment ? payment.plan : null);
+          loadLectures(getUserLectureLevel(payment));
         });
     });
+
+    function getUserLectureLevel(payment) {
+      if (!payment || payment.status !== 'approved') return 'free';
+      return payment.plan === 'pro' ? 'pro' : 'scholar';
+    }
+
+    function rbEscHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    var DASH_PLAY_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"/></svg>';
+    var DASH_LOCK_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+
+    function loadLectures(userLevel) {
+      var container = document.getElementById('rb-dash-lectures-container');
+      var loadingEl = document.getElementById('rb-dash-lectures-loading');
+      if (!container) return;
+
+      var canAccess = {
+        free:    true,
+        scholar: userLevel === 'scholar' || userLevel === 'pro',
+        pro:     userLevel === 'pro'
+      };
+
+      rbSupabase
+        .from('lectures')
+        .select('id, title, category, duration, access_level, order_number')
+        .order('order_number', { ascending: true })
+        .order('created_at', { ascending: true })
+        .then(function (result) {
+          if (loadingEl) loadingEl.remove();
+
+          if (result.error) {
+            container.innerHTML = '<p class="rb-dash-lectures-error">Could not load lectures. Please refresh the page.</p>';
+            return;
+          }
+
+          var lectures = result.data || [];
+
+          if (!lectures.length) {
+            container.innerHTML = '<p class="rb-dash-lectures-empty">No lectures available yet — check back soon.</p>';
+            return;
+          }
+
+          var totalCount    = lectures.length;
+          var unlockedCount = lectures.filter(function (l) { return canAccess[l.access_level]; }).length;
+          var freeCount     = lectures.filter(function (l) { return l.access_level === 'free'; }).length;
+
+          // Update "Lessons Unlocked" stat with real counts
+          document.querySelectorAll('.rb-dash-stat').forEach(function (stat) {
+            var label = stat.querySelector('.rb-dash-stat__label');
+            if (label && label.textContent.trim() === 'Lessons Unlocked') {
+              var numEl = stat.querySelector('.rb-dash-stat__num');
+              if (numEl) numEl.textContent = unlockedCount + '/' + totalCount;
+            }
+          });
+
+          // Update Academy section CTA and subtitle
+          var sectionCta = document.querySelector('#rb-dash-academy .rb-dash-section__cta');
+          if (sectionCta) {
+            if (userLevel === 'free') {
+              sectionCta.textContent = 'Unlock all ' + totalCount + ' lessons →';
+            } else {
+              sectionCta.style.display = 'none';
+            }
+          }
+          var sectionSub = document.querySelector('#rb-dash-academy .rb-dash-section__sub');
+          if (sectionSub) {
+            sectionSub.textContent = userLevel === 'free'
+              ? freeCount + ' lesson' + (freeCount === 1 ? '' : 's') + ' free on the Free plan. Upgrade to Scholar for the full library.'
+              : 'All ' + totalCount + ' lessons unlocked.';
+          }
+
+          // Render lecture cards
+          container.innerHTML = lectures.map(function (lec, i) {
+            var thumbIdx = (i % 8) + 1;
+            var meta     = [lec.category, lec.duration].filter(Boolean).join(' · ');
+            var metaHtml = meta ? '<p class="rb-dash-course__meta">' + rbEscHtml(meta) + '</p>' : '';
+
+            if (canAccess[lec.access_level]) {
+              var isFreeLec  = lec.access_level === 'free';
+              var badgeCls   = 'rb-dash-course__free-badge';
+              var badgeLabel = isFreeLec ? 'Free' : 'Unlocked';
+              return '<article class="rb-dash-course rb-dash-course--free">'
+                + '<div class="rb-dash-course__thumb rb-course-thumb--' + thumbIdx + '" aria-hidden="true">' + DASH_PLAY_SVG + '</div>'
+                + '<div class="rb-dash-course__body">'
+                +   '<span class="' + badgeCls + '">' + badgeLabel + '</span>'
+                +   '<h3 class="rb-dash-course__title">' + rbEscHtml(lec.title) + '</h3>'
+                +   metaHtml
+                +   '<div class="rb-dash-course__progress" aria-label="0% complete"><div class="rb-dash-course__progress-bar"></div></div>'
+                + '</div>'
+                + '<a href="#" class="rb-btn rb-btn--outline rb-dash-course__btn">Start</a>'
+                + '</article>';
+            }
+
+            var isPro      = lec.access_level === 'pro';
+            var reqLabel   = isPro ? 'Pro' : 'Scholar';
+            var badgeCls   = isPro ? 'rb-dash-course__pro-badge' : 'rb-dash-course__scholar-badge';
+            var upgradeUrl = isPro ? 'payment.html?plan=pro' : 'payment.html';
+            return '<article class="rb-dash-course rb-dash-course--locked" aria-label="' + rbEscHtml(lec.title) + ' — locked">'
+              + '<div class="rb-dash-course__thumb rb-course-thumb--' + thumbIdx + '" aria-hidden="true">'
+              +   DASH_PLAY_SVG
+              +   '<div class="rb-dash-course__lock-overlay" aria-hidden="true">' + DASH_LOCK_SVG + '</div>'
+              + '</div>'
+              + '<div class="rb-dash-course__body">'
+              +   '<span class="' + badgeCls + '">' + reqLabel + '</span>'
+              +   '<h3 class="rb-dash-course__title">' + rbEscHtml(lec.title) + '</h3>'
+              +   metaHtml
+              + '</div>'
+              + '<a href="' + upgradeUrl + '" class="rb-btn rb-btn--amber rb-dash-course__btn">Unlock</a>'
+              + '</article>';
+          }).join('');
+        });
+    }
 
     function applyPlanState(status, plan) {
       var dash         = document.getElementById('rb-dash');
