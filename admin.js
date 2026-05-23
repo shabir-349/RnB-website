@@ -9,6 +9,9 @@
   /* ── Config ────────────────────────────────────────────── */
   var ADMIN_EMAIL = 'shabirahmaddir598@gmail.com'; // replace with your email address
 
+  /* ── EmailJS ────────────────────────────────────────────── */
+  if (typeof emailjs !== 'undefined') emailjs.init('8DgZ_mpUTh4quKlwH');
+
   /* ── State ─────────────────────────────────────────────── */
   var allPayments   = [];
   var currentFilter = 'all';
@@ -110,9 +113,9 @@
       var actions = (row.status === 'pending')
         ? '<div class="rb-admin-row-actions">'
         +   '<button class="rb-admin-action-btn rb-admin-action-btn--approve"'
-        +     ' data-id="' + ea(row.id) + '" data-email="' + ea(row.email || '') + '">Approve</button>'
+        +     ' data-id="' + ea(row.id) + '" data-email="' + ea(row.email || '') + '" data-plan="' + ea(row.plan || '') + '">Approve</button>'
         +   '<button class="rb-admin-action-btn rb-admin-action-btn--reject"'
-        +     ' data-id="' + ea(row.id) + '" data-email="' + ea(row.email || '') + '">Reject</button>'
+        +     ' data-id="' + ea(row.id) + '" data-email="' + ea(row.email || '') + '" data-plan="' + ea(row.plan || '') + '">Reject</button>'
         + '</div>'
         : '<span class="rb-admin-no-action">—</span>';
 
@@ -139,9 +142,9 @@
     var approveBtn = e.target.closest('.rb-admin-action-btn--approve');
     var rejectBtn  = e.target.closest('.rb-admin-action-btn--reject');
 
-    if (thumb)      { openModal(thumb.dataset.url);                                          return; }
-    if (approveBtn) { openConfirm(approveBtn.dataset.id, approveBtn.dataset.email, 'approved'); return; }
-    if (rejectBtn)  { openConfirm(rejectBtn.dataset.id,  rejectBtn.dataset.email,  'rejected'); }
+    if (thumb)      { openModal(thumb.dataset.url);                                                                      return; }
+    if (approveBtn) { openConfirm(approveBtn.dataset.id, approveBtn.dataset.email, approveBtn.dataset.plan, 'approved'); return; }
+    if (rejectBtn)  { openConfirm(rejectBtn.dataset.id,  rejectBtn.dataset.email,  rejectBtn.dataset.plan,  'rejected'); }
   });
 
   /* ── Screenshot lightbox ────────────────────────────────── */
@@ -161,8 +164,8 @@
   modalEl.addEventListener('click', function (e) { if (e.target === modalEl) closeModal(); });
 
   /* ── Confirm dialog ─────────────────────────────────────── */
-  function openConfirm(id, email, newStatus) {
-    pendingAction = { id: id, newStatus: newStatus };
+  function openConfirm(id, email, plan, newStatus) {
+    pendingAction = { id: id, email: email, plan: plan, newStatus: newStatus };
     var verb = newStatus === 'approved' ? 'Approve' : 'Reject';
     confirmMsgEl.textContent = verb + ' payment from ' + (email || 'this user') + '?';
     confirmOkEl.className    = 'rb-admin-confirm-ok rb-admin-confirm-ok--' + newStatus;
@@ -195,6 +198,18 @@
       return;
     }
     await loadPayments();
+
+    if (typeof emailjs !== 'undefined') {
+      var templateId = action.newStatus === 'approved' ? 'template_zyv3hna' : 'template_b98fycr';
+      emailjs.send('service_ud6ayqz', templateId, {
+        user_email: action.email,
+        plan:       action.plan
+      }).then(function () {
+        showToast('Email sent to user');
+      }, function () {
+        showToast('Email failed to send');
+      });
+    }
   });
 
   /* ── Filter tabs ─────────────────────────────────────────── */
