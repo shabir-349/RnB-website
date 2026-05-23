@@ -1343,10 +1343,11 @@ p { line-height: 1.7; }
   background-color: var(--paper);
   border: 1px solid var(--border);
   border-radius: var(--radius-3);
-  padding: var(--space-8);
+  padding: 20px;
   display: flex;
   flex-direction: column;
   position: relative;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 
 .rb-plan-card--featured {
@@ -1371,7 +1372,7 @@ p { line-height: 1.7; }
 }
 
 .rb-plan-card__header {
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-4);
 }
 
 .rb-plan-card__name {
@@ -1393,7 +1394,7 @@ p { line-height: 1.7; }
 }
 
 .rb-plan-card__amount {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
   color: var(--navy-900);
   line-height: 1;
@@ -1417,8 +1418,8 @@ p { line-height: 1.7; }
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-  margin-bottom: var(--space-8);
+  gap: var(--space-2);
+  margin-bottom: 20px;
 }
 
 .rb-plan-card__features li {
@@ -1449,6 +1450,25 @@ p { line-height: 1.7; }
   max-width: 600px;
   margin: 0 auto;
   line-height: 1.6;
+}
+
+/* Scholar: gold highlight on hover */
+.rb-plan-card--scholar:hover {
+  border: 2px solid var(--amber-500);
+  box-shadow: 0 8px 32px rgba(232,163,61,0.15);
+  transform: translateY(-2px);
+}
+
+/* When Scholar is hovered, strip gold from Pro */
+.rb-pricing__grid:has(.rb-plan-card--scholar:hover) .rb-plan-card--pro {
+  border: 1px solid var(--border);
+  box-shadow: none;
+}
+
+/* Free: subtle lift only, never gold */
+.rb-plan-card--free:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 /* ============================================================
@@ -1772,7 +1792,7 @@ p { line-height: 1.7; }
   }
   .rb-plan-card__features {
     gap: var(--space-2);
-    margin-bottom: var(--space-6);
+    margin-bottom: 16px;
   }
   .rb-plan-card__features li {
     font-size: 0.875rem;
