@@ -1127,7 +1127,7 @@ p { line-height: 1.7; }
   background-color: var(--paper);
   border: 1px solid var(--border);
   border-radius: var(--radius-2);
-  padding: var(--space-8);
+  padding: 20px;
   transition: border-color var(--transition), box-shadow var(--transition);
   display: flex;
   flex-direction: column;
@@ -1139,15 +1139,15 @@ p { line-height: 1.7; }
 }
 
 .rb-agent-card__icon {
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: rgba(30,58,95,0.07);
   border-radius: var(--radius-1);
   color: var(--navy-700);
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-3);
   flex-shrink: 0;
 }
 
@@ -1159,9 +1159,9 @@ p { line-height: 1.7; }
 .rb-agent-card__name {
   font-family: 'Lora', Georgia, serif;
   font-weight: 600;
-  font-size: 1.25rem;
+  font-size: 1.0625rem;
   color: var(--navy-900);
-  margin-bottom: var(--space-2);
+  margin-bottom: 4px;
 }
 
 [data-theme="dark"] .rb-agent-card__name {
@@ -1169,18 +1169,18 @@ p { line-height: 1.7; }
 }
 
 .rb-agent-card__tagline {
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   color: var(--ink-600);
-  margin-bottom: var(--space-4);
-  line-height: 1.5;
+  margin-bottom: var(--space-2);
+  line-height: 1.4;
 }
 
 .rb-agent-card__body {
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   color: var(--ink-600);
-  line-height: 1.65;
+  line-height: 1.55;
   flex: 1;
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-3);
 }
 
 .rb-agent-card__link {
@@ -1767,23 +1767,23 @@ p { line-height: 1.7; }
     gap: var(--space-3);
   }
   .rb-agent-card {
-    padding: 18px;
+    padding: 16px;
   }
   .rb-agent-card__icon {
-    width: 34px;
-    height: 34px;
-    margin-bottom: var(--space-3);
+    width: 30px;
+    height: 30px;
+    margin-bottom: var(--space-2);
   }
   .rb-agent-card__icon svg {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
   }
   .rb-agent-card__name {
-    font-size: 1.0625rem;
+    font-size: 1rem;
   }
   .rb-agent-card__tagline,
   .rb-agent-card__body {
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
   }
 
   /* --- Course cards --- */
