@@ -636,8 +636,9 @@
           localStorage.removeItem('rb-pending-plan');
           setTimeout(function () { window.location.replace('payment.html?plan=' + pendingPlan); }, 1200);
         } else {
-          rbSupabase.from('payments').select('status').eq('user_id', result.data.session.user.id).eq('status', 'approved').limit(1).then(function (pr) {
-            var dest = (pr.data && pr.data.length) ? 'dashboard.html' : 'index.html';
+          rbSupabase.from('payments').select('status').eq('user_id', result.data.session.user.id).order('created_at', { ascending: false }).limit(1).then(function (pr) {
+            var status = pr.data && pr.data.length ? pr.data[0].status : null;
+            var dest = status ? 'dashboard.html' : 'index.html';
             setTimeout(function () { window.location.replace(dest); }, 1200);
           });
         }
@@ -715,8 +716,9 @@
       } else {
         rbGetSession().then(function (sess) {
           if (!sess) { setTimeout(function () { window.location.replace('index.html'); }, 800); return; }
-          rbSupabase.from('payments').select('status').eq('user_id', sess.user.id).eq('status', 'approved').limit(1).then(function (pr) {
-            var dest = (pr.data && pr.data.length) ? 'dashboard.html' : 'index.html';
+          rbSupabase.from('payments').select('status').eq('user_id', sess.user.id).order('created_at', { ascending: false }).limit(1).then(function (pr) {
+            var status = pr.data && pr.data.length ? pr.data[0].status : null;
+            var dest = status ? 'dashboard.html' : 'index.html';
             setTimeout(function () { window.location.replace(dest); }, 800);
           });
         });
@@ -838,28 +840,19 @@
               return;
             }
 
-            // No approved payment for this plan (new user or upgrading) — check for pending
+            // No approved payment for this plan (new user or upgrading) — check for any pending
             rbSupabase.from('payments')
-              .select('*')
+              .select('id')
               .eq('user_id', session.user.id)
               .eq('status', 'pending')
-              .eq('plan', urlPlan)
-              .order('created_at', { ascending: false })
               .limit(1)
               .then(function (pendingResult) {
-                var pendingPayment = pendingResult.data && pendingResult.data.length ? pendingResult.data[0] : null;
-                if (pendingPayment) {
-                  // Pending submission for this exact plan — show review card
-                  var paymentOptions = document.querySelector('.rb-payment-options');
-                  var paymentSteps   = document.querySelector('.rb-payment-steps');
-                  var proofSection   = document.getElementById('rb-proof-section');
-                  var confirmCard    = document.getElementById('rb-payment-confirm');
-                  if (paymentOptions) paymentOptions.style.display = 'none';
-                  if (paymentSteps)   paymentSteps.style.display   = 'none';
-                  if (proofSection)   proofSection.style.display   = 'none';
-                  if (confirmCard)    confirmCard.hidden = false;
+                if (pendingResult.data && pendingResult.data.length) {
+                  // Pending payment exists — lock them to the dashboard review screen
+                  window.location.replace('dashboard.html');
+                  return;
                 }
-                // No pending for this plan → show form normally (new user or upgrading)
+                // No pending payment → show form normally (new user or upgrading)
               });
           });
       });
@@ -1070,24 +1063,11 @@
         if (freeCard) freeCard.style.display = 'block';
 
       } else if (status === 'pending') {
-        if (pendingCard) pendingCard.style.display = 'block';
-        if (planLabel) planLabel.innerHTML = 'Payment is <strong>under review</strong>';
-        if (welcomeSub) welcomeSub.textContent = 'Your payment is being verified. Free lessons are available while you wait.';
-        if (upgradeBtn) {
-          upgradeBtn.textContent = 'Payment Under Review';
-          upgradeBtn.href = '#';
-          upgradeBtn.addEventListener('click', function (e) {
-            e.preventDefault();
-            if (!pendingCard) return;
-            pendingCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            pendingCard.classList.add('rb-dash-status-card--pulse');
-            setTimeout(function () { pendingCard.classList.remove('rb-dash-status-card--pulse'); }, 1000);
-          });
-        }
+        // CSS (.rb-dash--pending) handles the full lockout — only the status card is shown.
+        // No sidebar, no welcome, no stats — just the pending message and sign-out in the nav.
 
       } else if (status === 'rejected') {
-        if (rejectedCard) rejectedCard.style.display = 'block';
-        if (planLabel) planLabel.innerHTML = 'Payment was <strong>not verified</strong>';
+        // CSS (.rb-dash--rejected) handles the full lockout — only the rejection card is shown.
 
       } else if (status === 'approved') {
         var isScholar = (plan !== 'pro');
@@ -1246,22 +1226,29 @@
     rbGetSession().then(function (session) {
       if (!session) return; // logged out — defaults are correct
 
-      // Logged in, free tier: keep "Start Free" label, point both buttons to dashboard
-      if (heroBtn) heroBtn.href = 'dashboard.html';
-      if (ctaBtn)  ctaBtn.href  = 'dashboard.html';
-
-      // Check for an approved payment to further upgrade the labels
+      // Check payment status — pending/rejected users must go to dashboard
       rbSupabase.from('payments')
         .select('status')
         .eq('user_id', session.user.id)
-        .eq('status', 'approved')
         .order('created_at', { ascending: false })
         .limit(1)
         .then(function (result) {
-          if (!result.data || !result.data.length) return;
-          if (heroBtn) heroBtn.textContent = 'Go to Dashboard';
-          if (ctaBtn)  ctaBtn.textContent  = 'Go to Dashboard';
-          if (ctaSub)  ctaSub.textContent  = 'Welcome back — your workspace is ready.';
+          var status = result.data && result.data.length ? result.data[0].status : null;
+
+          if (status === 'pending' || status === 'rejected') {
+            window.location.replace('dashboard.html');
+            return;
+          }
+
+          // Free or approved user — point buttons to dashboard
+          if (heroBtn) heroBtn.href = 'dashboard.html';
+          if (ctaBtn)  ctaBtn.href  = 'dashboard.html';
+
+          if (status === 'approved') {
+            if (heroBtn) heroBtn.textContent = 'Go to Dashboard';
+            if (ctaBtn)  ctaBtn.textContent  = 'Go to Dashboard';
+            if (ctaSub)  ctaSub.textContent  = 'Welcome back — your workspace is ready.';
+          }
         });
     });
   })();

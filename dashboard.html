@@ -114,40 +114,32 @@
       <!-- Payment status cards — JS reveals the appropriate one -->
       <div class="rb-dash-status-card rb-dash-status-card--pending" id="rb-dash-pending" role="status" aria-label="Payment under review">
         <div class="rb-dash-status-card__icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg>
         </div>
         <h2 class="rb-dash-status-card__heading">Payment Under Review</h2>
-        <p class="rb-dash-status-card__text">We're verifying your payment. This usually takes less than 24 hours.</p>
-        <div class="rb-dash-status-card__support">
-          <a href="https://wa.me/923001234567" class="rb-dash-status-card__support-link" target="_blank" rel="noopener">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.5 12.09 19.79 19.79 0 0 1 1.53 3.46 2 2 0 0 1 3.5 1.27h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.77a16 16 0 0 0 6.29 6.29l.91-.91a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            WhatsApp: +92 300-1234567
-          </a>
-          <a href="mailto:support@rb-research.io" class="rb-dash-status-card__support-link">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-            support@rb-research.io
-          </a>
-        </div>
+        <p class="rb-dash-status-card__text">Your payment is being reviewed. This usually takes less than 24 hours. You'll get full access once approved.</p>
       </div>
 
       <div class="rb-dash-status-card rb-dash-status-card--rejected" id="rb-dash-rejected" role="alert" aria-label="Payment rejected">
         <div class="rb-dash-status-card__icon">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
         </div>
-        <h2 class="rb-dash-status-card__heading">Payment Could Not Be Verified</h2>
-        <p class="rb-dash-status-card__text">We couldn't verify your payment. Please try again or contact support.</p>
-        <div class="rb-dash-status-card__actions">
-          <a href="payment.html" class="rb-btn rb-btn--amber">Retry Payment</a>
-        </div>
+        <h2 class="rb-dash-status-card__heading">Payment Not Approved</h2>
+        <p class="rb-dash-status-card__text">We're sorry, your payment could not be verified. This usually happens due to an unclear screenshot, incorrect amount, or unmatched transaction details.</p>
+        <p class="rb-dash-status-card__subtext">Please try again or contact us for help:</p>
         <div class="rb-dash-status-card__support">
+          <a href="mailto:support@rbresearch.com" class="rb-dash-status-card__support-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            support@rbresearch.com
+          </a>
           <a href="https://wa.me/923001234567" class="rb-dash-status-card__support-link" target="_blank" rel="noopener">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.5 12.09 19.79 19.79 0 0 1 1.53 3.46 2 2 0 0 1 3.5 1.27h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.77a16 16 0 0 0 6.29 6.29l.91-.91a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            WhatsApp: +92 300-1234567
+            WhatsApp: +92-XXX-XXXXXXX
           </a>
-          <a href="mailto:support@rb-research.io" class="rb-dash-status-card__support-link">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-            support@rb-research.io
-          </a>
+        </div>
+        <div class="rb-dash-status-card__actions">
+          <a href="payment.html" class="rb-btn rb-btn--amber">Try Again</a>
+          <a href="https://wa.me/923001234567" class="rb-btn rb-btn--outline" target="_blank" rel="noopener">Contact Support</a>
         </div>
       </div>
 

@@ -3634,3 +3634,56 @@ p { line-height: 1.7; }
     word-break: break-all;
   }
 }
+
+/* ============================================================
+   PENDING / REJECTED — full-page status lockout
+   Hides sidebar, nav links, and all main content except the
+   relevant status card. The sign-out button stays in the header.
+   ============================================================ */
+
+/* Hide sidebar and hamburger toggle */
+.rb-dash--pending .rb-dash__sidebar,
+.rb-dash--rejected .rb-dash__sidebar,
+.rb-dash--pending .rb-dash-nav__sidebar-toggle,
+.rb-dash--rejected .rb-dash-nav__sidebar-toggle { display: none !important; }
+
+/* Make main span full grid width and center its content */
+.rb-dash--pending .rb-dash__main,
+.rb-dash--rejected .rb-dash__main {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 3rem 1rem 4rem;
+  min-height: calc(100vh - 64px);
+}
+
+/* Hide everything in main except the status card */
+.rb-dash--pending .rb-dash-pending-banner,
+.rb-dash--pending .rb-dash-upgrade-banner,
+.rb-dash--pending .rb-dash__welcome,
+.rb-dash--pending .rb-dash-stats,
+.rb-dash--pending .rb-dash-section,
+.rb-dash--pending .rb-dash-pro-upsell,
+.rb-dash--rejected .rb-dash-upgrade-banner,
+.rb-dash--rejected .rb-dash__welcome,
+.rb-dash--rejected .rb-dash-stats,
+.rb-dash--rejected .rb-dash-section,
+.rb-dash--rejected .rb-dash-pro-upsell { display: none !important; }
+
+/* Show and constrain the correct status card */
+.rb-dash--pending #rb-dash-pending,
+.rb-dash--rejected #rb-dash-rejected {
+  display: block !important;
+  max-width: 540px;
+  width: 100%;
+}
+
+/* Subtext style for rejected card */
+.rb-dash-status-card__subtext {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: var(--space-4);
+}
