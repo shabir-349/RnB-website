@@ -929,6 +929,37 @@ p { line-height: 1.7; }
   .rb-phases__scroll-hint { display: none; }
 }
 
+.rb-phases__scroll-outer {
+  position: relative;
+}
+
+/* Right-edge fade + arrow — visible only when cards scroll horizontally */
+.rb-phases__scroll-outer::after {
+  content: '›';
+  position: absolute;
+  top: var(--space-3);
+  right: 0;
+  bottom: var(--space-6);
+  width: 80px;
+  background: linear-gradient(to right, transparent, var(--paper) 65%);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 14px;
+  font-size: 1.75rem;
+  line-height: 1;
+  color: var(--amber-500);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Cards stack vertically on mobile — no horizontal scroll, hide indicator */
+@media (max-width: 767px) {
+  .rb-phases__scroll-outer::after {
+    display: none;
+  }
+}
+
 /* ============================================================
    MODES
    ============================================================ */
