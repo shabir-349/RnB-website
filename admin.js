@@ -276,6 +276,181 @@
     return '<span class="rb-admin-plan rb-admin-plan--' + (p || 'free') + '">' + cap(p || 'Free') + '</span>';
   }
 
+  /* ── Lecture Management ─────────────────────────────────── */
+  (function initLectureAdmin() {
+    var lectureForm   = document.getElementById('rb-lecture-form');
+    if (!lectureForm) return;
+
+    var lectureMsg    = document.getElementById('rb-lecture-msg');
+    var lectureList   = document.getElementById('rb-lecture-list');
+    var lectureSave   = document.getElementById('rb-lecture-save');
+    var lectureCancel = document.getElementById('rb-lecture-cancel');
+    var fTitle        = document.getElementById('lec-title');
+    var fDesc         = document.getElementById('lec-description');
+    var fVideoUrl     = document.getElementById('lec-video-url');
+    var fThumbUrl     = document.getElementById('lec-thumbnail-url');
+    var fCategory     = document.getElementById('lec-category');
+    var fAccess       = document.getElementById('lec-access-level');
+    var fOrder        = document.getElementById('lec-order');
+    var fDuration     = document.getElementById('lec-duration');
+
+    var editingId = null;
+
+    fetchLectures();
+
+    async function fetchLectures() {
+      var r = await rbSupabase
+        .from('lectures')
+        .select('*')
+        .order('order_number', { ascending: true })
+        .order('created_at', { ascending: false });
+      if (r.error) {
+        console.error('lectures fetch', r.error);
+        setMsg('Error loading lectures: ' + r.error.message, 'error');
+        return;
+      }
+      renderLectures(r.data || []);
+    }
+
+    function renderLectures(lectures) {
+      if (!lectures.length) {
+        lectureList.innerHTML = '<p class="rb-admin-lecture-empty">No lectures yet. Add one above.</p>';
+        return;
+      }
+      lectureList.innerHTML = lectures.map(function (lec) {
+        var thumbHtml = lec.thumbnail_url
+          ? '<div class="rb-admin-lec-card__thumb-wrap"><img class="rb-admin-lec-card__thumb" src="' + ea(lec.thumbnail_url) + '" alt="" loading="lazy" /></div>'
+          : '';
+        return '<div class="rb-admin-lec-card">'
+          + thumbHtml
+          + '<div class="rb-admin-lec-card__body">'
+          +   '<div class="rb-admin-lec-card__meta">'
+          +     lecAccessBadge(lec.access_level)
+          +     (lec.category ? ' <span class="rb-admin-lec-card__cat">' + eh(lec.category) + '</span>' : '')
+          +     ' <span class="rb-admin-lec-card__order">Order: ' + (lec.order_number || 0) + '</span>'
+          +     (lec.duration ? ' <span class="rb-admin-lec-card__dur">' + eh(lec.duration) + '</span>' : '')
+          +   '</div>'
+          +   '<h3 class="rb-admin-lec-card__title">' + eh(lec.title) + '</h3>'
+          +   (lec.description ? '<p class="rb-admin-lec-card__desc">' + eh(lec.description) + '</p>' : '')
+          +   '<a class="rb-admin-lec-card__link" href="' + ea(lec.video_url) + '" target="_blank" rel="noopener noreferrer">Watch video ↗</a>'
+          + '</div>'
+          + '<div class="rb-admin-lec-card__actions">'
+          +   '<button class="rb-admin-action-btn rb-admin-lec-edit" data-id="' + ea(lec.id) + '">Edit</button>'
+          +   '<button class="rb-admin-action-btn rb-admin-action-btn--reject rb-admin-lec-delete" data-id="' + ea(lec.id) + '">Delete</button>'
+          + '</div>'
+          + '</div>';
+      }).join('');
+    }
+
+    lectureForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var title       = fTitle.value.trim();
+      var videoUrl    = fVideoUrl.value.trim();
+      var accessLevel = fAccess.value;
+      var orderRaw    = fOrder.value.trim();
+      var orderNum    = orderRaw === '' ? 0 : parseInt(orderRaw, 10);
+
+      if (!title)       { setMsg('Title is required.',        'error'); fTitle.focus();   return; }
+      if (!videoUrl)    { setMsg('Video URL is required.',    'error'); fVideoUrl.focus(); return; }
+      if (!accessLevel) { setMsg('Access level is required.', 'error'); fAccess.focus();  return; }
+      if (isNaN(orderNum)) orderNum = 0;
+
+      var payload = {
+        title:         title,
+        description:   fDesc.value.trim()    || null,
+        video_url:     videoUrl,
+        thumbnail_url: fThumbUrl.value.trim() || null,
+        category:      fCategory.value.trim() || null,
+        access_level:  accessLevel,
+        order_number:  orderNum,
+        duration:      fDuration.value.trim() || null,
+      };
+
+      lectureSave.disabled    = true;
+      lectureSave.textContent = 'Saving…';
+
+      var r = editingId
+        ? await rbSupabase.from('lectures').update(payload).eq('id', editingId)
+        : await rbSupabase.from('lectures').insert(payload);
+
+      lectureSave.disabled    = false;
+      lectureSave.textContent = editingId ? 'Update Lecture' : 'Save Lecture';
+
+      if (r.error) {
+        console.error('lecture save', r.error);
+        setMsg('Error: ' + r.error.message, 'error');
+        return;
+      }
+
+      setMsg(editingId ? 'Lecture updated.' : 'Lecture added.', 'success');
+      resetLectureForm();
+      fetchLectures();
+    });
+
+    lectureCancel.addEventListener('click', resetLectureForm);
+
+    lectureList.addEventListener('click', function (e) {
+      var editBtn   = e.target.closest('.rb-admin-lec-edit');
+      var deleteBtn = e.target.closest('.rb-admin-lec-delete');
+      if (editBtn)   editLecture(editBtn.dataset.id);
+      if (deleteBtn) deleteLecture(deleteBtn.dataset.id);
+    });
+
+    function editLecture(id) {
+      rbSupabase.from('lectures').select('*').eq('id', id).single().then(function (r) {
+        if (r.error || !r.data) { setMsg('Could not load lecture.', 'error'); return; }
+        var lec = r.data;
+        editingId       = lec.id;
+        fTitle.value    = lec.title || '';
+        fDesc.value     = lec.description || '';
+        fVideoUrl.value = lec.video_url || '';
+        fThumbUrl.value = lec.thumbnail_url || '';
+        fCategory.value = lec.category || '';
+        fAccess.value   = lec.access_level || '';
+        fOrder.value    = lec.order_number != null ? lec.order_number : 0;
+        fDuration.value = lec.duration || '';
+        lectureCancel.style.display  = '';
+        lectureSave.textContent      = 'Update Lecture';
+        lectureForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setMsg('Editing: ' + eh(lec.title), 'info');
+      });
+    }
+
+    async function deleteLecture(id) {
+      if (!confirm('Delete this lecture? This cannot be undone.')) return;
+      var r = await rbSupabase.from('lectures').delete().eq('id', id);
+      if (r.error) {
+        console.error('lecture delete', r.error);
+        setMsg('Delete failed: ' + r.error.message, 'error');
+        return;
+      }
+      if (editingId === id) resetLectureForm();
+      setMsg('Lecture deleted.', 'success');
+      fetchLectures();
+    }
+
+    function resetLectureForm() {
+      editingId = null;
+      lectureForm.reset();
+      lectureCancel.style.display = 'none';
+      lectureSave.textContent     = 'Save Lecture';
+      setMsg('', '');
+    }
+
+    function setMsg(msg, type) {
+      lectureMsg.textContent = msg;
+      lectureMsg.className   = 'rb-admin-lecture-msg'
+        + (type === 'error'   ? ' rb-admin-lecture-msg--error'   : '')
+        + (type === 'success' ? ' rb-admin-lecture-msg--success' : '')
+        + (type === 'info'    ? ' rb-admin-lecture-msg--info'    : '');
+    }
+
+    function lecAccessBadge(level) {
+      return '<span class="rb-admin-lec-badge rb-admin-lec-badge--' + (level || 'free') + '">'
+        + cap(level || 'free') + '</span>';
+    }
+  })();
+
   /* ── Boot ────────────────────────────────────────────────── */
   init();
 })();

@@ -79,6 +79,75 @@
         <p class="rb-admin-empty" id="rb-admin-empty" style="display:none">No payments match this filter.</p>
       </div>
 
+      <!-- ── Lecture Management ───────────────────────────────── -->
+      <section class="rb-admin-lecture-section" id="rb-admin-lectures" aria-label="Lecture Management">
+
+        <div class="rb-admin-section-divider">
+          <h2 class="rb-admin-section-title">Lecture Management</h2>
+        </div>
+
+        <form class="rb-admin-lecture-form" id="rb-lecture-form" novalidate>
+          <div class="rb-admin-lecture-form__grid">
+
+            <div class="rb-admin-lecture-form__group">
+              <label class="rb-admin-lecture-form__label" for="lec-title">Title *</label>
+              <input class="rb-admin-lecture-form__input" id="lec-title" type="text" placeholder="Lecture title" />
+            </div>
+
+            <div class="rb-admin-lecture-form__group">
+              <label class="rb-admin-lecture-form__label" for="lec-category">Category</label>
+              <input class="rb-admin-lecture-form__input" id="lec-category" type="text" placeholder="e.g. Research, Clinical" />
+            </div>
+
+            <div class="rb-admin-lecture-form__group rb-admin-lecture-form__group--full">
+              <label class="rb-admin-lecture-form__label" for="lec-description">Description</label>
+              <textarea class="rb-admin-lecture-form__input rb-admin-lecture-form__textarea" id="lec-description" rows="3" placeholder="Short description…"></textarea>
+            </div>
+
+            <div class="rb-admin-lecture-form__group rb-admin-lecture-form__group--full">
+              <label class="rb-admin-lecture-form__label" for="lec-video-url">Video URL *</label>
+              <input class="rb-admin-lecture-form__input" id="lec-video-url" type="url" placeholder="https://…" />
+            </div>
+
+            <div class="rb-admin-lecture-form__group rb-admin-lecture-form__group--full">
+              <label class="rb-admin-lecture-form__label" for="lec-thumbnail-url">Thumbnail URL</label>
+              <input class="rb-admin-lecture-form__input" id="lec-thumbnail-url" type="url" placeholder="https://… (optional)" />
+            </div>
+
+            <div class="rb-admin-lecture-form__group">
+              <label class="rb-admin-lecture-form__label" for="lec-access-level">Access Level *</label>
+              <select class="rb-admin-lecture-form__input rb-admin-lecture-form__select" id="lec-access-level">
+                <option value="">— select —</option>
+                <option value="free">Free</option>
+                <option value="scholar">Scholar</option>
+                <option value="pro">Pro</option>
+              </select>
+            </div>
+
+            <div class="rb-admin-lecture-form__group">
+              <label class="rb-admin-lecture-form__label" for="lec-order">Order #</label>
+              <input class="rb-admin-lecture-form__input" id="lec-order" type="number" min="0" placeholder="0" />
+            </div>
+
+            <div class="rb-admin-lecture-form__group">
+              <label class="rb-admin-lecture-form__label" for="lec-duration">Duration</label>
+              <input class="rb-admin-lecture-form__input" id="lec-duration" type="text" placeholder="e.g. 12:30" />
+            </div>
+
+          </div>
+
+          <div class="rb-admin-lecture-form__actions">
+            <button type="submit" class="rb-btn rb-btn--amber" id="rb-lecture-save">Save Lecture</button>
+            <button type="button" class="rb-btn rb-btn--outline" id="rb-lecture-cancel" style="display:none">Cancel Edit</button>
+          </div>
+
+          <p class="rb-admin-lecture-msg" id="rb-lecture-msg" aria-live="polite"></p>
+        </form>
+
+        <div class="rb-admin-lecture-list" id="rb-lecture-list"></div>
+
+      </section>
+
     </div>
   </main>
 
