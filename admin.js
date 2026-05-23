@@ -113,9 +113,9 @@
       var actions = (row.status === 'pending')
         ? '<div class="rb-admin-row-actions">'
         +   '<button class="rb-admin-action-btn rb-admin-action-btn--approve"'
-        +     ' data-id="' + ea(row.id) + '" data-email="' + ea(row.email || '') + '" data-plan="' + ea(row.plan || '') + '">Approve</button>'
+        +     ' data-id="' + ea(row.id) + '" data-email="' + ea(row.email || '') + '" data-plan="' + ea(row.plan || '') + '" data-user-id="' + ea(row.user_id || '') + '">Approve</button>'
         +   '<button class="rb-admin-action-btn rb-admin-action-btn--reject"'
-        +     ' data-id="' + ea(row.id) + '" data-email="' + ea(row.email || '') + '" data-plan="' + ea(row.plan || '') + '">Reject</button>'
+        +     ' data-id="' + ea(row.id) + '" data-email="' + ea(row.email || '') + '" data-plan="' + ea(row.plan || '') + '" data-user-id="' + ea(row.user_id || '') + '">Reject</button>'
         + '</div>'
         : '<span class="rb-admin-no-action">—</span>';
 
@@ -143,8 +143,8 @@
     var rejectBtn  = e.target.closest('.rb-admin-action-btn--reject');
 
     if (thumb)      { openModal(thumb.dataset.url);                                                                      return; }
-    if (approveBtn) { openConfirm(approveBtn.dataset.id, approveBtn.dataset.email, approveBtn.dataset.plan, 'approved'); return; }
-    if (rejectBtn)  { openConfirm(rejectBtn.dataset.id,  rejectBtn.dataset.email,  rejectBtn.dataset.plan,  'rejected'); }
+    if (approveBtn) { openConfirm(approveBtn.dataset.id, approveBtn.dataset.email, approveBtn.dataset.plan, approveBtn.dataset.userId, 'approved'); return; }
+    if (rejectBtn)  { openConfirm(rejectBtn.dataset.id,  rejectBtn.dataset.email,  rejectBtn.dataset.plan,  rejectBtn.dataset.userId,  'rejected'); }
   });
 
   /* ── Screenshot lightbox ────────────────────────────────── */
@@ -164,8 +164,8 @@
   modalEl.addEventListener('click', function (e) { if (e.target === modalEl) closeModal(); });
 
   /* ── Confirm dialog ─────────────────────────────────────── */
-  function openConfirm(id, email, plan, newStatus) {
-    pendingAction = { id: id, email: email, plan: plan, newStatus: newStatus };
+  function openConfirm(id, email, plan, userId, newStatus) {
+    pendingAction = { id: id, email: email, plan: plan, userId: userId, newStatus: newStatus };
     var verb = newStatus === 'approved' ? 'Approve' : 'Reject';
     confirmMsgEl.textContent = verb + ' payment from ' + (email || 'this user') + '?';
     confirmOkEl.className    = 'rb-admin-confirm-ok rb-admin-confirm-ok--' + newStatus;
@@ -201,13 +201,22 @@
 
     if (typeof emailjs !== 'undefined') {
       var templateId = action.newStatus === 'approved' ? 'template_zyv3hna' : 'template_b98fycr';
-      emailjs.send('service_ud6ayqz', templateId, {
-        user_email: action.email,
-        plan:       action.plan
-      }).then(function () {
-        showToast('Email sent to user');
-      }, function () {
-        showToast('Email failed to send');
+      var profilePromise = action.userId
+        ? rbSupabase.from('profiles').select('full_name').eq('user_id', action.userId).single()
+        : Promise.resolve({ data: null });
+      profilePromise.then(function (r) {
+        var userName = (r.data && r.data.full_name) ? r.data.full_name : action.email;
+        emailjs.send('service_ud6ayqz', templateId, {
+          user_email: action.email,
+          user_name:  userName,
+          plan:       action.plan
+        }).then(function (res) {
+          console.log('EmailJS response:', res);
+          showToast('Email sent to user');
+        }, function (err) {
+          console.log('EmailJS error:', err);
+          showToast('Email failed to send');
+        });
       });
     }
   });
