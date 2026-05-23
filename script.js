@@ -1217,10 +1217,11 @@
      LANDING PAGE CTA — dynamic button state based on auth + plan
   ============================================================ */
   (function initLandingCtaState() {
-    var heroBtn = document.getElementById('rb-hero-cta');
-    var ctaBtn  = document.getElementById('rb-cta-strip-btn');
-    var ctaSub  = document.getElementById('rb-cta-strip-sub');
-    if (!heroBtn && !ctaBtn) return;
+    var heroBtn     = document.getElementById('rb-hero-cta');
+    var ctaBtn      = document.getElementById('rb-cta-strip-btn');
+    var ctaSub      = document.getElementById('rb-cta-strip-sub');
+    var freePlanBtn = document.getElementById('rb-free-plan-btn');
+    if (!heroBtn && !ctaBtn && !freePlanBtn) return;
     if (typeof rbGetSession !== 'function') return;
 
     rbGetSession().then(function (session) {
@@ -1240,14 +1241,16 @@
             return;
           }
 
-          // Free or approved user — point buttons to dashboard
-          if (heroBtn) heroBtn.href = 'dashboard.html';
-          if (ctaBtn)  ctaBtn.href  = 'dashboard.html';
+          // Free or approved user — point all CTA/free-plan buttons to dashboard
+          if (heroBtn)     heroBtn.href     = 'dashboard.html';
+          if (ctaBtn)      ctaBtn.href      = 'dashboard.html';
+          if (freePlanBtn) freePlanBtn.href = 'dashboard.html';
 
           if (status === 'approved') {
-            if (heroBtn) heroBtn.textContent = 'Go to Dashboard';
-            if (ctaBtn)  ctaBtn.textContent  = 'Go to Dashboard';
-            if (ctaSub)  ctaSub.textContent  = 'Welcome back — your workspace is ready.';
+            if (heroBtn)     heroBtn.textContent     = 'Go to Dashboard';
+            if (ctaBtn)      ctaBtn.textContent      = 'Go to Dashboard';
+            if (freePlanBtn) freePlanBtn.textContent = 'Go to Dashboard';
+            if (ctaSub)      ctaSub.textContent      = 'Welcome back — your workspace is ready.';
           }
         });
     });
