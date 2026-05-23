@@ -1015,6 +1015,69 @@
     if (!document.getElementById('rb-dash')) return;
     if (typeof rbRequireAuth !== 'function') return;
 
+    /* ── Lecture video modal ─────────────────────────────────── */
+    var _modal = document.createElement('div');
+    _modal.id = 'rb-video-modal';
+    _modal.className = 'rb-video-modal';
+    _modal.setAttribute('role', 'dialog');
+    _modal.setAttribute('aria-modal', 'true');
+    _modal.setAttribute('aria-label', 'Lecture video');
+    _modal.innerHTML =
+      '<div class="rb-video-modal__backdrop"></div>'
+      + '<div class="rb-video-modal__box">'
+      +   '<button type="button" class="rb-video-modal__close" aria-label="Close video">'
+      +     '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'
+      +   '</button>'
+      +   '<div class="rb-video-modal__player" id="rb-video-modal-player"></div>'
+      + '</div>';
+    document.body.appendChild(_modal);
+    var _player = _modal.querySelector('#rb-video-modal-player');
+
+    function _toYTEmbed(url) {
+      if (/youtube\.com\/embed\//.test(url)) return url;
+      var m = url.match(/youtu\.be\/([^?&\s]+)/) || url.match(/[?&]v=([^&\s]+)/);
+      return m ? 'https://www.youtube.com/embed/' + m[1] + '?autoplay=1' : null;
+    }
+
+    function openLectureModal(videoUrl) {
+      _player.innerHTML = '';
+      if (!videoUrl) {
+        var msg = document.createElement('p');
+        msg.className = 'rb-video-modal__no-video';
+        msg.textContent = 'No video available for this lecture yet.';
+        _player.appendChild(msg);
+      } else {
+        var embedUrl = _toYTEmbed(videoUrl);
+        if (embedUrl) {
+          var iframe = document.createElement('iframe');
+          iframe.src = embedUrl;
+          iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+          iframe.setAttribute('allowfullscreen', '');
+          _player.appendChild(iframe);
+        } else {
+          var video = document.createElement('video');
+          video.src = videoUrl;
+          video.controls = true;
+          video.autoplay = true;
+          _player.appendChild(video);
+        }
+      }
+      _modal.classList.add('rb-video-modal--open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLectureModal() {
+      _modal.classList.remove('rb-video-modal--open');
+      _player.innerHTML = '';
+      document.body.style.overflow = '';
+    }
+
+    _modal.querySelector('.rb-video-modal__close').addEventListener('click', closeLectureModal);
+    _modal.querySelector('.rb-video-modal__backdrop').addEventListener('click', closeLectureModal);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && _modal.classList.contains('rb-video-modal--open')) closeLectureModal();
+    });
+
     rbRequireAuth().then(function (session) {
       if (!session) return;
 
@@ -1066,6 +1129,13 @@
       var loadingEl = document.getElementById('rb-dash-lectures-loading');
       if (!container) return;
 
+      container.addEventListener('click', function (e) {
+        var btn = e.target.closest('.rb-lecture-start');
+        if (!btn) return;
+        e.preventDefault();
+        openLectureModal(btn.dataset.videoUrl);
+      });
+
       var canAccess = {
         free:    true,
         scholar: userLevel === 'scholar' || userLevel === 'pro',
@@ -1074,7 +1144,7 @@
 
       rbSupabase
         .from('lectures')
-        .select('id, title, category, duration, access_level, order_number')
+        .select('id, title, category, duration, access_level, order_number, video_url')
         .order('order_number', { ascending: true })
         .order('created_at', { ascending: true })
         .then(function (result) {
@@ -1139,7 +1209,7 @@
                 +   metaHtml
                 +   '<div class="rb-dash-course__progress" aria-label="0% complete"><div class="rb-dash-course__progress-bar"></div></div>'
                 + '</div>'
-                + '<a href="#" class="rb-btn rb-btn--outline rb-dash-course__btn">Start</a>'
+                + '<button type="button" class="rb-btn rb-btn--outline rb-dash-course__btn rb-lecture-start" data-video-url="' + rbEscHtml(lec.video_url || '') + '">Start</button>'
                 + '</article>';
             }
 
