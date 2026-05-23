@@ -1039,6 +1039,19 @@
       return m ? 'https://www.youtube.com/embed/' + m[1] + '?autoplay=1' : null;
     }
 
+    function _toDriveEmbed(url) {
+      var m = url.match(/drive\.google\.com\/file\/d\/([^/?&\s]+)/);
+      return m ? 'https://drive.google.com/file/d/' + m[1] + '/preview' : null;
+    }
+
+    function _makeIframe(src, allowStr) {
+      var iframe = document.createElement('iframe');
+      iframe.src = src;
+      if (allowStr) iframe.setAttribute('allow', allowStr);
+      iframe.setAttribute('allowfullscreen', '');
+      _player.appendChild(iframe);
+    }
+
     function openLectureModal(videoUrl) {
       _player.innerHTML = '';
       if (!videoUrl) {
@@ -1047,13 +1060,12 @@
         msg.textContent = 'No video available for this lecture yet.';
         _player.appendChild(msg);
       } else {
-        var embedUrl = _toYTEmbed(videoUrl);
-        if (embedUrl) {
-          var iframe = document.createElement('iframe');
-          iframe.src = embedUrl;
-          iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
-          iframe.setAttribute('allowfullscreen', '');
-          _player.appendChild(iframe);
+        var ytUrl    = _toYTEmbed(videoUrl);
+        var driveUrl = _toDriveEmbed(videoUrl);
+        if (ytUrl) {
+          _makeIframe(ytUrl, 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+        } else if (driveUrl) {
+          _makeIframe(driveUrl, '');
         } else {
           var video = document.createElement('video');
           video.src = videoUrl;
