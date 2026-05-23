@@ -1297,54 +1297,6 @@ p { line-height: 1.7; }
   line-height: 1.4;
 }
 
-.rb-testimonial-card {
-  background-color: var(--paper-50);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-3);
-  padding: var(--space-8);
-  max-width: 640px;
-  margin: 0 auto var(--space-8);
-}
-
-.rb-testimonial-card__quote {
-  font-family: 'Lora', Georgia, serif;
-  font-style: italic;
-  font-size: 1.125rem;
-  color: var(--ink-600);
-  line-height: 1.6;
-  margin-bottom: var(--space-6);
-}
-
-.rb-testimonial-card__author {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-}
-
-.rb-testimonial-card__avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--navy-700), var(--navy-900));
-  flex-shrink: 0;
-}
-
-.rb-testimonial-card__name {
-  font-weight: 600;
-  font-size: 0.9375rem;
-  color: var(--ink-900);
-}
-
-.rb-testimonial-card__detail {
-  font-size: 0.8125rem;
-  color: var(--ink-400);
-}
-
-.rb-proof__journals {
-  text-align: center;
-  font-size: 0.9375rem;
-  color: var(--ink-600);
-}
 
 /* ============================================================
    PRICING
@@ -1821,19 +1773,6 @@ p { line-height: 1.7; }
   }
   .rb-plan-card__features li {
     font-size: 0.875rem;
-  }
-
-  /* --- Testimonial card --- */
-  .rb-testimonial-card {
-    padding: 20px;
-  }
-  .rb-testimonial-card__quote {
-    font-size: 1rem;
-    margin-bottom: var(--space-4);
-  }
-  .rb-testimonial-card__avatar {
-    width: 36px;
-    height: 36px;
   }
 
   /* --- FAQ accordion --- */
