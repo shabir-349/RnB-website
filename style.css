@@ -4352,3 +4352,59 @@ p { line-height: 1.7; }
   display: block;
   border: none;
 }
+
+/* ============================================================
+   MOBILE "WATCH ON DESKTOP" POPUP
+   ============================================================ */
+.rb-watch-popup {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+}
+
+.rb-watch-popup--open { display: flex; }
+
+.rb-watch-popup__backdrop {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+}
+
+.rb-watch-popup__card {
+  position: relative;
+  z-index: 1;
+  width: min(92vw, 400px);
+  background-color: var(--navy-900);
+  border: 1px solid var(--navy-700);
+  border-radius: var(--radius-3);
+  padding: var(--space-8) var(--space-6);
+  text-align: center;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
+}
+
+.rb-watch-popup__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--space-4);
+  color: var(--amber-500);
+}
+
+.rb-watch-popup__msg {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 500;
+  color: #E8ECF3;
+  line-height: 1.6;
+}
+
+.rb-watch-popup__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}

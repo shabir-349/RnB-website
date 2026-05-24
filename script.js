@@ -1164,6 +1164,52 @@
       if (e.key === 'Escape' && _modal.classList.contains('rb-video-modal--open')) closeLectureModal();
     });
 
+    /* ── "Watch on desktop" popup (mobile-only) ─────────────── */
+    var _wpopup = document.createElement('div');
+    _wpopup.id = 'rb-watch-popup';
+    _wpopup.className = 'rb-watch-popup';
+    _wpopup.setAttribute('role', 'dialog');
+    _wpopup.setAttribute('aria-modal', 'true');
+    _wpopup.setAttribute('aria-label', 'Viewing recommendation');
+    _wpopup.innerHTML =
+      '<div class="rb-watch-popup__backdrop"></div>'
+      + '<div class="rb-watch-popup__card">'
+      +   '<div class="rb-watch-popup__icon" aria-hidden="true">'
+      +     '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>'
+      +   '</div>'
+      +   '<p class="rb-watch-popup__msg">For the best viewing experience, we recommend watching lectures on a desktop or laptop.</p>'
+      +   '<div class="rb-watch-popup__actions">'
+      +     '<button type="button" class="rb-btn rb-btn--amber rb-watch-popup__continue">Continue Anyway</button>'
+      +     '<button type="button" class="rb-btn rb-btn--outline rb-watch-popup__dismiss">Got it</button>'
+      +   '</div>'
+      + '</div>';
+    document.body.appendChild(_wpopup);
+
+    var _wpopupVideoUrl = null;
+
+    function openWatchPopup(videoUrl) {
+      _wpopupVideoUrl = videoUrl;
+      _wpopup.classList.add('rb-watch-popup--open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeWatchPopup() {
+      _wpopup.classList.remove('rb-watch-popup--open');
+      _wpopupVideoUrl = null;
+      document.body.style.overflow = '';
+    }
+
+    _wpopup.querySelector('.rb-watch-popup__continue').addEventListener('click', function () {
+      var url = _wpopupVideoUrl;
+      closeWatchPopup();
+      openLectureModal(url);
+    });
+    _wpopup.querySelector('.rb-watch-popup__dismiss').addEventListener('click', closeWatchPopup);
+    _wpopup.querySelector('.rb-watch-popup__backdrop').addEventListener('click', closeWatchPopup);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && _wpopup.classList.contains('rb-watch-popup--open')) closeWatchPopup();
+    });
+
     rbRequireAuth().then(function (session) {
       if (!session) return;
 
@@ -1236,7 +1282,12 @@
         var btn = e.target.closest('.rb-lecture-start');
         if (!btn) return;
         e.preventDefault();
-        openLectureModal(btn.dataset.videoUrl);
+        var videoUrl = btn.dataset.videoUrl;
+        if (window.innerWidth < 768) {
+          openWatchPopup(videoUrl);
+        } else {
+          openLectureModal(videoUrl);
+        }
       });
 
       var canAccess = {
