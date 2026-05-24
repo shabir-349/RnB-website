@@ -9,8 +9,6 @@
   /* ── Config ────────────────────────────────────────────── */
   var ADMIN_EMAIL = 'shabirahmaddir598@gmail.com'; // replace with your email address
 
-  /* ── EmailJS ────────────────────────────────────────────── */
-  if (typeof emailjs !== 'undefined') emailjs.init('8DgZ_mpUTh4quKlwH');
 
   /* ── State ─────────────────────────────────────────────── */
   var allPayments   = [];
@@ -199,26 +197,32 @@
     }
     await loadPayments();
 
-    if (typeof emailjs !== 'undefined') {
-      var templateId = action.newStatus === 'approved' ? 'template_zyv3hna' : 'template_b98fycr';
-      var profilePromise = action.userId
-        ? rbSupabase.from('profiles').select('full_name').eq('user_id', action.userId).single()
-        : Promise.resolve({ data: null });
-      profilePromise.then(function (r) {
-        var userName = (r.data && r.data.full_name) ? r.data.full_name : action.email;
-        emailjs.send('service_ud6ayqz', templateId, {
-          user_email: action.email,
-          user_name:  userName,
-          plan:       action.plan
-        }).then(function (res) {
-          console.log('EmailJS response:', res);
+    var profilePromise = action.userId
+      ? rbSupabase.from('profiles').select('full_name').eq('user_id', action.userId).single()
+      : Promise.resolve({ data: null });
+    profilePromise.then(function (r) {
+      var userName = (r.data && r.data.full_name) ? r.data.full_name : action.email;
+      fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to_email:  action.email,
+          user_name: userName,
+          plan:      action.plan,
+          type:      action.newStatus
+        })
+      }).then(function (res) { return res.json(); }).then(function (data) {
+        if (data.success) {
           showToast('Email sent to user');
-        }, function (err) {
-          console.log('EmailJS error:', err);
+        } else {
+          console.error('send-email error:', data.error);
           showToast('Email failed to send');
-        });
+        }
+      }).catch(function (err) {
+        console.error('send-email fetch error:', err);
+        showToast('Email failed to send');
       });
-    }
+    });
   });
 
   /* ── Filter tabs ─────────────────────────────────────────── */
