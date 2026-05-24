@@ -978,6 +978,18 @@
         return;
       }
 
+      // Notify admin of new payment — fire and forget
+      fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to_email: session.user.email,
+          plan:     plan,
+          method:   method,
+          type:     'new_payment'
+        })
+      }).catch(function (err) { console.error('admin notify error:', err); });
+
       // Success — hide form, show confirmation card
       var proofSection = document.getElementById('rb-proof-section');
       var confirmCard  = document.getElementById('rb-payment-confirm');

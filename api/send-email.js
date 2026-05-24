@@ -3,18 +3,51 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, error: 'Method not allowed' });
   }
 
-  const { to_email, user_name, plan, type } = req.body || {};
+  const { to_email, user_name, plan, type, method } = req.body || {};
 
   if (!to_email || !type) {
     return res.status(400).json({ success: false, error: 'Missing required fields' });
   }
 
   const displayPlan = plan ? plan.charAt(0).toUpperCase() + plan.slice(1) : 'Scholar';
+  const displayMethod = method ? method.charAt(0).toUpperCase() + method.slice(1) : 'Unknown';
   const name = user_name || to_email;
 
-  let subject, htmlContent;
+  let subject, htmlContent, recipient;
 
-  if (type === 'approved') {
+  if (type === 'new_payment') {
+    recipient = 'researchandbeyondd@gmail.com';
+    subject = 'New Payment Request — R&B';
+    htmlContent = `
+      <div style="font-family:Inter,Arial,sans-serif;max-width:600px;margin:0 auto;color:#1a1a1a">
+        <div style="background:#f5b730;padding:32px 40px;border-radius:12px 12px 0 0">
+          <h1 style="margin:0;font-size:24px;color:#1a1a1a">R&amp;B — Research and Beyond</h1>
+        </div>
+        <div style="padding:40px;background:#ffffff;border-radius:0 0 12px 12px;border:1px solid #e5e7eb;border-top:none">
+          <h2 style="margin:0 0 24px;font-size:20px">New payment request submitted</h2>
+          <table style="width:100%;border-collapse:collapse;margin:0 0 32px">
+            <tr>
+              <td style="padding:10px 16px;background:#f9fafb;border:1px solid #e5e7eb;font-weight:600;width:140px">User email</td>
+              <td style="padding:10px 16px;border:1px solid #e5e7eb">${to_email}</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 16px;background:#f9fafb;border:1px solid #e5e7eb;font-weight:600">Plan</td>
+              <td style="padding:10px 16px;border:1px solid #e5e7eb">${displayPlan}</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 16px;background:#f9fafb;border:1px solid #e5e7eb;font-weight:600">Payment method</td>
+              <td style="padding:10px 16px;border:1px solid #e5e7eb">${displayMethod}</td>
+            </tr>
+          </table>
+          <a href="https://rn-b-website.vercel.app/admin.html"
+             style="display:inline-block;background:#f5b730;color:#1a1a1a;text-decoration:none;
+                    padding:14px 28px;border-radius:8px;font-weight:600;font-size:15px">
+            Review in Admin Panel →
+          </a>
+        </div>
+      </div>`;
+  } else if (type === 'approved') {
+    recipient = to_email;
     subject = 'R&B — Your payment has been approved!';
     htmlContent = `
       <div style="font-family:Inter,Arial,sans-serif;max-width:600px;margin:0 auto;color:#1a1a1a">
@@ -44,6 +77,7 @@ export default async function handler(req, res) {
         </div>
       </div>`;
   } else {
+    recipient = to_email;
     subject = 'R&B — Payment update';
     htmlContent = `
       <div style="font-family:Inter,Arial,sans-serif;max-width:600px;margin:0 auto;color:#1a1a1a">
@@ -89,7 +123,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         sender: { name: 'R&B — Research and Beyond', email: 'researchandbeyondd@gmail.com' },
-        to: [{ email: to_email }],
+        to: [{ email: recipient }],
         subject,
         htmlContent,
       }),
