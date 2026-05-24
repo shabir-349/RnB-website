@@ -37,8 +37,14 @@
     </div>
   </header>
 
-  <!-- Dashboard layout -->
-  <div class="rb-dash" id="rb-dash">
+  <!-- Full-page loading overlay — visible until auth + data resolve -->
+  <div class="rb-dash-loading-overlay" id="rb-dash-page-loading" role="status" aria-live="polite" aria-label="Loading dashboard">
+    <div class="rb-spinner rb-spinner--dark" aria-hidden="true"></div>
+    <p class="rb-dash-loading-overlay__text">Loading your dashboard…</p>
+  </div>
+
+  <!-- Dashboard layout — hidden until data is ready (JS removes hidden attr) -->
+  <div class="rb-dash" id="rb-dash" hidden>
 
     <!-- Sidebar -->
     <aside class="rb-dash__sidebar" id="rb-dash-sidebar" aria-label="Dashboard navigation">

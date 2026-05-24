@@ -4408,3 +4408,44 @@ p { line-height: 1.7; }
   gap: var(--space-3);
   margin-top: var(--space-6);
 }
+
+/* ============================================================
+   DASHBOARD PAGE-LEVEL LOADING OVERLAY
+   Covers the full viewport (including nav) until auth + data
+   resolve. Hidden by adding --hidden modifier class via JS.
+============================================================ */
+.rb-dash-loading-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  background: #0B1220;
+  z-index: 500;
+}
+.rb-dash-loading-overlay--hidden { display: none; }
+
+.rb-dash-loading-overlay__text {
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  color: #94A3B8;
+}
+
+/* Spinner variant for dark navy backgrounds */
+.rb-spinner--dark {
+  border-color: rgba(232, 163, 61, 0.2);
+  border-top-color: #E8A33D;
+}
+
+/* ── Admin loading overlay — dark navy ────────────────────── */
+#rb-admin-loading {
+  top: 0;
+  background: #0B1220;
+}
+#rb-admin-loading .rb-admin-overlay__text { color: #94A3B8; }
+#rb-admin-loading .rb-spinner {
+  border-color: rgba(232, 163, 61, 0.2);
+  border-top-color: #E8A33D;
+}

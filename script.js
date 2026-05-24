@@ -1057,6 +1057,15 @@
     if (!document.getElementById('rb-dash')) return;
     if (typeof rbRequireAuth !== 'function') return;
 
+    /* ── Loading overlay ─────────────────────────────────────── */
+    var _dashOverlay = document.getElementById('rb-dash-page-loading');
+    var _dashEl      = document.getElementById('rb-dash');
+
+    function _revealDash() {
+      if (_dashOverlay) _dashOverlay.classList.add('rb-dash-loading-overlay--hidden');
+      if (_dashEl) _dashEl.removeAttribute('hidden');
+    }
+
     /* ── Lecture video modal ─────────────────────────────────── */
     var _modal = document.createElement('div');
     _modal.id = 'rb-video-modal';
@@ -1306,6 +1315,7 @@
 
           if (result.error) {
             container.innerHTML = '<p class="rb-dash-lectures-error">Could not load lectures. Please refresh the page.</p>';
+            _revealDash();
             return;
           }
 
@@ -1313,6 +1323,7 @@
 
           if (!lectures.length) {
             container.innerHTML = '<p class="rb-dash-lectures-empty">No lectures available yet — check back soon.</p>';
+            _revealDash();
             return;
           }
 
@@ -1384,6 +1395,7 @@
               + '<a href="' + upgradeUrl + '" class="rb-btn rb-btn--amber rb-dash-course__btn">Unlock</a>'
               + '</article>';
           }).join('');
+          _revealDash();
         });
     }
 
