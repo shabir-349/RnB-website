@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404 — Page Not Found | R&amp;B Research and Beyond</title>
+  <meta name="description" content="The page you're looking for may have been moved or doesn't exist." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/jpeg" href="./logo.jpg" />
+  <style>
+    .rb-404-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: #0B1220;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .rb-404-logo {
+      margin-bottom: 48px;
+      font-size: 1.75rem;
+    }
+
+    .rb-404-num {
+      font-family: 'Lora', Georgia, serif;
+      font-size: clamp(5rem, 22vw, 9rem);
+      font-weight: 600;
+      color: #E8A33D;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      margin-bottom: 20px;
+    }
+
+    .rb-404-title {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(1.125rem, 4vw, 1.5rem);
+      font-weight: 600;
+      color: #E8ECF3;
+      margin-bottom: 12px;
+    }
+
+    .rb-404-sub {
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      color: #94A3B8;
+      max-width: 380px;
+      line-height: 1.65;
+      margin-bottom: 40px;
+    }
+
+    .rb-404-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+
+  <main class="rb-404-page" role="main">
+
+    <a href="index.html" class="rb-logo rb-404-logo" aria-label="R&B — Research and Beyond home">R&amp;B</a>
+
+    <p class="rb-404-num" aria-label="Error 404">404</p>
+    <h1 class="rb-404-title">Oops! This page doesn't exist.</h1>
+    <p class="rb-404-sub">The page you're looking for may have been moved or doesn't exist.</p>
+
+    <div class="rb-404-actions">
+      <a href="index.html" class="rb-btn rb-btn--amber">Go Home</a>
+      <a href="dashboard.html" class="rb-btn rb-btn--outline">Go to Dashboard</a>
+    </div>
+
+  </main>
+
+</body>
+</html>
