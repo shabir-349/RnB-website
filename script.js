@@ -1075,23 +1075,13 @@
     document.body.appendChild(_modal);
     var _player = _modal.querySelector('#rb-video-modal-player');
 
-    function _toYTEmbed(url) {
-      if (/youtube\.com\/embed\//.test(url)) return url;
-      var m = url.match(/youtu\.be\/([^?&\s]+)/) || url.match(/[?&]v=([^&\s]+)/);
-      return m ? 'https://www.youtube.com/embed/' + m[1] + '?autoplay=1' : null;
-    }
-
     function _toDriveEmbed(url) {
+      if (!url) return null;
+      // Already a /preview embed URL — use as-is
+      if (/drive\.google\.com\/file\/d\/.+\/preview/.test(url)) return url;
+      // Standard share/view URL — extract file ID
       var m = url.match(/drive\.google\.com\/file\/d\/([^/?&\s]+)/);
       return m ? 'https://drive.google.com/file/d/' + m[1] + '/preview' : null;
-    }
-
-    function _makeIframe(src, allowStr) {
-      var iframe = document.createElement('iframe');
-      iframe.src = src;
-      if (allowStr) iframe.setAttribute('allow', allowStr);
-      iframe.setAttribute('allowfullscreen', '');
-      _player.appendChild(iframe);
     }
 
     function openLectureModal(videoUrl) {
@@ -1102,13 +1092,15 @@
         msg.textContent = 'No video available for this lecture yet.';
         _player.appendChild(msg);
       } else {
-        var ytUrl    = _toYTEmbed(videoUrl);
         var driveUrl = _toDriveEmbed(videoUrl);
-        if (ytUrl) {
-          _makeIframe(ytUrl, 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
-        } else if (driveUrl) {
-          _makeIframe(driveUrl, '');
+        if (driveUrl) {
+          var iframe = document.createElement('iframe');
+          iframe.src = driveUrl;
+          iframe.setAttribute('allow', 'autoplay; fullscreen');
+          iframe.setAttribute('allowfullscreen', '');
+          _player.appendChild(iframe);
         } else {
+          // Fallback for direct video file URLs
           var video = document.createElement('video');
           video.src = videoUrl;
           video.controls = true;
