@@ -2346,8 +2346,10 @@ p { line-height: 1.7; }
 
 @media (min-width: 480px) { .rb-dash-nav__username { display: block; } }
 
-.rb-dash-nav__signout { display: none; }
-@media (min-width: 640px) { .rb-dash-nav__signout { display: inline-flex; } }
+.rb-dash-nav__signout { display: inline-flex; }
+@media (max-width: 479px) {
+  .rb-dash-nav__signout { padding: 6px 12px; font-size: 0.8125rem; }
+}
 
 .rb-dash {
   display: grid;
@@ -2417,6 +2419,30 @@ p { line-height: 1.7; }
 .rb-dash__nav-link--locked { opacity: 0.65; cursor: not-allowed; }
 
 .rb-dash__nav-lock { margin-left: auto; color: var(--ink-400); }
+
+.rb-dash__sidebar-signout {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  margin: var(--space-3) var(--space-3) 0;
+  border-radius: var(--radius-1);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--ink-500);
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-4);
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  width: calc(100% - 2 * var(--space-3));
+  text-align: left;
+  cursor: pointer;
+  transition: color var(--transition), background-color var(--transition);
+}
+
+.rb-dash__sidebar-signout:hover { color: var(--text); background-color: var(--paper-50); }
 
 .rb-dash__sidebar-footer {
   padding: var(--space-4) var(--space-6) 0;

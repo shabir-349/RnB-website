@@ -1488,13 +1488,12 @@
      LOGOUT HANDLER
   ============================================================ */
   (function initLogout() {
-    var btn = document.getElementById('rb-signout-btn');
-    if (!btn) return;
-
-    btn.addEventListener('click', async function (e) {
-      e.preventDefault();
-      if (typeof rbSignOut === 'function') await rbSignOut();
-      window.location.replace('signin.html');
+    document.querySelectorAll('.rb-signout-trigger').forEach(function (btn) {
+      btn.addEventListener('click', async function (e) {
+        e.preventDefault();
+        if (typeof rbSignOut === 'function') await rbSignOut();
+        window.location.replace('signin.html');
+      });
     });
   })();
 
