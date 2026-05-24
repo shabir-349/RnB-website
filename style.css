@@ -4156,11 +4156,34 @@ p { line-height: 1.7; }
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
 }
 
-.rb-video-modal__close {
+/* Bar sits top-right on desktop (absolute), becomes a full-width strip on mobile (in-flow) */
+.rb-video-modal__bar {
   position: absolute;
   top: var(--space-3);
   right: var(--space-3);
   z-index: 2;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Fullscreen button — desktop: hidden; mobile: shown via media query */
+.rb-video-modal__fullscreen {
+  display: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.65);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: background-color var(--transition);
+  flex-shrink: 0;
+}
+
+.rb-video-modal__close {
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -4172,8 +4195,10 @@ p { line-height: 1.7; }
   align-items: center;
   justify-content: center;
   transition: background-color var(--transition);
+  flex-shrink: 0;
 }
 
+.rb-video-modal__fullscreen:hover,
 .rb-video-modal__close:hover { background-color: rgba(0, 0, 0, 0.9); }
 
 .rb-video-modal__player {
@@ -4200,8 +4225,8 @@ p { line-height: 1.7; }
   padding: var(--space-8);
 }
 
+/* ── Portrait mobile ───────────────────────────────────────── */
 @media (max-width: 767px) {
-  /* Box is a flex column: close button sits above video in normal flow */
   .rb-video-modal__box {
     display: flex;
     flex-direction: column;
@@ -4211,17 +4236,34 @@ p { line-height: 1.7; }
     overflow: hidden;
   }
 
-  /* Close button: in-flow above video, never overlapping it */
-  .rb-video-modal__close {
+  /* Bar: in-flow full-width strip above the video */
+  .rb-video-modal__bar {
     position: static;
-    align-self: flex-end;
+    top: auto;
+    right: auto;
+    width: 100%;
+    height: 44px;
+    padding: 0;
+    background-color: #000;
+    justify-content: space-between;
     flex-shrink: 0;
+  }
+
+  .rb-video-modal__fullscreen {
+    display: flex;
     width: 44px;
     height: 44px;
     border-radius: 0;
+    background-color: transparent;
   }
 
-  /* Player fills full width at 16:9; overflow:hidden enables the crop */
+  .rb-video-modal__close {
+    width: 44px;
+    height: 44px;
+    border-radius: 0;
+    background-color: transparent;
+  }
+
   .rb-video-modal__player {
     width: 100%;
     max-width: 100vw;
@@ -4230,7 +4272,6 @@ p { line-height: 1.7; }
     display: block;
   }
 
-  /* Extend iframe 30px above to crop Google Drive's top toolbar */
   .rb-video-modal__player iframe {
     width: 100%;
     height: calc(100% + 30px);
@@ -4238,4 +4279,76 @@ p { line-height: 1.7; }
     display: block;
     border: none;
   }
+}
+
+/* ── Landscape mobile: video fills viewport, bar floats top-right ── */
+/* max-height:600px catches phones in landscape (height ~390–500px).  */
+@media (max-height: 600px) and (orientation: landscape) {
+  .rb-video-modal__box {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .rb-video-modal__bar {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    left: auto;
+    width: auto;
+    height: auto;
+    background-color: transparent;
+    gap: 8px;
+    z-index: 2;
+  }
+
+  .rb-video-modal__fullscreen,
+  .rb-video-modal__close {
+    display: flex;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.65);
+  }
+
+  .rb-video-modal__player {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+    overflow: hidden;
+    display: block;
+  }
+
+  .rb-video-modal__player iframe {
+    width: 100%;
+    height: calc(100% + 30px);
+    margin-top: -30px;
+    display: block;
+    border: none;
+  }
+}
+
+/* ── Fullscreen API: pure video, Drive toolbar crop removed ── */
+.rb-video-modal__player:fullscreen,
+.rb-video-modal__player:-webkit-full-screen {
+  aspect-ratio: auto;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000;
+  overflow: hidden;
+}
+
+.rb-video-modal__player:fullscreen iframe,
+.rb-video-modal__player:-webkit-full-screen iframe {
+  width: 100%;
+  height: 100%;
+  margin-top: 0;
+  display: block;
+  border: none;
 }

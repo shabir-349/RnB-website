@@ -1067,13 +1067,51 @@
     _modal.innerHTML =
       '<div class="rb-video-modal__backdrop"></div>'
       + '<div class="rb-video-modal__box">'
-      +   '<button type="button" class="rb-video-modal__close" aria-label="Close video">'
-      +     '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'
-      +   '</button>'
+      +   '<div class="rb-video-modal__bar">'
+      +     '<button type="button" class="rb-video-modal__fullscreen" aria-label="Enter fullscreen">'
+      +       '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>'
+      +     '</button>'
+      +     '<button type="button" class="rb-video-modal__close" aria-label="Close video">'
+      +       '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'
+      +     '</button>'
+      +   '</div>'
       +   '<div class="rb-video-modal__player" id="rb-video-modal-player"></div>'
       + '</div>';
     document.body.appendChild(_modal);
     var _player = _modal.querySelector('#rb-video-modal-player');
+    var _fsBtn  = _modal.querySelector('.rb-video-modal__fullscreen');
+
+    function _enterFullscreen() {
+      var req = _player.requestFullscreen || _player.webkitRequestFullscreen;
+      if (!req) return;
+      req.call(_player).then(function () {
+        if (screen.orientation && typeof screen.orientation.lock === 'function') {
+          screen.orientation.lock('landscape').catch(function () {});
+        }
+      }).catch(function () {});
+    }
+
+    function _onFullscreenChange() {
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        if (screen.orientation && typeof screen.orientation.unlock === 'function') {
+          screen.orientation.unlock();
+        }
+      }
+    }
+
+    document.addEventListener('fullscreenchange', _onFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', _onFullscreenChange);
+
+    if (_fsBtn) {
+      _fsBtn.addEventListener('click', function () {
+        if (document.fullscreenElement || document.webkitFullscreenElement) {
+          var exit = document.exitFullscreen || document.webkitExitFullscreen;
+          if (exit) exit.call(document);
+        } else {
+          _enterFullscreen();
+        }
+      });
+    }
 
     function _toDriveEmbed(url) {
       if (!url) return null;
