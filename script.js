@@ -1086,6 +1086,9 @@
 
     function openLectureModal(videoUrl) {
       _player.innerHTML = '';
+      var existingTab = _modal.querySelector('.rb-video-modal__open-tab');
+      if (existingTab) existingTab.remove();
+
       if (!videoUrl) {
         var msg = document.createElement('p');
         msg.className = 'rb-video-modal__no-video';
@@ -1099,6 +1102,17 @@
           iframe.setAttribute('allow', 'autoplay; fullscreen');
           iframe.setAttribute('allowfullscreen', '');
           _player.appendChild(iframe);
+
+          var fileIdMatch = driveUrl.match(/\/d\/([^/?&\s]+)/);
+          if (fileIdMatch) {
+            var tabLink = document.createElement('a');
+            tabLink.href = 'https://drive.google.com/file/d/' + fileIdMatch[1] + '/view';
+            tabLink.target = '_blank';
+            tabLink.rel = 'noopener noreferrer';
+            tabLink.className = 'rb-video-modal__open-tab';
+            tabLink.textContent = 'Open in new tab ↗';
+            _modal.querySelector('.rb-video-modal__box').appendChild(tabLink);
+          }
         } else {
           // Fallback for direct video file URLs
           var video = document.createElement('video');
@@ -1117,6 +1131,8 @@
     function closeLectureModal() {
       _modal.classList.remove('rb-video-modal--open');
       _player.innerHTML = '';
+      var tabLink = _modal.querySelector('.rb-video-modal__open-tab');
+      if (tabLink) tabLink.remove();
       document.body.style.overflow = '';
     }
 
