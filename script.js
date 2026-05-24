@@ -50,37 +50,53 @@
   handleNavScroll();
 
   /* ============================================================
-     SMOOTH SCROLL — anchor links
-     Uses window.scrollTo with explicit offset so the position is
-     calculated after a short delay, letting images and dynamic
-     content finish rendering before we measure offsetTop.
+     ANCHOR SCROLL — nav sections
+     Targets the five main sections explicitly. Delays position
+     measurement by 400ms so fonts and dynamic content finish
+     rendering before we read getBoundingClientRect(), preventing
+     the wrong-position-on-first-click bug on mobile.
   ============================================================ */
-  function scrollToTarget(target) {
-    var headerHeight = nav ? nav.offsetHeight : 80;
-    var targetTop = target.getBoundingClientRect().top + window.scrollY - headerHeight;
-    window.scrollTo({ top: targetTop, behavior: 'smooth' });
-  }
+  var NAV_ANCHOR_SELECTOR = [
+    'a[href="#pricing"]',
+    'a[href="#faq"]',
+    'a[href="#how-it-works"]',
+    'a[href="#modes"]',
+    'a[href="#academy"]'
+  ].join(', ');
 
-  document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
+  document.querySelectorAll(NAV_ANCHOR_SELECTOR).forEach(function (anchor) {
     anchor.addEventListener('click', function (e) {
       var targetId = this.getAttribute('href');
-      if (targetId === '#') return;
       var target = document.querySelector(targetId);
       if (!target) return;
 
       e.preventDefault();
 
-      var menuIsOpen = mobileMenu && mobileMenu.classList.contains('rb-mobile-menu--open');
-
-      if (menuIsOpen) {
-        // Close menu first, then scroll after menu animation settles
+      var menuOpen = document.getElementById('rb-mobile-menu');
+      if (menuOpen && menuOpen.classList.contains('rb-mobile-menu--open')) {
         closeMobileMenu();
-        setTimeout(function () { scrollToTarget(target); }, 300);
-      } else {
-        // Delay lets page content (images, dynamic elements) fully render
-        // before we measure the target's position.
-        setTimeout(function () { scrollToTarget(target); }, 500);
       }
+
+      // 400ms lets fonts finish loading and layout settle before we
+      // measure the target's position — fixes first-click miss on mobile.
+      setTimeout(function () {
+        var top = target.getBoundingClientRect().top + window.pageYOffset - 100;
+        window.scrollTo({ top: top, behavior: 'smooth' });
+      }, 400);
+    });
+  });
+
+  /* General fallback for any other in-page anchor links */
+  document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
+    if (anchor.matches(NAV_ANCHOR_SELECTOR)) return; // already handled above
+    anchor.addEventListener('click', function (e) {
+      var targetId = this.getAttribute('href');
+      if (targetId === '#') return;
+      var target = document.querySelector(targetId);
+      if (!target) return;
+      e.preventDefault();
+      var top = target.getBoundingClientRect().top + window.pageYOffset - 100;
+      window.scrollTo({ top: top, behavior: 'smooth' });
     });
   });
 

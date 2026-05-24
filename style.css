@@ -544,6 +544,7 @@ p { line-height: 1.7; }
   padding: var(--space-24) 0 var(--space-16);
   overflow: hidden;
   position: relative;
+  min-height: 560px;
 }
 
 /* Canvas fills the entire hero behind all content */
