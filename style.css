@@ -4059,6 +4059,76 @@ p { line-height: 1.7; }
 [data-theme="dark"] .rb-admin-lec-badge--pro     { background: rgba(232,163,61,.18); color: var(--amber-400); }
 
 /* ============================================================
+   TOPICSCOUT SETTINGS — admin.html
+   ============================================================ */
+.rb-admin-settings-section { margin-top: var(--space-12); }
+
+.rb-admin-settings-form {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2);
+  padding: var(--space-8);
+  margin-bottom: var(--space-8);
+}
+
+.rb-admin-settings-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+@media (max-width: 700px) {
+  .rb-admin-settings-grid { grid-template-columns: 1fr; }
+}
+
+.rb-admin-settings-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.rb-admin-settings-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.rb-admin-settings-input {
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-1);
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.rb-admin-settings-input::-webkit-outer-spin-button,
+.rb-admin-settings-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+.rb-admin-settings-input:focus {
+  border-color: var(--amber-500);
+  box-shadow: 0 0 0 3px rgba(232,163,61,.12);
+}
+
+.rb-admin-settings-actions { margin-bottom: var(--space-4); }
+
+.rb-admin-settings-msg {
+  font-size: 0.875rem;
+  font-weight: 500;
+  min-height: 1.25rem;
+}
+
+.rb-admin-settings-msg--error   { color: #E53E3E; }
+.rb-admin-settings-msg--success { color: #38A169; }
+
+/* ============================================================
    USER MANAGEMENT
    ============================================================ */
 .rb-admin-users-section { margin-top: var(--space-12); }

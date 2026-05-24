@@ -605,6 +605,89 @@
     });
   })();
 
+  /* ── TopicScout Settings ───────────────────────────────── */
+  (function initTopicScoutSettings() {
+    var settingsSection = document.getElementById('rb-admin-topicscout-settings');
+    if (!settingsSection) return;
+
+    var fFree    = document.getElementById('ts-free-limit');
+    var fScholar = document.getElementById('ts-scholar-limit');
+    var fPro     = document.getElementById('ts-pro-limit');
+    var saveBtn  = document.getElementById('rb-topicscout-save');
+    var msgEl    = document.getElementById('rb-topicscout-msg');
+
+    var KEYS = {
+      free:    'topicscout_free_limit',
+      scholar: 'topicscout_scholar_limit',
+      pro:     'topicscout_pro_limit'
+    };
+    var DEFAULTS = { free: 3, scholar: 15, pro: 30 };
+
+    fetchSettings();
+
+    async function fetchSettings() {
+      var r = await rbSupabase
+        .from('settings')
+        .select('key, value')
+        .in('key', [KEYS.free, KEYS.scholar, KEYS.pro]);
+
+      if (r.error) {
+        console.error('settings fetch', r.error);
+        setMsg('Failed to load settings: ' + r.error.message, 'error');
+        return;
+      }
+
+      var map = {};
+      (r.data || []).forEach(function (row) { map[row.key] = row.value; });
+
+      fFree.value    = map[KEYS.free]    != null ? parseInt(map[KEYS.free],    10) : DEFAULTS.free;
+      fScholar.value = map[KEYS.scholar] != null ? parseInt(map[KEYS.scholar], 10) : DEFAULTS.scholar;
+      fPro.value     = map[KEYS.pro]     != null ? parseInt(map[KEYS.pro],     10) : DEFAULTS.pro;
+    }
+
+    saveBtn.addEventListener('click', async function () {
+      var freeVal    = parseInt(fFree.value,    10);
+      var scholarVal = parseInt(fScholar.value, 10);
+      var proVal     = parseInt(fPro.value,     10);
+
+      if (isNaN(freeVal)    || freeVal    < 0) { setMsg('Free limit must be a non-negative number.',    'error'); fFree.focus();    return; }
+      if (isNaN(scholarVal) || scholarVal < 0) { setMsg('Scholar limit must be a non-negative number.', 'error'); fScholar.focus(); return; }
+      if (isNaN(proVal)     || proVal     < 0) { setMsg('Pro limit must be a non-negative number.',     'error'); fPro.focus();     return; }
+
+      saveBtn.disabled    = true;
+      saveBtn.textContent = 'Saving…';
+
+      var now = new Date().toISOString();
+      var upserts = [
+        { key: KEYS.free,    value: String(freeVal),    updated_at: now },
+        { key: KEYS.scholar, value: String(scholarVal), updated_at: now },
+        { key: KEYS.pro,     value: String(proVal),     updated_at: now }
+      ];
+
+      var r = await rbSupabase
+        .from('settings')
+        .upsert(upserts, { onConflict: 'key' });
+
+      saveBtn.disabled    = false;
+      saveBtn.textContent = 'Save Settings';
+
+      if (r.error) {
+        console.error('settings save', r.error);
+        setMsg('Error: ' + r.error.message, 'error');
+        return;
+      }
+
+      setMsg('Settings saved.', 'success');
+    });
+
+    function setMsg(msg, type) {
+      msgEl.textContent = msg;
+      msgEl.className   = 'rb-admin-settings-msg'
+        + (type === 'error'   ? ' rb-admin-settings-msg--error'   : '')
+        + (type === 'success' ? ' rb-admin-settings-msg--success' : '');
+    }
+  })();
+
   /* ── Boot ────────────────────────────────────────────────── */
   init();
 })();

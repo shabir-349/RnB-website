@@ -149,6 +149,42 @@
 
       </section>
 
+      <!-- ── TopicScout Settings ──────────────────────────── -->
+      <section class="rb-admin-settings-section" id="rb-admin-topicscout-settings" aria-label="TopicScout Settings">
+
+        <div class="rb-admin-section-divider">
+          <h2 class="rb-admin-section-title">TopicScout Settings</h2>
+        </div>
+
+        <div class="rb-admin-settings-form">
+          <div class="rb-admin-settings-grid">
+
+            <div class="rb-admin-settings-group">
+              <label class="rb-admin-settings-label" for="ts-free-limit">Free user daily limit</label>
+              <input class="rb-admin-settings-input" id="ts-free-limit" type="number" min="0" step="1" value="3" />
+            </div>
+
+            <div class="rb-admin-settings-group">
+              <label class="rb-admin-settings-label" for="ts-scholar-limit">Scholar daily limit</label>
+              <input class="rb-admin-settings-input" id="ts-scholar-limit" type="number" min="0" step="1" value="15" />
+            </div>
+
+            <div class="rb-admin-settings-group">
+              <label class="rb-admin-settings-label" for="ts-pro-limit">Pro daily limit</label>
+              <input class="rb-admin-settings-input" id="ts-pro-limit" type="number" min="0" step="1" value="30" />
+            </div>
+
+          </div>
+
+          <div class="rb-admin-settings-actions">
+            <button type="button" class="rb-btn rb-btn--amber" id="rb-topicscout-save">Save Settings</button>
+          </div>
+
+          <p class="rb-admin-settings-msg" id="rb-topicscout-msg" aria-live="polite"></p>
+        </div>
+
+      </section>
+
       <!-- ── User Management ──────────────────────────────── -->
       <section class="rb-admin-users-section" id="rb-admin-users" aria-label="User Management">
 
