@@ -195,6 +195,53 @@
         </div>
       </div>
 
+      <!-- TopicScout AI -->
+      <section class="rb-dash-section rb-topicscout" id="rb-topicscout">
+        <div class="rb-dash-section__head">
+          <h2 class="rb-dash-section__title">&#10024; TopicScout AI</h2>
+        </div>
+        <p class="rb-dash-section__sub">Generate novel research topics tailored to your specialty</p>
+        <div class="rb-topicscout__form">
+          <div class="rb-topicscout__controls">
+            <div class="rb-topicscout__field">
+              <label class="rb-topicscout__label" for="rb-ts-specialty">Specialty</label>
+              <select id="rb-ts-specialty" class="rb-topicscout__select">
+                <option value="">Select a specialty&hellip;</option>
+                <option>Cardiology</option>
+                <option>Neurology</option>
+                <option>Oncology</option>
+                <option>Orthopedics</option>
+                <option>Pediatrics</option>
+                <option>Psychiatry</option>
+                <option>Dermatology</option>
+                <option>Ophthalmology</option>
+                <option>Radiology</option>
+                <option>General Surgery</option>
+                <option>Internal Medicine</option>
+                <option>Emergency Medicine</option>
+                <option>Obstetrics &amp; Gynecology</option>
+                <option>Nephrology</option>
+                <option>Pulmonology</option>
+                <option>Gastroenterology</option>
+                <option>Endocrinology</option>
+                <option>Hematology</option>
+                <option>Infectious Disease</option>
+                <option>Public Health</option>
+              </select>
+            </div>
+            <div class="rb-topicscout__field">
+              <label class="rb-topicscout__label" for="rb-ts-keywords">Keywords <span class="rb-topicscout__label-opt">(optional)</span></label>
+              <input type="text" id="rb-ts-keywords" class="rb-topicscout__input" placeholder="e.g. machine learning, LMIC, pediatric" />
+            </div>
+          </div>
+          <button type="button" id="rb-ts-btn" class="rb-btn rb-btn--amber">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>
+            Generate Topics
+          </button>
+        </div>
+        <div id="rb-ts-results" class="rb-topicscout__results" hidden></div>
+      </section>
+
       <!-- Quick Actions -->
       <section class="rb-dash-section">
         <div class="rb-dash-section__head">

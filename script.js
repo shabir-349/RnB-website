@@ -1623,6 +1623,100 @@
   })();
 
   /* ============================================================
+     TOPICSCOUT AI — generate research topics via OpenAI
+  ============================================================ */
+  (function initTopicScout() {
+    var btn     = document.getElementById('rb-ts-btn');
+    var selEl   = document.getElementById('rb-ts-specialty');
+    var kwEl    = document.getElementById('rb-ts-keywords');
+    var results = document.getElementById('rb-ts-results');
+    if (!btn || !selEl || !results) return;
+
+    function escHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function showErrorToast(msg) {
+      var existing = document.getElementById('rb-ts-err-toast');
+      if (existing) existing.remove();
+      var toast = document.createElement('div');
+      toast.id = 'rb-ts-err-toast';
+      toast.className = 'rb-toast rb-ts-toast--error rb-toast--fade';
+      toast.textContent = msg;
+      document.body.appendChild(toast);
+      toast.getBoundingClientRect(); // force reflow for transition
+      toast.classList.remove('rb-toast--fade');
+      setTimeout(function () {
+        toast.classList.add('rb-toast--fade');
+        setTimeout(function () { if (toast.parentNode) toast.remove(); }, 350);
+      }, 3500);
+    }
+
+    btn.addEventListener('click', async function () {
+      var specialty = selEl.value.trim();
+      if (!specialty) {
+        showErrorToast('Please select a specialty first.');
+        return;
+      }
+
+      var keywords = kwEl ? kwEl.value.trim() : '';
+      var userId = null;
+
+      if (typeof rbGetSession === 'function') {
+        var session = await rbGetSession();
+        if (session) userId = session.user.id;
+      }
+
+      btn.disabled = true;
+      results.removeAttribute('hidden');
+      results.innerHTML =
+        '<div class="rb-topicscout__loading">'
+        + '<div class="rb-spinner rb-spinner--sm rb-spinner--dark"></div>'
+        + '<span>Generating research topics…</span>'
+        + '</div>';
+
+      try {
+        var res = await fetch('/api/generate-topics', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ specialty: specialty, keywords: keywords || '', userId: userId })
+        });
+
+        var data = await res.json();
+        if (!res.ok || !data.success) throw new Error(data.error || 'Unknown error');
+
+        results.innerHTML = data.topics.map(function (t) {
+          return '<div class="rb-topic-card">'
+            + '<div class="rb-topic-card__header">'
+            +   '<h3 class="rb-topic-card__title">' + escHtml(t.title) + '</h3>'
+            +   '<span class="rb-topic-card__badge">' + escHtml(t.study_design) + '</span>'
+            + '</div>'
+            + '<div class="rb-topic-card__meta">'
+            +   '<div class="rb-topic-card__row">'
+            +     '<span class="rb-topic-card__row-label">Rationale</span>'
+            +     '<p class="rb-topic-card__row-text">' + escHtml(t.rationale) + '</p>'
+            +   '</div>'
+            +   '<div class="rb-topic-card__row">'
+            +     '<span class="rb-topic-card__row-label">Feasibility</span>'
+            +     '<p class="rb-topic-card__row-text">' + escHtml(t.feasibility) + '</p>'
+            +   '</div>'
+            + '</div>'
+            + '</div>';
+        }).join('');
+
+      } catch (err) {
+        results.setAttribute('hidden', '');
+        results.innerHTML = '';
+        showErrorToast((err && err.message) ? err.message : 'Failed to generate topics. Please try again.');
+      }
+
+      btn.disabled = false;
+    });
+  })();
+
+  /* ============================================================
      NAV AUTH STATE — swap Sign in / Join Free for user info
      Runs on every page except the dashboard (which has its own).
   ============================================================ */

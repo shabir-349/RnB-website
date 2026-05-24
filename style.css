@@ -4615,6 +4615,175 @@ p { line-height: 1.7; }
   .rb-auth-card { padding: var(--space-6); }
 }
 
+/* ============================================================
+   TOPICSCOUT AI
+   ============================================================ */
+.rb-topicscout__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.rb-topicscout__controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+@media (max-width: 600px) {
+  .rb-topicscout__controls { grid-template-columns: 1fr; }
+}
+
+.rb-topicscout__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.rb-topicscout__label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.rb-topicscout__label-opt {
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.rb-topicscout__select,
+.rb-topicscout__input {
+  width: 100%;
+  padding: 10px 14px;
+  background-color: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-1);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9375rem;
+  color: var(--text);
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.rb-topicscout__select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+.rb-topicscout__select:focus,
+.rb-topicscout__input:focus {
+  border-color: var(--amber-500);
+  box-shadow: 0 0 0 3px rgba(232, 163, 61, 0.15);
+}
+
+.rb-topicscout__input::placeholder { color: var(--ink-400); }
+
+.rb-topicscout__results {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.rb-topicscout__loading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  padding: var(--space-4) 0;
+}
+
+/* Smaller spinner variant for inline use */
+.rb-spinner--sm {
+  width: 20px;
+  height: 20px;
+  border-width: 2px;
+}
+
+/* Topic result cards */
+.rb-topic-card {
+  background-color: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2);
+  padding: var(--space-5) var(--space-6);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.rb-topic-card:hover {
+  border-color: var(--navy-700);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="dark"] .rb-topic-card:hover { border-color: var(--amber-500); }
+
+.rb-topic-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.rb-topic-card__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.4;
+  flex: 1;
+}
+
+.rb-topic-card__badge {
+  display: inline-block;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  padding: 3px 8px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  background-color: rgba(30, 58, 95, 0.08);
+  color: var(--navy-700);
+  border: 1px solid rgba(30, 58, 95, 0.14);
+}
+
+[data-theme="dark"] .rb-topic-card__badge {
+  background-color: rgba(232, 163, 61, 0.1);
+  color: var(--amber-400);
+  border-color: rgba(232, 163, 61, 0.22);
+}
+
+.rb-topic-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.rb-topic-card__row { display: flex; flex-direction: column; gap: var(--space-1); }
+
+.rb-topic-card__row-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--amber-500);
+}
+
+.rb-topic-card__row-text {
+  font-size: 0.9375rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* Error toast variant (paired with .rb-toast) */
+.rb-ts-toast--error { border-left-color: #EF4444; }
+
 @media (max-width: 767px) {
   .rb-auth-main {
     flex-direction: column;
