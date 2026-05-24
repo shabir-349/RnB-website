@@ -51,22 +51,36 @@
 
   /* ============================================================
      SMOOTH SCROLL — anchor links
+     Uses window.scrollTo with explicit offset so the position is
+     calculated after a short delay, letting images and dynamic
+     content finish rendering before we measure offsetTop.
   ============================================================ */
+  function scrollToTarget(target) {
+    var headerHeight = nav ? nav.offsetHeight : 80;
+    var targetTop = target.getBoundingClientRect().top + window.scrollY - headerHeight;
+    window.scrollTo({ top: targetTop, behavior: 'smooth' });
+  }
+
   document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
     anchor.addEventListener('click', function (e) {
-      const targetId = this.getAttribute('href');
+      var targetId = this.getAttribute('href');
       if (targetId === '#') return;
-      const target = document.querySelector(targetId);
+      var target = document.querySelector(targetId);
       if (!target) return;
 
       e.preventDefault();
 
-      // Close mobile menu if open
-      closeMobileMenu();
+      var menuIsOpen = mobileMenu && mobileMenu.classList.contains('rb-mobile-menu--open');
 
-      // scroll-margin-top on the target (set in CSS) handles the nav offset;
-      // scrollIntoView respects it automatically on all modern browsers.
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (menuIsOpen) {
+        // Close menu first, then scroll after menu animation settles
+        closeMobileMenu();
+        setTimeout(function () { scrollToTarget(target); }, 300);
+      } else {
+        // Delay lets page content (images, dynamic elements) fully render
+        // before we measure the target's position.
+        setTimeout(function () { scrollToTarget(target); }, 500);
+      }
     });
   });
 
