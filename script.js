@@ -1113,6 +1113,8 @@
           video.src = videoUrl;
           video.controls = true;
           video.autoplay = true;
+          video.setAttribute('playsinline', '');
+          video.setAttribute('webkit-playsinline', '');
           _player.appendChild(video);
         }
       }
