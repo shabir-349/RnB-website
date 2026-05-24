@@ -65,7 +65,7 @@ export default async function handler(req, res) {
             Log in to your dashboard to start exploring everything R&amp;B has to offer on your journey
             from first idea to residency CV.
           </p>
-          <a href="https://researchandbeyond.vercel.app/signin.html"
+          <a href="https://rn-b-website.vercel.app/signin.html"
              style="display:inline-block;background:#f5b730;color:#1a1a1a;text-decoration:none;
                     padding:14px 28px;border-radius:8px;font-weight:600;font-size:15px">
             Go to Dashboard →
@@ -100,7 +100,7 @@ export default async function handler(req, res) {
             Please resubmit your payment with a clear screenshot showing the transaction amount,
             reference number, and date.
           </p>
-          <a href="https://researchandbeyond.vercel.app/index.html#rb-pricing"
+          <a href="https://rn-b-website.vercel.app/payment.html"
              style="display:inline-block;background:#f5b730;color:#1a1a1a;text-decoration:none;
                     padding:14px 28px;border-radius:8px;font-weight:600;font-size:15px">
             Retry Payment →
