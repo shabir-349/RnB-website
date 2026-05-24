@@ -1119,6 +1119,23 @@
           var payment = result.data && result.data.length ? result.data[0] : null;
           applyPlanState(payment ? payment.status : null, payment ? payment.plan : null);
           loadLectures(getUserLectureLevel(payment));
+
+          if (payment && payment.status === 'pending') {
+            rbSupabase
+              .channel('rb-payment-watch-' + session.user.id)
+              .on('postgres_changes', {
+                event: 'UPDATE',
+                schema: 'public',
+                table: 'payments',
+                filter: 'user_id=eq.' + session.user.id
+              }, function (payload) {
+                var newStatus = payload.new && payload.new.status;
+                if (newStatus === 'approved' || newStatus === 'rejected') {
+                  window.location.reload();
+                }
+              })
+              .subscribe();
+          }
         });
     });
 
