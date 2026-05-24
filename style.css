@@ -4127,6 +4127,7 @@ p { line-height: 1.7; }
 
 .rb-admin-settings-msg--error   { color: #E53E3E; }
 .rb-admin-settings-msg--success { color: #38A169; }
+.rb-admin-settings-msg--info    { color: var(--amber-500); }
 
 /* ============================================================
    USER MANAGEMENT

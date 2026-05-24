@@ -625,15 +625,40 @@
 
     fetchSettings();
 
-    async function fetchSettings() {
-      var r = await rbSupabase
+    function delay(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+    function isJwtError(err) {
+      var msg = (err.message || err.hint || '').toLowerCase();
+      return msg.includes('jwt') || msg.includes('issued at') || msg.includes('clock') || msg.includes('token');
+    }
+
+    async function attemptFetch() {
+      return rbSupabase
         .from('settings')
         .select('key, value')
         .in('key', [KEYS.free, KEYS.scholar, KEYS.pro]);
+    }
+
+    function populateDefaults() {
+      fFree.value    = DEFAULTS.free;
+      fScholar.value = DEFAULTS.scholar;
+      fPro.value     = DEFAULTS.pro;
+    }
+
+    async function fetchSettings() {
+      var r = await attemptFetch();
+
+      // Retry once after 1 s if this looks like a clock-skew JWT error
+      if (r.error && isJwtError(r.error)) {
+        console.warn('settings fetch: JWT clock error, retrying in 1 s…', r.error.message);
+        await delay(1000);
+        r = await attemptFetch();
+      }
 
       if (r.error) {
         console.error('settings fetch', r.error);
-        setMsg('Failed to load settings: ' + r.error.message, 'error');
+        populateDefaults();
+        setMsg('Could not load settings — showing defaults. You can still save.', 'info');
         return;
       }
 
