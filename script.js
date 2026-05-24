@@ -1626,12 +1626,13 @@
      TOPICSCOUT AI — generate research topics via OpenAI
   ============================================================ */
   (function initTopicScout() {
-    var btn     = document.getElementById('rb-ts-btn');
-    var selEl   = document.getElementById('rb-ts-specialty');
-    var kwEl    = document.getElementById('rb-ts-keywords');
-    var results = document.getElementById('rb-ts-results');
-    var quotaEl = document.getElementById('rb-ts-quota');
-    if (!btn || !selEl || !results) return;
+    var btn      = document.getElementById('rb-ts-btn');
+    var popEl    = document.getElementById('rb-ts-population');
+    var intEl    = document.getElementById('rb-ts-intervention');
+    var designEl = document.getElementById('rb-ts-study-design');
+    var results  = document.getElementById('rb-ts-results');
+    var quotaEl  = document.getElementById('rb-ts-quota');
+    if (!btn || !popEl || !designEl || !results) return;
 
     function escHtml(str) {
       return String(str || '')
@@ -1704,14 +1705,39 @@
 
     loadQuota();
 
-    btn.addEventListener('click', async function () {
-      var specialty = selEl.value.trim();
-      if (!specialty) {
-        showErrorToast('Please select a specialty first.');
-        return;
-      }
+    // Clear inline errors on correction
+    popEl.addEventListener('input', function () {
+      var e = document.getElementById('rb-ts-pop-err');
+      if (e) e.setAttribute('hidden', '');
+      popEl.classList.remove('rb-ts-input--err');
+    });
+    designEl.addEventListener('change', function () {
+      var e = document.getElementById('rb-ts-design-err');
+      if (e) e.setAttribute('hidden', '');
+      designEl.classList.remove('rb-ts-input--err');
+    });
 
-      var keywords = kwEl ? kwEl.value.trim() : '';
+    btn.addEventListener('click', async function () {
+      var population   = popEl.value.trim();
+      var intervention = intEl ? intEl.value.trim() : '';
+      var studyDesign  = designEl.value;
+
+      // Inline validation
+      var valid = true;
+      var popErr    = document.getElementById('rb-ts-pop-err');
+      var designErr = document.getElementById('rb-ts-design-err');
+      if (!population) {
+        if (popErr) popErr.removeAttribute('hidden');
+        popEl.classList.add('rb-ts-input--err');
+        valid = false;
+      }
+      if (!studyDesign) {
+        if (designErr) designErr.removeAttribute('hidden');
+        designEl.classList.add('rb-ts-input--err');
+        valid = false;
+      }
+      if (!valid) return;
+
       var userId = null;
 
       if (typeof rbGetSession === 'function') {
@@ -1731,7 +1757,7 @@
         var res = await fetch('/api/generate-topics', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ specialty: specialty, keywords: keywords || '', userId: userId })
+          body: JSON.stringify({ population: population, intervention: intervention || '', studyDesign: studyDesign, userId: userId })
         });
 
         var data = await res.json();
@@ -1760,8 +1786,12 @@
             +     '<p class="rb-topic-card__row-text">' + escHtml(t.rationale) + '</p>'
             +   '</div>'
             +   '<div class="rb-topic-card__row">'
-            +     '<span class="rb-topic-card__row-label">Feasibility</span>'
-            +     '<p class="rb-topic-card__row-text">' + escHtml(t.feasibility) + '</p>'
+            +     '<span class="rb-topic-card__row-label">Novelty</span>'
+            +     '<p class="rb-topic-card__row-text">' + escHtml(t.novelty) + '</p>'
+            +   '</div>'
+            +   '<div class="rb-topic-card__row">'
+            +     '<span class="rb-topic-card__row-label">Knowledge Gap</span>'
+            +     '<p class="rb-topic-card__row-text">' + escHtml(t.knowledge_gap) + '</p>'
             +   '</div>'
             + '</div>'
             + '</div>';

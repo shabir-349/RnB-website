@@ -204,34 +204,28 @@
         <div class="rb-topicscout__form">
           <div class="rb-topicscout__controls">
             <div class="rb-topicscout__field">
-              <label class="rb-topicscout__label" for="rb-ts-specialty">Specialty</label>
-              <select id="rb-ts-specialty" class="rb-topicscout__select">
-                <option value="">Select a specialty&hellip;</option>
-                <option>Cardiology</option>
-                <option>Neurology</option>
-                <option>Oncology</option>
-                <option>Orthopedics</option>
-                <option>Pediatrics</option>
-                <option>Psychiatry</option>
-                <option>Dermatology</option>
-                <option>Ophthalmology</option>
-                <option>Radiology</option>
-                <option>General Surgery</option>
-                <option>Internal Medicine</option>
-                <option>Emergency Medicine</option>
-                <option>Obstetrics &amp; Gynecology</option>
-                <option>Nephrology</option>
-                <option>Pulmonology</option>
-                <option>Gastroenterology</option>
-                <option>Endocrinology</option>
-                <option>Hematology</option>
-                <option>Infectious Disease</option>
-                <option>Public Health</option>
-              </select>
+              <label class="rb-topicscout__label" for="rb-ts-population">Population</label>
+              <input type="text" id="rb-ts-population" class="rb-topicscout__input" placeholder="e.g. diabetic patients over 60, pregnant women in rural areas" autocomplete="off" />
+              <span id="rb-ts-pop-err" class="rb-ts-field-err" hidden>Population is required.</span>
             </div>
             <div class="rb-topicscout__field">
-              <label class="rb-topicscout__label" for="rb-ts-keywords">Keywords <span class="rb-topicscout__label-opt">(optional)</span></label>
-              <input type="text" id="rb-ts-keywords" class="rb-topicscout__input" placeholder="e.g. machine learning, LMIC, pediatric" />
+              <label class="rb-topicscout__label" for="rb-ts-intervention">Intervention <span class="rb-topicscout__label-opt">(optional)</span></label>
+              <input type="text" id="rb-ts-intervention" class="rb-topicscout__input" placeholder="e.g. telemedicine, metformin, CBT" autocomplete="off" />
+            </div>
+            <div class="rb-topicscout__field rb-topicscout__field--full">
+              <label class="rb-topicscout__label" for="rb-ts-study-design">Study Design</label>
+              <select id="rb-ts-study-design" class="rb-topicscout__select">
+                <option value="">Select a study design&hellip;</option>
+                <option value="LTE">LTE</option>
+                <option value="Narrative review">Narrative review</option>
+                <option value="Cross-sectional study">Cross-sectional study</option>
+                <option value="Cohort study">Cohort study</option>
+                <option value="Case control study">Case control study</option>
+                <option value="RCT">RCT</option>
+                <option value="Systematic review and meta-analysis">Systematic review and meta-analysis</option>
+                <option value="Network meta-analysis">Network meta-analysis</option>
+              </select>
+              <span id="rb-ts-design-err" class="rb-ts-field-err" hidden>Study Design is required.</span>
             </div>
           </div>
           <button type="button" id="rb-ts-btn" class="rb-btn rb-btn--amber">

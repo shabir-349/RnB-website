@@ -4755,6 +4755,22 @@ p { line-height: 1.7; }
 
 .rb-topicscout__input::placeholder { color: var(--ink-400); }
 
+.rb-topicscout__field--full { grid-column: 1 / -1; }
+
+.rb-ts-field-err {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #C53030;
+  margin-top: var(--space-1);
+}
+
+[data-theme="dark"] .rb-ts-field-err { color: #FC8181; }
+
+.rb-ts-input--err {
+  border-color: #C53030 !important;
+  box-shadow: 0 0 0 3px rgba(197, 48, 48, .12) !important;
+}
+
 .rb-topicscout__results {
   display: flex;
   flex-direction: column;

@@ -9,10 +9,10 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, error: 'Method not allowed' });
   }
 
-  const { specialty, keywords, userId } = req.body || {};
+  const { population, intervention, studyDesign, userId } = req.body || {};
 
-  if (!specialty) {
-    return res.status(400).json({ success: false, error: 'Missing required field: specialty' });
+  if (!population || !studyDesign) {
+    return res.status(400).json({ success: false, error: 'Missing required fields: population and studyDesign' });
   }
 
   if (!process.env.OPENAI_API_KEY) {
@@ -73,8 +73,8 @@ export default async function handler(req, res) {
     }
   }
 
-  const systemPrompt = `You are a medical research topic advisor. Given a specialty and optional keywords, generate exactly 3 novel, specific research topic suggestions. Each topic must include: title (specific and detailed, not generic), study_design (cross-sectional, cohort, case-control, RCT, systematic review, or meta-analysis), rationale (one sentence on why this matters and what gap it fills), and feasibility (one sentence on how a medical student could conduct this). Avoid generic topics like 'prevalence of diabetes' or 'effects of smoking'. Focus on underexplored angles, emerging trends, and novel combinations. Return ONLY valid JSON array with 3 objects, no markdown, no extra text.`;
-  const userMessage = `Specialty: ${specialty}. Additional interests: ${keywords || 'none'}`;
+  const systemPrompt = `You are a medical research topic advisor. Given a population, an optional intervention, and a study design, generate exactly 3 novel, specific research topic suggestions using the specified study design. Each topic must include: title (specific, detailed, using the given study design), study_design (echo the provided study design exactly), rationale (one sentence on why this matters), novelty (one sentence on what makes this topic novel and unexplored), and knowledge_gap (one sentence on what specific gap in current literature this addresses). Avoid generic topics. Focus on underexplored angles and emerging trends. Return ONLY valid JSON array with 3 objects containing title, study_design, rationale, novelty, and knowledge_gap — no markdown, no extra text.`;
+  const userMessage = `Population: ${population}. Intervention: ${intervention || 'none specified'}. Study Design: ${studyDesign}`;
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -123,8 +123,8 @@ export default async function handler(req, res) {
       try {
         await sbPost(SB_URL, SB_KEY, 'topic_generations', {
           user_id: userId,
-          specialty: specialty,
-          keywords: keywords || null,
+          specialty: population,
+          keywords: intervention || null,
           response: JSON.stringify(topics),
         });
         usageCount++;
