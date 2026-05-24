@@ -1824,12 +1824,26 @@ p { line-height: 1.7; }
   gap: 6px;
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--text-muted);
+  color: var(--amber-500);
   text-decoration: none;
   transition: color var(--transition);
 }
 
-.rb-auth-back:hover { color: var(--amber-500); }
+.rb-auth-back:hover { color: var(--amber-400); }
+
+.rb-payment-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--amber-500);
+  text-decoration: none;
+  transition: color var(--transition);
+  margin-bottom: var(--space-6);
+}
+
+.rb-payment-back:hover { color: var(--amber-400); }
 
 .rb-auth-wrap {
   width: 100%;
@@ -4599,6 +4613,20 @@ p { line-height: 1.7; }
 
 @media (max-width: 359px) {
   .rb-auth-card { padding: var(--space-6); }
+}
+
+@media (max-width: 767px) {
+  .rb-auth-main {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding-top: var(--space-6);
+  }
+  .rb-auth-back {
+    position: static;
+    align-self: flex-start;
+    margin-bottom: var(--space-6);
+  }
 }
 
 @media (min-width: 400px) and (max-width: 767px) {
