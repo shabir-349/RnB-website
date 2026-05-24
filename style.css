@@ -4854,6 +4854,46 @@ p { line-height: 1.7; }
 /* Error toast variant (paired with .rb-toast) */
 .rb-ts-toast--error { border-left-color: #EF4444; }
 
+/* ── Quota display ────────────────────────────────────── */
+.rb-ts-quota {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  padding: 5px 12px;
+  border-radius: var(--radius-1);
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  display: inline-block;
+  margin-top: var(--space-2);
+  transition: color var(--transition), border-color var(--transition), background var(--transition);
+}
+
+.rb-ts-quota--warning {
+  color: #B45309;
+  border-color: var(--amber-500);
+  background: rgba(232, 163, 61, .08);
+}
+
+[data-theme="dark"] .rb-ts-quota--warning { color: var(--amber-400); }
+
+.rb-ts-quota--depleted {
+  color: #C53030;
+  border-color: #FEB2B2;
+  background: rgba(229, 62, 62, .07);
+}
+
+[data-theme="dark"] .rb-ts-quota--depleted {
+  color: #FC8181;
+  border-color: rgba(229, 62, 62, .4);
+  background: rgba(229, 62, 62, .12);
+}
+
+#rb-ts-btn:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 @media (max-width: 767px) {
   .rb-auth-main {
     flex-direction: column;

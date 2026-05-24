@@ -1630,6 +1630,7 @@
     var selEl   = document.getElementById('rb-ts-specialty');
     var kwEl    = document.getElementById('rb-ts-keywords');
     var results = document.getElementById('rb-ts-results');
+    var quotaEl = document.getElementById('rb-ts-quota');
     if (!btn || !selEl || !results) return;
 
     function escHtml(str) {
@@ -1653,6 +1654,55 @@
         setTimeout(function () { if (toast.parentNode) toast.remove(); }, 350);
       }, 3500);
     }
+
+    var PLAN_LIMIT_KEY = {
+      free:    'topicscout_free_limit',
+      scholar: 'topicscout_scholar_limit',
+      pro:     'topicscout_pro_limit'
+    };
+    var PLAN_DEFAULTS = { free: 3, scholar: 15, pro: 30 };
+
+    function renderQuota(count, limit) {
+      if (!quotaEl) return;
+      var remaining = Math.max(0, limit - count);
+      var depleted  = remaining === 0;
+      quotaEl.removeAttribute('hidden');
+      quotaEl.className = 'rb-ts-quota'
+        + (depleted ? ' rb-ts-quota--depleted' : (remaining === 1 ? ' rb-ts-quota--warning' : ''));
+      quotaEl.textContent = depleted
+        ? 'Daily limit reached. Upgrade your plan for more generations.'
+        : remaining + ' / ' + limit + ' generation' + (limit === 1 ? '' : 's') + ' remaining today';
+      btn.disabled = depleted;
+    }
+
+    async function loadQuota() {
+      if (!quotaEl || typeof rbGetSession !== 'function' || typeof rbSupabase === 'undefined') return;
+      var session = await rbGetSession();
+      if (!session) return;
+      var uid = session.user.id;
+
+      var profileRes = await rbSupabase.from('profiles').select('plan').eq('user_id', uid).maybeSingle();
+      var plan = (profileRes.data && profileRes.data.plan) ? profileRes.data.plan : 'free';
+
+      var limitKey = PLAN_LIMIT_KEY[plan] || PLAN_LIMIT_KEY.free;
+      var settingRes = await rbSupabase.from('settings').select('value').eq('key', limitKey).maybeSingle();
+      var limit = settingRes.data
+        ? (parseInt(settingRes.data.value, 10) || PLAN_DEFAULTS[plan] || 3)
+        : (PLAN_DEFAULTS[plan] || 3);
+
+      var todayUTC = new Date();
+      todayUTC.setUTCHours(0, 0, 0, 0);
+      var countRes = await rbSupabase
+        .from('topic_generations')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', uid)
+        .gte('created_at', todayUTC.toISOString());
+      var count = countRes.count != null ? countRes.count : 0;
+
+      renderQuota(count, limit);
+    }
+
+    loadQuota();
 
     btn.addEventListener('click', async function () {
       var specialty = selEl.value.trim();
@@ -1685,7 +1735,18 @@
         });
 
         var data = await res.json();
+
+        if (res.status === 429) {
+          results.setAttribute('hidden', '');
+          results.innerHTML = '';
+          var u = data.usage || {};
+          renderQuota(u.count != null ? u.count : 999, u.limit != null ? u.limit : 999);
+          return;
+        }
+
         if (!res.ok || !data.success) throw new Error(data.error || 'Unknown error');
+
+        if (data.usage) renderQuota(data.usage.count, data.usage.limit);
 
         results.innerHTML = data.topics.map(function (t) {
           return '<div class="rb-topic-card">'
@@ -1712,7 +1773,9 @@
         showErrorToast((err && err.message) ? err.message : 'Failed to generate topics. Please try again.');
       }
 
-      btn.disabled = false;
+      if (!quotaEl || !quotaEl.classList.contains('rb-ts-quota--depleted')) {
+        btn.disabled = false;
+      }
     });
   })();
 
