@@ -1695,7 +1695,7 @@
       todayUTC.setUTCHours(0, 0, 0, 0);
       var countRes = await rbSupabase
         .from('topic_generations')
-        .select('id', { count: 'exact', head: true })
+        .select('user_id', { count: 'exact', head: true })
         .eq('user_id', uid)
         .gte('created_at', todayUTC.toISOString());
       var count = countRes.count != null ? countRes.count : 0;

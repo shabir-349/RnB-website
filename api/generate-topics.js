@@ -1,4 +1,4 @@
-// Requires Vercel env vars: OPENAI_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_KEY
+// Requires Vercel env vars: OPENAI_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
 
 const systemPrompt = `\`\`\`text
 You are CRTGE, a clinical research topic generator. You output ONLY valid JSON matching the schema below. No prose, no markdown, no code fences. First character \`{\`, last character \`}\`.
@@ -205,7 +205,7 @@ export default async function handler(req, res) {
   }
 
   const SB_URL = process.env.SUPABASE_URL;
-  const SB_KEY = process.env.SUPABASE_SERVICE_KEY;
+  const SB_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const canLimit = !!(userId && SB_URL && SB_KEY);
 
   const DEFAULTS = { free: 3, scholar: 15, pro: 30 };
@@ -240,7 +240,7 @@ export default async function handler(req, res) {
       const genRows = await sbGet(SB_URL, SB_KEY, 'topic_generations', {
         user_id: `eq.${userId}`,
         created_at: `gte.${todayUTC.toISOString()}`,
-        select: 'id',
+        select: 'user_id',
       });
       usageCount = genRows.length;
 
@@ -324,9 +324,7 @@ export default async function handler(req, res) {
       try {
         await sbPost(SB_URL, SB_KEY, 'topic_generations', {
           user_id: userId,
-          specialty: population,
-          keywords: intervention || null,
-          response: JSON.stringify(aiResponse),
+          created_at: new Date().toISOString(),
         });
         usageCount++;
       } catch (err) {
