@@ -186,10 +186,11 @@ HARD RULES (read these last, apply on every output)
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method === 'GET') return handleGetQuota(req, res);
   if (req.method !== 'POST') {
     return res.status(405).json({ success: false, error: 'Method not allowed' });
   }
@@ -345,6 +346,59 @@ export default async function handler(req, res) {
   } catch (err) {
     console.error('generate-topics error:', err);
     return res.status(500).json({ success: false, error: err.message });
+  }
+}
+
+/* ── GET /api/generate-topics?userId=… → quota info ──────── */
+async function handleGetQuota(req, res) {
+  const userId = req.query && req.query.userId;
+  const SB_URL = process.env.SUPABASE_URL;
+  const SB_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!userId || !SB_URL || !SB_KEY) {
+    return res.status(200).json({ usage: null });
+  }
+
+  const PLAN_DEFAULTS = { free: 3, scholar: 15, pro: 30 };
+  const PLAN_LIMIT_KEY = {
+    free:    'topicscout_free_limit',
+    scholar: 'topicscout_scholar_limit',
+    pro:     'topicscout_pro_limit',
+  };
+
+  try {
+    const profileRows = await sbGet(SB_URL, SB_KEY, 'profiles', {
+      user_id: `eq.${userId}`,
+      select: 'plan',
+      limit: '1',
+    });
+    const plan = profileRows[0]?.plan || 'free';
+
+    const limitKey = PLAN_LIMIT_KEY[plan] || PLAN_LIMIT_KEY.free;
+    const settingsRows = await sbGet(SB_URL, SB_KEY, 'settings', {
+      key: `eq.${limitKey}`,
+      select: 'value',
+    });
+    const rawVal = settingsRows[0]?.value;
+    const limit = (rawVal != null && !isNaN(parseInt(rawVal, 10)))
+      ? parseInt(rawVal, 10)
+      : (PLAN_DEFAULTS[plan] || PLAN_DEFAULTS.free);
+
+    const todayUTC = new Date();
+    todayUTC.setUTCHours(0, 0, 0, 0);
+    const genRows = await sbGet(SB_URL, SB_KEY, 'topic_generations', {
+      user_id: `eq.${userId}`,
+      created_at: `gte.${todayUTC.toISOString()}`,
+      select: 'user_id',
+    });
+    const count = genRows.length;
+
+    return res.status(200).json({
+      usage: { count, limit, remaining: Math.max(0, limit - count) },
+    });
+  } catch (err) {
+    console.error('quota-get error:', err);
+    return res.status(200).json({ usage: null });
   }
 }
 

@@ -1656,13 +1656,6 @@
       }, 3500);
     }
 
-    var PLAN_LIMIT_KEY = {
-      free:    'topicscout_free_limit',
-      scholar: 'topicscout_scholar_limit',
-      pro:     'topicscout_pro_limit'
-    };
-    var PLAN_DEFAULTS = { free: 3, scholar: 15, pro: 30 };
-
     function renderQuota(count, limit) {
       if (!quotaEl) return;
       var remaining = Math.max(0, limit - count);
@@ -1677,30 +1670,21 @@
     }
 
     async function loadQuota() {
-      if (!quotaEl || typeof rbGetSession !== 'function' || typeof rbSupabase === 'undefined') return;
-      var session = await rbGetSession();
+      if (!quotaEl) return;
+      var session = null;
+      try {
+        session = typeof rbGetSession === 'function' ? await rbGetSession() : null;
+      } catch (e) { return; }
       if (!session) return;
-      var uid = session.user.id;
 
-      var profileRes = await rbSupabase.from('profiles').select('plan').eq('user_id', uid).maybeSingle();
-      var plan = (profileRes.data && profileRes.data.plan) ? profileRes.data.plan : 'free';
-
-      var limitKey = PLAN_LIMIT_KEY[plan] || PLAN_LIMIT_KEY.free;
-      var settingRes = await rbSupabase.from('settings').select('value').eq('key', limitKey).maybeSingle();
-      var limit = settingRes.data
-        ? (parseInt(settingRes.data.value, 10) || PLAN_DEFAULTS[plan] || 3)
-        : (PLAN_DEFAULTS[plan] || 3);
-
-      var todayUTC = new Date();
-      todayUTC.setUTCHours(0, 0, 0, 0);
-      var countRes = await rbSupabase
-        .from('topic_generations')
-        .select('user_id', { count: 'exact', head: true })
-        .eq('user_id', uid)
-        .gte('created_at', todayUTC.toISOString());
-      var count = countRes.count != null ? countRes.count : 0;
-
-      renderQuota(count, limit);
+      try {
+        var res = await fetch('/api/generate-topics?userId=' + encodeURIComponent(session.user.id));
+        if (!res.ok) return;
+        var data = await res.json();
+        if (data && data.usage) renderQuota(data.usage.count, data.usage.limit);
+      } catch (e) {
+        // Non-critical: quota display updates after first generation
+      }
     }
 
     loadQuota();
