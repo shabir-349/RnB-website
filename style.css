@@ -4868,6 +4868,83 @@ p { line-height: 1.7; }
   line-height: 1.6;
 }
 
+/* Scores row — side-by-side feasibility + novelty */
+.rb-topic-card__scores {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.rb-topic-card__score-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.rb-topic-card__score {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--navy-700);
+  letter-spacing: -0.01em;
+}
+
+[data-theme="dark"] .rb-topic-card__score { color: var(--amber-400); }
+
+/* Difficulty badge */
+.rb-topic-card__diff-badge {
+  display: inline-block;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  padding: 3px 9px;
+  border: 1px solid transparent;
+}
+
+.rb-topic-card__diff-badge--beginner {
+  background-color: rgba(16, 128, 61, 0.1);
+  color: #10803D;
+  border-color: rgba(16, 128, 61, 0.22);
+}
+
+[data-theme="dark"] .rb-topic-card__diff-badge--beginner {
+  background-color: rgba(52, 211, 153, 0.1);
+  color: #34D399;
+  border-color: rgba(52, 211, 153, 0.25);
+}
+
+.rb-topic-card__diff-badge--intermediate {
+  background-color: rgba(180, 83, 9, 0.1);
+  color: #B45309;
+  border-color: rgba(232, 163, 61, 0.3);
+}
+
+[data-theme="dark"] .rb-topic-card__diff-badge--intermediate {
+  background-color: rgba(232, 163, 61, 0.1);
+  color: var(--amber-400);
+  border-color: rgba(232, 163, 61, 0.28);
+}
+
+.rb-topic-card__diff-badge--advanced {
+  background-color: rgba(197, 48, 48, 0.09);
+  color: #C53030;
+  border-color: rgba(229, 62, 62, 0.22);
+}
+
+[data-theme="dark"] .rb-topic-card__diff-badge--advanced {
+  background-color: rgba(229, 62, 62, 0.1);
+  color: #FC8181;
+  border-color: rgba(229, 62, 62, 0.3);
+}
+
+/* Red flags text */
+.rb-topic-card__red-flags {
+  color: #C53030 !important;
+}
+
+[data-theme="dark"] .rb-topic-card__red-flags { color: #FC8181 !important; }
+
 /* Error toast variant (paired with .rb-toast) */
 .rb-ts-toast--error { border-left-color: #EF4444; }
 

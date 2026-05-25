@@ -1775,10 +1775,14 @@
         if (data.usage) renderQuota(data.usage.count, data.usage.limit);
 
         results.innerHTML = data.topics.map(function (t) {
+          var secOutcomes = Array.isArray(t.secondary_outcomes) ? t.secondary_outcomes.join(', ') : escHtml(t.secondary_outcomes || '');
+          var dataSources = Array.isArray(t.data_sources) ? t.data_sources.join(', ') : escHtml(t.data_sources || '');
+          var redFlags    = Array.isArray(t.red_flags) ? t.red_flags : [];
+          var diffLevel   = (t.difficulty_level || '').toLowerCase();
           return '<div class="rb-topic-card">'
             + '<div class="rb-topic-card__header">'
             +   '<h3 class="rb-topic-card__title">' + escHtml(t.title) + '</h3>'
-            +   '<span class="rb-topic-card__badge">' + escHtml(t.study_design) + '</span>'
+            +   '<span class="rb-topic-card__badge">' + escHtml(studyDesign) + '</span>'
             + '</div>'
             + '<div class="rb-topic-card__meta">'
             +   '<div class="rb-topic-card__row">'
@@ -1786,13 +1790,45 @@
             +     '<p class="rb-topic-card__row-text">' + escHtml(t.rationale) + '</p>'
             +   '</div>'
             +   '<div class="rb-topic-card__row">'
-            +     '<span class="rb-topic-card__row-label">Novelty</span>'
-            +     '<p class="rb-topic-card__row-text">' + escHtml(t.novelty) + '</p>'
+            +     '<span class="rb-topic-card__row-label">Evidence Gap</span>'
+            +     '<p class="rb-topic-card__row-text">' + escHtml(t.evidence_gap) + '</p>'
             +   '</div>'
             +   '<div class="rb-topic-card__row">'
-            +     '<span class="rb-topic-card__row-label">Knowledge Gap</span>'
-            +     '<p class="rb-topic-card__row-text">' + escHtml(t.knowledge_gap) + '</p>'
+            +     '<span class="rb-topic-card__row-label">Primary Outcome</span>'
+            +     '<p class="rb-topic-card__row-text">' + escHtml(t.primary_outcome) + '</p>'
             +   '</div>'
+            +   '<div class="rb-topic-card__row">'
+            +     '<span class="rb-topic-card__row-label">Secondary Outcomes</span>'
+            +     '<p class="rb-topic-card__row-text">' + escHtml(secOutcomes) + '</p>'
+            +   '</div>'
+            +   '<div class="rb-topic-card__scores">'
+            +     '<div class="rb-topic-card__score-item">'
+            +       '<span class="rb-topic-card__row-label">Feasibility Score</span>'
+            +       '<span class="rb-topic-card__score">' + escHtml(String(t.feasibility_score != null ? t.feasibility_score : '—')) + '/10</span>'
+            +     '</div>'
+            +     '<div class="rb-topic-card__score-item">'
+            +       '<span class="rb-topic-card__row-label">Novelty Score</span>'
+            +       '<span class="rb-topic-card__score">' + escHtml(String(t.novelty_score != null ? t.novelty_score : '—')) + '/10</span>'
+            +     '</div>'
+            +   '</div>'
+            +   '<div class="rb-topic-card__row">'
+            +     '<span class="rb-topic-card__row-label">Data Sources</span>'
+            +     '<p class="rb-topic-card__row-text">' + escHtml(dataSources) + '</p>'
+            +   '</div>'
+            +   '<div class="rb-topic-card__row">'
+            +     '<span class="rb-topic-card__row-label">Difficulty Level</span>'
+            +     '<span class="rb-topic-card__diff-badge rb-topic-card__diff-badge--' + escHtml(diffLevel) + '">' + escHtml(t.difficulty_level || '') + '</span>'
+            +   '</div>'
+            +   '<div class="rb-topic-card__row">'
+            +     '<span class="rb-topic-card__row-label">Estimated Timeline</span>'
+            +     '<p class="rb-topic-card__row-text">' + escHtml(String(t.estimated_timeline_months != null ? t.estimated_timeline_months : '—')) + ' months</p>'
+            +   '</div>'
+            + (redFlags.length > 0
+            ?   '<div class="rb-topic-card__row">'
+            +     '<span class="rb-topic-card__row-label">Red Flags</span>'
+            +     '<p class="rb-topic-card__row-text rb-topic-card__red-flags">' + escHtml(redFlags.join(', ')) + '</p>'
+            +   '</div>'
+            : '')
             + '</div>'
             + '</div>';
         }).join('');
