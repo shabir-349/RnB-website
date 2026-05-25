@@ -108,7 +108,9 @@ export default async function handler(req, res) {
 
     let topics;
     try {
-      topics = JSON.parse(raw);
+      const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
+      const parsed = JSON.parse(cleaned);
+      topics = Array.isArray(parsed) ? parsed : (Array.isArray(parsed.topics) ? parsed.topics : null);
     } catch {
       console.error('JSON parse error. Raw response:', raw);
       return res.status(502).json({ success: false, error: 'AI returned invalid JSON' });
@@ -117,6 +119,20 @@ export default async function handler(req, res) {
     if (!Array.isArray(topics) || topics.length === 0) {
       return res.status(502).json({ success: false, error: 'AI returned unexpected format' });
     }
+
+    topics = topics.map(t => ({
+      ...t,
+      rationale:                 t.rationale                 ?? 'Not available',
+      evidence_gap:              t.evidence_gap              ?? 'Not available',
+      novelty_score:             t.novelty_score             ?? 0,
+      feasibility_score:         t.feasibility_score         ?? 0,
+      primary_outcome:           t.primary_outcome           ?? 'Not available',
+      secondary_outcomes:        Array.isArray(t.secondary_outcomes)  ? t.secondary_outcomes  : [],
+      data_sources:              Array.isArray(t.data_sources)         ? t.data_sources         : [],
+      difficulty_level:          t.difficulty_level          ?? 'Not specified',
+      estimated_timeline_months: t.estimated_timeline_months ?? 0,
+      red_flags:                 Array.isArray(t.red_flags)            ? t.red_flags            : [],
+    }));
 
     // Record this generation
     if (canLimit) {
