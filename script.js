@@ -1770,68 +1770,169 @@
           return;
         }
 
-        if (!res.ok || !data.success) throw new Error(data.error || 'Unknown error');
+        if (!res.ok || (!data.success && !Array.isArray(data.candidates))) throw new Error(data.error || 'Unknown error');
 
         if (data.usage) renderQuota(data.usage.count, data.usage.limit);
 
-        results.innerHTML = data.topics.map(function (t) {
-          var secOutcomes = Array.isArray(t.secondary_outcomes) ? t.secondary_outcomes.join(', ') : escHtml(t.secondary_outcomes || '');
-          var dataSources = Array.isArray(t.data_sources) ? t.data_sources.join(', ') : escHtml(t.data_sources || '');
-          var redFlags    = Array.isArray(t.red_flags) ? t.red_flags : [];
-          var diffLevel   = (t.difficulty_level || '').toLowerCase();
-          return '<div class="rb-topic-card">'
-            + '<div class="rb-topic-card__header">'
-            +   '<h3 class="rb-topic-card__title">' + escHtml(t.title) + '</h3>'
-            +   '<span class="rb-topic-card__badge">' + escHtml(studyDesign) + '</span>'
+        var candidates = Array.isArray(data.candidates) ? data.candidates
+          : (Array.isArray(data.topics) ? data.topics : []);
+        var meta = data.meta || {};
+
+        // Meta banner
+        var metaInfoHtml = '';
+        var candidateCount = meta.total_candidates != null ? meta.total_candidates : candidates.length;
+        if (candidateCount > 0) {
+          metaInfoHtml += '<p class="rb-ts-meta-info">' + candidateCount
+            + ' candidate' + (candidateCount === 1 ? '' : 's') + ' generated</p>';
+        }
+        if (meta.under_target) {
+          metaInfoHtml += '<div class="rb-ts-under-target-banner">'
+            + '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>'
+            + '<span>' + escHtml(meta.under_target_reason || 'Fewer candidates than requested were generated.') + '</span>'
+            + '</div>';
+        }
+
+        function probClass(level) {
+          var l = (level || '').toLowerCase();
+          if (l === 'very_low' || l === 'low') return 'rb-topic-card__prob-badge--green';
+          if (l === 'moderate') return 'rb-topic-card__prob-badge--amber';
+          return 'rb-topic-card__prob-badge--red';
+        }
+        function fmtLevel(level) { return (level || '').replace(/_/g, ' '); }
+
+        var cardsHtml = candidates.map(function (c, idx) {
+          var bodyId = 'rb-tc-body-' + idx;
+          var score = c.composite_score != null ? c.composite_score : '—';
+          var pubVal = (c.estimated_publication_value || '').toLowerCase();
+          var pubValLabels = { low: 'Low', moderate: 'Moderate', high: 'High', very_high: 'Very High' };
+
+          // MA classification badge (hidden when "not_applicable")
+          var maHtml = '';
+          if (c.ma_classification && c.ma_classification !== 'not_applicable') {
+            maHtml = '<span class="rb-topic-card__badge rb-topic-card__badge--ma" title="'
+              + escHtml(c.ma_classification_rationale || '') + '">'
+              + escHtml(c.ma_classification.replace(/_/g, ' ')) + '</span>';
+          }
+
+          var pubValHtml = pubVal
+            ? '<span class="rb-topic-card__pubval rb-topic-card__pubval--' + escHtml(pubVal) + '">'
+              + escHtml(pubValLabels[pubVal] || pubVal) + ' Publication Value</span>'
+            : '';
+
+          // PICO block
+          var pico = c.pico || {};
+          var picoRows = '';
+          picoRows += '<div class="rb-topic-card__pico-row"><span class="rb-topic-card__pico-label">Population</span><span class="rb-topic-card__pico-value">' + escHtml(pico.population || '—') + '</span></div>';
+          picoRows += '<div class="rb-topic-card__pico-row"><span class="rb-topic-card__pico-label">Intervention / Exposure</span><span class="rb-topic-card__pico-value">' + escHtml(pico.intervention || '—') + '</span></div>';
+          if (pico.comparator) {
+            picoRows += '<div class="rb-topic-card__pico-row"><span class="rb-topic-card__pico-label">Comparator</span><span class="rb-topic-card__pico-value">' + escHtml(pico.comparator) + '</span></div>';
+          }
+          var outcomesText = Array.isArray(pico.outcomes) ? pico.outcomes.join(', ') : (pico.outcomes || '');
+          if (outcomesText) {
+            picoRows += '<div class="rb-topic-card__pico-row"><span class="rb-topic-card__pico-label">Outcomes</span><span class="rb-topic-card__pico-value">' + escHtml(outcomesText) + '</span></div>';
+          }
+          if (pico.timeframe) {
+            picoRows += '<div class="rb-topic-card__pico-row"><span class="rb-topic-card__pico-label">Timeframe</span><span class="rb-topic-card__pico-value">' + escHtml(pico.timeframe) + '</span></div>';
+          }
+          if (pico.setting) {
+            picoRows += '<div class="rb-topic-card__pico-row"><span class="rb-topic-card__pico-label">Setting</span><span class="rb-topic-card__pico-value">' + escHtml(pico.setting) + '</span></div>';
+          }
+
+          // Probability badges
+          var probHtml = '<div class="rb-topic-card__prob-row">'
+            + '<span class="rb-topic-card__prob-badge ' + probClass(c.prior_synthesis_probability) + '">Prior Synthesis: ' + escHtml(fmtLevel(c.prior_synthesis_probability)) + '</span>'
+            + '<span class="rb-topic-card__prob-badge ' + probClass(c.sufficient_studies_probability) + '">Sufficient Studies: ' + escHtml(fmtLevel(c.sufficient_studies_probability)) + '</span>'
+            + '<span class="rb-topic-card__prob-badge ' + probClass(c.heterogeneity_probability) + '">Heterogeneity: ' + escHtml(fmtLevel(c.heterogeneity_probability)) + '</span>'
+            + '</div>';
+
+          // Pills
+          var dbs = Array.isArray(c.likely_databases) ? c.likely_databases : [];
+          var dbHtml = dbs.length
+            ? '<div class="rb-topic-card__pills">' + dbs.map(function (d) { return '<span class="rb-topic-card__pill">' + escHtml(d) + '</span>'; }).join('') + '</div>'
+            : '';
+          var sts = Array.isArray(c.likely_study_types) ? c.likely_study_types : [];
+          var stHtml = sts.length
+            ? '<div class="rb-topic-card__pills">' + sts.map(function (s) { return '<span class="rb-topic-card__pill">' + escHtml(s) + '</span>'; }).join('') + '</div>'
+            : '';
+
+          // Limitations
+          var lims = Array.isArray(c.possible_limitations) ? c.possible_limitations : [];
+          var limHtml = lims.length
+            ? '<ul class="rb-topic-card__limitations">' + lims.map(function (l) { return '<li>' + escHtml(l) + '</li>'; }).join('') + '</ul>'
+            : '';
+
+          // Red flags (only if non-empty)
+          var rfs = Array.isArray(c.red_flags) ? c.red_flags : [];
+          var rfHtml = rfs.length
+            ? '<div class="rb-topic-card__red-flags-section">'
+              + '<span class="rb-topic-card__red-flags-label">&#9888; Red Flags</span>'
+              + '<ul class="rb-topic-card__red-flags-list">' + rfs.map(function (f) { return '<li>' + escHtml(f) + '</li>'; }).join('') + '</ul>'
+              + '</div>'
+            : '';
+
+          // MA rationale below badge (expandable text)
+          var maRationaleHtml = '';
+          if (c.ma_classification && c.ma_classification !== 'not_applicable' && c.ma_classification_rationale) {
+            maRationaleHtml = '<p class="rb-topic-card__ma-rationale">' + escHtml(c.ma_classification_rationale) + '</p>';
+          }
+
+          return '<div class="rb-topic-card rb-topic-card--collapsible">'
+            // Collapsed header — always visible
+            + '<div class="rb-topic-card__summary" role="button" tabindex="0" aria-expanded="false" aria-controls="' + bodyId + '">'
+            +   '<div class="rb-topic-card__summary-top">'
+            +     '<h3 class="rb-topic-card__title">' + escHtml(c.title) + '</h3>'
+            +     '<span class="rb-topic-card__score-badge">' + escHtml(String(score)) + '/100</span>'
+            +   '</div>'
+            +   '<div class="rb-topic-card__summary-badges">'
+            +     '<span class="rb-topic-card__badge">' + escHtml(c.study_design || '') + '</span>'
+            +     maHtml
+            +     pubValHtml
+            +     '<svg class="rb-topic-card__chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>'
+            +   '</div>'
             + '</div>'
-            + '<div class="rb-topic-card__meta">'
-            +   '<div class="rb-topic-card__row">'
-            +     '<span class="rb-topic-card__row-label">Rationale</span>'
-            +     '<p class="rb-topic-card__row-text">' + escHtml(t.rationale) + '</p>'
+            // Expanded body — hidden by default
+            + '<div class="rb-topic-card__body" id="' + bodyId + '" hidden>'
+            +   '<div class="rb-topic-card__section">'
+            +     '<span class="rb-topic-card__row-label">PICO</span>'
+            +     '<div class="rb-topic-card__pico">' + picoRows + '</div>'
             +   '</div>'
-            +   '<div class="rb-topic-card__row">'
-            +     '<span class="rb-topic-card__row-label">Evidence Gap</span>'
-            +     '<p class="rb-topic-card__row-text">' + escHtml(t.evidence_gap) + '</p>'
-            +   '</div>'
-            +   '<div class="rb-topic-card__row">'
-            +     '<span class="rb-topic-card__row-label">Primary Outcome</span>'
-            +     '<p class="rb-topic-card__row-text">' + escHtml(t.primary_outcome) + '</p>'
-            +   '</div>'
-            +   '<div class="rb-topic-card__row">'
-            +     '<span class="rb-topic-card__row-label">Secondary Outcomes</span>'
-            +     '<p class="rb-topic-card__row-text">' + escHtml(secOutcomes) + '</p>'
-            +   '</div>'
-            +   '<div class="rb-topic-card__scores">'
-            +     '<div class="rb-topic-card__score-item">'
-            +       '<span class="rb-topic-card__row-label">Feasibility Score</span>'
-            +       '<span class="rb-topic-card__score">' + escHtml(String(t.feasibility_score != null ? t.feasibility_score : '—')) + '/10</span>'
-            +     '</div>'
-            +     '<div class="rb-topic-card__score-item">'
-            +       '<span class="rb-topic-card__row-label">Novelty Score</span>'
-            +       '<span class="rb-topic-card__score">' + escHtml(String(t.novelty_score != null ? t.novelty_score : '—')) + '/10</span>'
-            +     '</div>'
-            +   '</div>'
-            +   '<div class="rb-topic-card__row">'
-            +     '<span class="rb-topic-card__row-label">Data Sources</span>'
-            +     '<p class="rb-topic-card__row-text">' + escHtml(dataSources) + '</p>'
-            +   '</div>'
-            +   '<div class="rb-topic-card__row">'
-            +     '<span class="rb-topic-card__row-label">Difficulty Level</span>'
-            +     '<span class="rb-topic-card__diff-badge rb-topic-card__diff-badge--' + escHtml(diffLevel) + '">' + escHtml(t.difficulty_level || '') + '</span>'
-            +   '</div>'
-            +   '<div class="rb-topic-card__row">'
-            +     '<span class="rb-topic-card__row-label">Estimated Timeline</span>'
-            +     '<p class="rb-topic-card__row-text">' + escHtml(String(t.estimated_timeline_months != null ? t.estimated_timeline_months : '—')) + ' months</p>'
-            +   '</div>'
-            + (redFlags.length > 0
-            ?   '<div class="rb-topic-card__row">'
-            +     '<span class="rb-topic-card__row-label">Red Flags</span>'
-            +     '<p class="rb-topic-card__row-text rb-topic-card__red-flags">' + escHtml(redFlags.join(', ')) + '</p>'
-            +   '</div>'
-            : '')
+            +   '<div class="rb-topic-card__row"><span class="rb-topic-card__row-label">Rationale</span><p class="rb-topic-card__row-text">' + escHtml(c.rationale || '') + '</p></div>'
+            +   '<div class="rb-topic-card__row"><span class="rb-topic-card__row-label">Evidence Gap</span><p class="rb-topic-card__row-text">' + escHtml(c.evidence_gap || '') + '</p></div>'
+            +   '<div class="rb-topic-card__row"><span class="rb-topic-card__row-label">Novelty Assessment</span><p class="rb-topic-card__row-text">' + escHtml(c.novelty_assessment || '') + '</p></div>'
+            +   '<div class="rb-topic-card__row"><span class="rb-topic-card__row-label">Feasibility Assessment</span><p class="rb-topic-card__row-text">' + escHtml(c.feasibility_assessment || '') + '</p></div>'
+            +   '<div class="rb-topic-card__section"><span class="rb-topic-card__row-label">Synthesis Probabilities</span>' + probHtml + '</div>'
+            +   (dbHtml ? '<div class="rb-topic-card__section"><span class="rb-topic-card__row-label">Likely Databases</span>' + dbHtml + '</div>' : '')
+            +   (stHtml ? '<div class="rb-topic-card__section"><span class="rb-topic-card__row-label">Likely Study Types</span>' + stHtml + '</div>' : '')
+            +   (limHtml ? '<div class="rb-topic-card__section"><span class="rb-topic-card__row-label">Possible Limitations</span>' + limHtml + '</div>' : '')
+            +   rfHtml
+            +   maRationaleHtml
             + '</div>'
             + '</div>';
         }).join('');
+
+        results.innerHTML = metaInfoHtml + cardsHtml;
+
+        // Wire up collapsible toggle
+        results.querySelectorAll('.rb-topic-card__summary').forEach(function (summary) {
+          function toggle() {
+            var card = summary.closest('.rb-topic-card--collapsible');
+            var body = document.getElementById(summary.getAttribute('aria-controls'));
+            if (!body) return;
+            var expanded = summary.getAttribute('aria-expanded') === 'true';
+            summary.setAttribute('aria-expanded', String(!expanded));
+            if (expanded) {
+              body.setAttribute('hidden', '');
+              card.classList.remove('rb-topic-card--expanded');
+            } else {
+              body.removeAttribute('hidden');
+              card.classList.add('rb-topic-card--expanded');
+            }
+          }
+          summary.addEventListener('click', toggle);
+          summary.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+          });
+        });
 
       } catch (err) {
         results.setAttribute('hidden', '');
