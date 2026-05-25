@@ -5098,6 +5098,26 @@ p { line-height: 1.7; }
   border-color: rgba(229, 62, 62, 0.3);
 }
 
+.rb-topic-card__novelty-badge {
+  display: inline-block;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: capitalize;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  background-color: rgba(99, 102, 241, 0.08);
+  color: #6366F1;
+  margin-bottom: var(--space-1);
+}
+
+[data-theme="dark"] .rb-topic-card__novelty-badge {
+  background-color: rgba(129, 140, 248, 0.12);
+  color: #818CF8;
+  border-color: rgba(129, 140, 248, 0.3);
+}
+
 /* Database / study-type pills */
 .rb-topic-card__pills {
   display: flex;

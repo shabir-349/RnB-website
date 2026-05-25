@@ -1898,7 +1898,10 @@
             +   '</div>'
             +   '<div class="rb-topic-card__row"><span class="rb-topic-card__row-label">Rationale</span><p class="rb-topic-card__row-text">' + escHtml(c.rationale || '') + '</p></div>'
             +   '<div class="rb-topic-card__row"><span class="rb-topic-card__row-label">Evidence Gap</span><p class="rb-topic-card__row-text">' + escHtml(c.evidence_gap || '') + '</p></div>'
-            +   '<div class="rb-topic-card__row"><span class="rb-topic-card__row-label">Novelty Assessment</span><p class="rb-topic-card__row-text">' + escHtml(c.novelty_assessment || '') + '</p></div>'
+            +   '<div class="rb-topic-card__row"><span class="rb-topic-card__row-label">Novelty</span>'
+            +     (c.novelty_axis ? '<span class="rb-topic-card__novelty-badge">' + escHtml(c.novelty_axis.replace(/_/g, ' ')) + '</span>' : '')
+            +     '<p class="rb-topic-card__row-text">' + escHtml(c.novelty_content || '') + '</p>'
+            +   '</div>'
             +   '<div class="rb-topic-card__row"><span class="rb-topic-card__row-label">Feasibility Assessment</span><p class="rb-topic-card__row-text">' + escHtml(c.feasibility_assessment || '') + '</p></div>'
             +   '<div class="rb-topic-card__section"><span class="rb-topic-card__row-label">Synthesis Probabilities</span>' + probHtml + '</div>'
             +   (dbHtml ? '<div class="rb-topic-card__section"><span class="rb-topic-card__row-label">Likely Databases</span>' + dbHtml + '</div>' : '')
