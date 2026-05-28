@@ -195,6 +195,8 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, error: 'Method not allowed' });
   }
 
+  console.log('Key exists: ' + !!process.env.SUPABASE_SERVICE_ROLE_KEY);
+
   const { population, intervention, studyDesign, userId } = req.body || {};
 
   if (!population || !studyDesign) {
@@ -208,6 +210,7 @@ export default async function handler(req, res) {
   const SB_URL = process.env.SUPABASE_URL;
   const SB_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const canLimit = !!(userId && SB_URL && SB_KEY);
+  console.log('canLimit:', canLimit, '| userId:', !!userId, '| SB_URL:', !!SB_URL, '| SB_KEY:', !!SB_KEY);
 
   const DEFAULTS = { free: 3, scholar: 15, pro: 30 };
   let dailyLimit = DEFAULTS.free;
@@ -328,9 +331,12 @@ export default async function handler(req, res) {
           created_at: new Date().toISOString(),
         });
         usageCount++;
+        console.log('topic_generations insert ok | userId:', userId);
       } catch (err) {
-        console.error('insert generation error:', err);
+        console.error('topic_generations insert failed | userId:', userId, '| error:', err.message);
       }
+    } else {
+      console.log('topic_generations insert skipped — canLimit is false');
     }
 
     return res.status(200).json({
