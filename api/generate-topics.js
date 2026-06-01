@@ -410,8 +410,10 @@ async function handleGetQuota(req, res) {
 
 /* ── Supabase REST helpers ──────────────────────────────── */
 async function sbGet(url, key, table, params) {
-  const endpoint = new URL(`${url}/rest/v1/${table}`);
+  const base = url.replace(/\/+$/, '');
+  const endpoint = new URL(`${base}/rest/v1/${table}`);
   Object.entries(params).forEach(([k, v]) => endpoint.searchParams.set(k, v));
+  console.log('sbGet URL:', endpoint.toString());
   const r = await fetch(endpoint.toString(), {
     headers: { apikey: key, Authorization: `Bearer ${key}` },
   });
@@ -420,7 +422,10 @@ async function sbGet(url, key, table, params) {
 }
 
 async function sbPost(url, key, table, body) {
-  const r = await fetch(`${url}/rest/v1/${table}`, {
+  const base = url.replace(/\/+$/, '');
+  const endpoint = `${base}/rest/v1/${table}`;
+  console.log('sbPost URL:', endpoint);
+  const r = await fetch(endpoint, {
     method: 'POST',
     headers: {
       apikey: key,
