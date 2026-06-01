@@ -1741,7 +1741,7 @@
         'Deconstructing your PICO framework...',
         'Scanning literature landscape for gaps...',
         'Generating candidate topics internally...',
-        'Applying quality gates (specificity, novelty, feasibility)...',
+        'Applying quality gates...',
         'Filtering saturated and weak candidates...',
         'Ranking survivors by clinical value and novelty...',
         'Finalizing top candidates...'
@@ -1753,16 +1753,13 @@
         '<div class="rb-ts-status-loading">'
         + '<div class="rb-ts-status-row">'
         + '<span class="rb-ts-status-dot"></span>'
-        + '<span class="rb-ts-status-msg" id="rb-ts-status-msg">'
+        + '<span class="rb-ts-status-msg rb-ts-status-msg--visible" id="rb-ts-status-msg">'
         + tsStatusMessages[0]
         + '</span>'
         + '</div>'
         + '</div>';
 
       var tsStatusMsgEl = document.getElementById('rb-ts-status-msg');
-      requestAnimationFrame(function () {
-        if (tsStatusMsgEl) tsStatusMsgEl.classList.add('rb-ts-status-msg--visible');
-      });
 
       tsInterval = setInterval(function () {
         if (tsStatusIdx >= tsStatusMessages.length - 1) {
@@ -1783,7 +1780,7 @@
           clearInterval(tsInterval);
           tsInterval = null;
         }
-      }, 2000);
+      }, 2500);
 
       try {
         var res = await fetch('/api/generate-topics', {
