@@ -1747,35 +1747,43 @@
         'Finalizing top candidates...'
       ];
       var tsStatusIdx = 0;
-      var tsStatusTimer = null;
-      var tsStatusDone = false;
+      var tsInterval = null;
 
       results.innerHTML =
         '<div class="rb-ts-status-loading">'
         + '<div class="rb-ts-status-row">'
         + '<span class="rb-ts-status-dot"></span>'
-        + '<span class="rb-ts-status-msg rb-ts-status-msg--visible" id="rb-ts-status-msg">'
+        + '<span class="rb-ts-status-msg" id="rb-ts-status-msg">'
         + tsStatusMessages[0]
         + '</span>'
         + '</div>'
         + '</div>';
 
       var tsStatusMsgEl = document.getElementById('rb-ts-status-msg');
+      requestAnimationFrame(function () {
+        if (tsStatusMsgEl) tsStatusMsgEl.classList.add('rb-ts-status-msg--visible');
+      });
 
-      function tsAdvanceMessage() {
-        if (tsStatusDone || !tsStatusMsgEl) return;
+      tsInterval = setInterval(function () {
+        if (tsStatusIdx >= tsStatusMessages.length - 1) {
+          clearInterval(tsInterval);
+          tsInterval = null;
+          return;
+        }
         tsStatusIdx++;
-        tsStatusMsgEl.classList.remove('rb-ts-status-msg--visible');
-        tsStatusTimer = setTimeout(function () {
-          if (tsStatusDone || !tsStatusMsgEl) return;
-          tsStatusMsgEl.textContent = tsStatusMessages[tsStatusIdx];
+        var nextText = tsStatusMessages[tsStatusIdx];
+        var isLast = tsStatusIdx >= tsStatusMessages.length - 1;
+        if (tsStatusMsgEl) tsStatusMsgEl.classList.remove('rb-ts-status-msg--visible');
+        setTimeout(function () {
+          if (!tsStatusMsgEl) return;
+          tsStatusMsgEl.textContent = nextText;
           tsStatusMsgEl.classList.add('rb-ts-status-msg--visible');
-          if (tsStatusIdx < 6) {
-            tsStatusTimer = setTimeout(tsAdvanceMessage, 2000);
-          }
         }, 300);
-      }
-      tsStatusTimer = setTimeout(tsAdvanceMessage, 2000);
+        if (isLast) {
+          clearInterval(tsInterval);
+          tsInterval = null;
+        }
+      }, 2000);
 
       try {
         var res = await fetch('/api/generate-topics', {
@@ -1787,6 +1795,8 @@
         var data = await res.json();
 
         if (res.status === 429) {
+          clearInterval(tsInterval);
+          tsInterval = null;
           results.setAttribute('hidden', '');
           results.innerHTML = '';
           var u = data.usage || {};
@@ -1937,8 +1947,8 @@
             + '</div>';
         }).join('');
 
-        tsStatusDone = true;
-        clearTimeout(tsStatusTimer);
+        clearInterval(tsInterval);
+        tsInterval = null;
         results.innerHTML = metaInfoHtml + cardsHtml;
 
         // Wire up collapsible toggle
@@ -1964,8 +1974,8 @@
         });
 
       } catch (err) {
-        tsStatusDone = true;
-        clearTimeout(tsStatusTimer);
+        clearInterval(tsInterval);
+        tsInterval = null;
         results.setAttribute('hidden', '');
         results.innerHTML = '';
         showErrorToast((err && err.message) ? err.message : 'Failed to generate topics. Please try again.');
