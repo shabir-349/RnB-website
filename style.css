@@ -4786,6 +4786,45 @@ p { line-height: 1.7; }
   padding: var(--space-4) 0;
 }
 
+/* ── TopicScout animated status messages ─────────────────── */
+.rb-ts-status-loading {
+  padding: var(--space-5) 0 var(--space-6);
+}
+
+.rb-ts-status-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.rb-ts-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--amber-500);
+  flex-shrink: 0;
+  animation: rb-ts-dot-pulse 1.2s ease-in-out infinite;
+}
+
+[data-theme="dark"] .rb-ts-status-dot { background: var(--amber-400); }
+
+@keyframes rb-ts-dot-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.35; transform: scale(0.65); }
+}
+
+.rb-ts-status-msg {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--amber-500);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+[data-theme="dark"] .rb-ts-status-msg { color: var(--amber-400); }
+
+.rb-ts-status-msg--visible { opacity: 1; }
+
 /* Smaller spinner variant for inline use */
 .rb-spinner--sm {
   width: 20px;

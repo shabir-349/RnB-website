@@ -1736,11 +1736,46 @@
 
       btn.disabled = true;
       results.removeAttribute('hidden');
+
+      var tsStatusMessages = [
+        'Deconstructing your PICO framework...',
+        'Scanning literature landscape for gaps...',
+        'Generating candidate topics internally...',
+        'Applying quality gates (specificity, novelty, feasibility)...',
+        'Filtering saturated and weak candidates...',
+        'Ranking survivors by clinical value and novelty...',
+        'Finalizing top candidates...'
+      ];
+      var tsStatusIdx = 0;
+      var tsStatusTimer = null;
+      var tsStatusDone = false;
+
       results.innerHTML =
-        '<div class="rb-topicscout__loading">'
-        + '<div class="rb-spinner rb-spinner--sm rb-spinner--dark"></div>'
-        + '<span>Generating research topics…</span>'
+        '<div class="rb-ts-status-loading">'
+        + '<div class="rb-ts-status-row">'
+        + '<span class="rb-ts-status-dot"></span>'
+        + '<span class="rb-ts-status-msg rb-ts-status-msg--visible" id="rb-ts-status-msg">'
+        + tsStatusMessages[0]
+        + '</span>'
+        + '</div>'
         + '</div>';
+
+      var tsStatusMsgEl = document.getElementById('rb-ts-status-msg');
+
+      function tsAdvanceMessage() {
+        if (tsStatusDone || !tsStatusMsgEl) return;
+        tsStatusIdx++;
+        tsStatusMsgEl.classList.remove('rb-ts-status-msg--visible');
+        tsStatusTimer = setTimeout(function () {
+          if (tsStatusDone || !tsStatusMsgEl) return;
+          tsStatusMsgEl.textContent = tsStatusMessages[tsStatusIdx];
+          tsStatusMsgEl.classList.add('rb-ts-status-msg--visible');
+          if (tsStatusIdx < 6) {
+            tsStatusTimer = setTimeout(tsAdvanceMessage, 2000);
+          }
+        }, 300);
+      }
+      tsStatusTimer = setTimeout(tsAdvanceMessage, 2000);
 
       try {
         var res = await fetch('/api/generate-topics', {
@@ -1902,6 +1937,8 @@
             + '</div>';
         }).join('');
 
+        tsStatusDone = true;
+        clearTimeout(tsStatusTimer);
         results.innerHTML = metaInfoHtml + cardsHtml;
 
         // Wire up collapsible toggle
@@ -1927,6 +1964,8 @@
         });
 
       } catch (err) {
+        tsStatusDone = true;
+        clearTimeout(tsStatusTimer);
         results.setAttribute('hidden', '');
         results.innerHTML = '';
         showErrorToast((err && err.message) ? err.message : 'Failed to generate topics. Please try again.');
