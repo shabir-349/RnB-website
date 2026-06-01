@@ -1050,6 +1050,9 @@
     });
   })();
 
+  var rbDashboardPlan = 'free';
+  var _rbCallLoadQuota = null;
+
   /* ============================================================
      DASHBOARD AUTH GUARD + USER DISPLAY + PLAN STATE
   ============================================================ */
@@ -1247,7 +1250,9 @@
         .then(function (result) {
           var payment = result.data && result.data.length ? result.data[0] : null;
           applyPlanState(payment ? payment.status : null, payment ? payment.plan : null);
-          loadLectures(getUserLectureLevel(payment));
+          rbDashboardPlan = getUserLectureLevel(payment);
+          loadLectures(rbDashboardPlan);
+          if (typeof _rbCallLoadQuota === 'function') _rbCallLoadQuota();
 
           if (payment && payment.status === 'pending') {
             rbSupabase
@@ -1678,7 +1683,7 @@
       if (!session) return;
 
       try {
-        var res = await fetch('/api/generate-topics?userId=' + encodeURIComponent(session.user.id));
+        var res = await fetch('/api/generate-topics?userId=' + encodeURIComponent(session.user.id) + '&plan=' + encodeURIComponent(rbDashboardPlan));
         if (!res.ok) return;
         var data = await res.json();
         if (data && data.usage) renderQuota(data.usage.count, data.usage.limit);
@@ -1687,7 +1692,7 @@
       }
     }
 
-    loadQuota();
+    _rbCallLoadQuota = loadQuota;
 
     // Clear inline errors on correction
     popEl.addEventListener('input', function () {
@@ -1741,7 +1746,7 @@
         var res = await fetch('/api/generate-topics', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ population: population, intervention: intervention || '', studyDesign: studyDesign, userId: userId })
+          body: JSON.stringify({ population: population, intervention: intervention || '', studyDesign: studyDesign, userId: userId, plan: rbDashboardPlan })
         });
 
         var data = await res.json();

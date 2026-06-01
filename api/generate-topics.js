@@ -197,7 +197,8 @@ export default async function handler(req, res) {
 
   console.log('Key exists: ' + !!process.env.SUPABASE_SERVICE_ROLE_KEY);
 
-  const { population, intervention, studyDesign, userId } = req.body || {};
+  const { population, intervention, studyDesign, userId, plan: rawPlan } = req.body || {};
+  const plan = ['free', 'scholar', 'pro'].includes(rawPlan) ? rawPlan : 'free';
 
   if (!population || !studyDesign) {
     return res.status(400).json({ success: false, error: 'Missing required fields: population and studyDesign' });
@@ -216,29 +217,25 @@ export default async function handler(req, res) {
   let dailyLimit = DEFAULTS.free;
   let usageCount = 0;
 
+  const PLAN_LIMIT_KEY = {
+    free:    'topicscout_free_limit',
+    scholar: 'topicscout_scholar_limit',
+    pro:     'topicscout_pro_limit',
+  };
+
   if (canLimit) {
     try {
-      // 1. Get user's plan from profiles
-      const profileRows = await sbGet(SB_URL, SB_KEY, 'profiles', {
-        user_id: `eq.${userId}`,
-        select: 'plan',
-        limit: '1',
-      });
-      const plan = profileRows[0]?.plan || 'free';
-
-      // 2. Get limits from settings table
+      // 1. Get limit from settings based on plan sent by client
       const settingsRows = await sbGet(SB_URL, SB_KEY, 'settings', {
-        key: 'in.(topicscout_free_limit,topicscout_scholar_limit,topicscout_pro_limit)',
-        select: 'key,value',
+        key: `eq.${PLAN_LIMIT_KEY[plan]}`,
+        select: 'value',
       });
-      const cfg = {};
-      settingsRows.forEach(r => { cfg[r.key] = r.value; });
+      const rawVal = settingsRows[0]?.value;
+      dailyLimit = (rawVal != null && !isNaN(parseInt(rawVal, 10)))
+        ? parseInt(rawVal, 10)
+        : DEFAULTS[plan];
 
-      if (plan === 'pro')          dailyLimit = parseInt(cfg.topicscout_pro_limit)     || DEFAULTS.pro;
-      else if (plan === 'scholar') dailyLimit = parseInt(cfg.topicscout_scholar_limit) || DEFAULTS.scholar;
-      else                         dailyLimit = parseInt(cfg.topicscout_free_limit)    || DEFAULTS.free;
-
-      // 3. Count today's generations (UTC day boundary)
+      // 2. Count today's generations (UTC day boundary)
       const todayUTC = new Date();
       todayUTC.setUTCHours(0, 0, 0, 0);
       const genRows = await sbGet(SB_URL, SB_KEY, 'topic_generations', {
@@ -248,7 +245,7 @@ export default async function handler(req, res) {
       });
       usageCount = genRows.length;
 
-      // 4. Enforce limit
+      // 3. Enforce limit
       if (usageCount >= dailyLimit) {
         return res.status(429).json({
           success: false,
@@ -358,6 +355,8 @@ export default async function handler(req, res) {
 /* ── GET /api/generate-topics?userId=… → quota info ──────── */
 async function handleGetQuota(req, res) {
   const userId = req.query && req.query.userId;
+  const rawPlan = req.query && req.query.plan;
+  const plan = ['free', 'scholar', 'pro'].includes(rawPlan) ? rawPlan : 'free';
   const SB_URL = process.env.SUPABASE_URL;
   const SB_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -373,22 +372,14 @@ async function handleGetQuota(req, res) {
   };
 
   try {
-    const profileRows = await sbGet(SB_URL, SB_KEY, 'profiles', {
-      user_id: `eq.${userId}`,
-      select: 'plan',
-      limit: '1',
-    });
-    const plan = profileRows[0]?.plan || 'free';
-
-    const limitKey = PLAN_LIMIT_KEY[plan] || PLAN_LIMIT_KEY.free;
     const settingsRows = await sbGet(SB_URL, SB_KEY, 'settings', {
-      key: `eq.${limitKey}`,
+      key: `eq.${PLAN_LIMIT_KEY[plan]}`,
       select: 'value',
     });
     const rawVal = settingsRows[0]?.value;
     const limit = (rawVal != null && !isNaN(parseInt(rawVal, 10)))
       ? parseInt(rawVal, 10)
-      : (PLAN_DEFAULTS[plan] || PLAN_DEFAULTS.free);
+      : PLAN_DEFAULTS[plan];
 
     const todayUTC = new Date();
     todayUTC.setUTCHours(0, 0, 0, 0);
