@@ -281,7 +281,7 @@ export default async function handler(req, res) {
         ],
         temperature: 0.5,
         top_p: 0.9,
-        max_tokens: 2500,
+        max_tokens: 3500,
         response_format: { type: 'json_object' },
       }),
     });
@@ -312,7 +312,7 @@ export default async function handler(req, res) {
         aiResponse = null;
       }
     } catch {
-      console.error('JSON parse error. Raw response:', raw);
+      console.error('JSON parse error. Raw response (first 500 chars):', raw?.slice(0, 500));
       return res.status(502).json({ success: false, error: 'AI returned invalid JSON' });
     }
 
