@@ -235,12 +235,13 @@ export default async function handler(req, res) {
         ? parseInt(rawVal, 10)
         : DEFAULTS[plan];
 
-      // 2. Count today's generations (UTC day boundary)
-      const todayUTC = new Date();
-      todayUTC.setUTCHours(0, 0, 0, 0);
+      // 2. Count today's generations (PKT day boundary — UTC+5)
+      const PKT_OFFSET_MS = 5 * 60 * 60 * 1000;
+      const nowMs = Date.now();
+      const startOfDayPKT = new Date(Math.floor((nowMs + PKT_OFFSET_MS) / 86400000) * 86400000 - PKT_OFFSET_MS);
       const genRows = await sbGet(SB_URL, SB_KEY, 'topic_generations', {
         user_id: `eq.${userId}`,
-        created_at: `gte.${todayUTC.toISOString()}`,
+        created_at: `gte.${startOfDayPKT.toISOString()}`,
         select: 'user_id',
       });
       usageCount = genRows.length;
@@ -381,11 +382,12 @@ async function handleGetQuota(req, res) {
       ? parseInt(rawVal, 10)
       : PLAN_DEFAULTS[plan];
 
-    const todayUTC = new Date();
-    todayUTC.setUTCHours(0, 0, 0, 0);
+    const PKT_OFFSET_MS = 5 * 60 * 60 * 1000;
+    const nowMs = Date.now();
+    const startOfDayPKT = new Date(Math.floor((nowMs + PKT_OFFSET_MS) / 86400000) * 86400000 - PKT_OFFSET_MS);
     const genRows = await sbGet(SB_URL, SB_KEY, 'topic_generations', {
       user_id: `eq.${userId}`,
-      created_at: `gte.${todayUTC.toISOString()}`,
+      created_at: `gte.${startOfDayPKT.toISOString()}`,
       select: 'user_id',
     });
     const count = genRows.length;
