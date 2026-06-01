@@ -263,7 +263,7 @@ export default async function handler(req, res) {
     population,
     intervention_or_exposure: intervention || null,
     study_design: studyDesign,
-    n: 3,
+    n: 2,
   });
 
   try {
