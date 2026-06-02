@@ -1839,4 +1839,51 @@
     });
   })();
 
+  /* ============================================================
+     TEAM CAROUSEL
+  ============================================================ */
+  (function initTeamCarousel() {
+    var track = document.getElementById('rb-team-track');
+    if (!track) return;
+
+    var cards = Array.from(track.querySelectorAll('.rb-team-card'));
+    var current = 0;
+
+    function getState(i) {
+      var diff = (i - current + cards.length) % cards.length;
+      if (diff === 0) return 'center';
+      if (diff === 1 || diff === cards.length - 1) return 'side';
+      return 'hidden';
+    }
+
+    function render() {
+      cards.forEach(function (card, i) {
+        var state = getState(i);
+        card.dataset.state = state;
+        card.style.display = state === 'hidden' ? 'none' : '';
+      });
+    }
+
+    function advance(dir) {
+      current = (current + dir + cards.length) % cards.length;
+      render();
+    }
+
+    cards.forEach(function (card, i) {
+      card.addEventListener('click', function () {
+        if (card.dataset.state === 'side') {
+          var diff = (i - current + cards.length) % cards.length;
+          advance(diff === 1 ? 1 : -1);
+        }
+      });
+    });
+
+    var prev = document.getElementById('rb-team-prev');
+    var next = document.getElementById('rb-team-next');
+    if (prev) prev.addEventListener('click', function () { advance(-1); });
+    if (next) next.addEventListener('click', function () { advance(1); });
+
+    render();
+  })();
+
 })();
