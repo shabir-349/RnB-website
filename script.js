@@ -234,58 +234,7 @@
     statNums.forEach(function (el) { counterObserver.observe(el); });
   });
 
-  /* ============================================================
-     HERO TYPING ANIMATION
-     Types the search query, then reveals result cards
-  ============================================================ */
-  const queryEl = document.getElementById('rb-typing-query');
-  const resultsEl = document.getElementById('rb-mockup-results');
-  const fullQuery = 'Find me a meta-analysis topic in pediatric neurology';
 
-  if (queryEl && resultsEl) {
-    let charIndex = 0;
-    let typingStarted = false;
-
-    function typeChar() {
-      if (charIndex < fullQuery.length) {
-        queryEl.textContent = fullQuery.slice(0, charIndex + 1);
-        charIndex++;
-        // Vary typing speed slightly for realism
-        const delay = 45 + Math.random() * 35;
-        setTimeout(typeChar, delay);
-      } else {
-        // Pause then reveal result cards
-        setTimeout(function () {
-          resultsEl.classList.add('rb-results--visible');
-        }, 500);
-      }
-    }
-
-    // Start typing when hero is visible (immediate on load since it's above fold)
-    function startTyping() {
-      if (typingStarted) return;
-      typingStarted = true;
-      setTimeout(typeChar, 800);
-    }
-
-    // Use IntersectionObserver in case user starts below fold
-    const heroObserver = new IntersectionObserver(
-      function (entries) {
-        if (entries[0].isIntersecting) {
-          startTyping();
-          heroObserver.disconnect();
-        }
-      },
-      { threshold: 0.3 }
-    );
-
-    const heroSection = document.getElementById('rb-hero');
-    if (heroSection) {
-      heroObserver.observe(heroSection);
-    } else {
-      startTyping();
-    }
-  }
 
   /* ============================================================
      PHASES SCROLL HINT — hide after user scrolls the track

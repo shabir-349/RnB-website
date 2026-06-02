@@ -595,12 +595,6 @@ p { line-height: 1.7; }
   z-index: 3;
 }
 
-@media (min-width: 1024px) {
-  .rb-hero__inner {
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-12);
-  }
-}
 
 .rb-hero__content .rb-eyebrow {
   color: var(--amber-500);
@@ -620,7 +614,7 @@ p { line-height: 1.7; }
   font-size: clamp(1.0625rem, 2vw, 1.25rem);
   color: #cccccc;
   margin-bottom: var(--space-8);
-  max-width: 480px;
+  max-width: 640px;
 }
 
 .rb-hero__ctas {
@@ -646,147 +640,6 @@ p { line-height: 1.7; }
   font-weight: 500;
 }
 
-/* Hero browser mockup */
-.rb-mockup {
-  background-color: var(--paper);
-  border-radius: var(--radius-3);
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35), 0 4px 16px rgba(0,0,0,0.2);
-  overflow: hidden;
-  max-width: 336px;
-  margin: 0 auto;
-  width: 100%;
-}
-
-.rb-mockup__chrome {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  background-color: #F0F0EC;
-  border-bottom: 1px solid #E0E0D8;
-}
-
-.rb-mockup__dots {
-  display: flex;
-  gap: 6px;
-}
-
-.rb-mockup__dots span {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background-color: #D0D0C8;
-}
-
-.rb-mockup__dots span:nth-child(1) { background-color: #FF5F57; }
-.rb-mockup__dots span:nth-child(2) { background-color: #FFBD2E; }
-.rb-mockup__dots span:nth-child(3) { background-color: #28CA41; }
-
-.rb-mockup__url {
-  font-size: 0.8125rem;
-  color: #888;
-  background-color: #E4E4DC;
-  border-radius: 4px;
-  padding: 2px 10px;
-  flex: 1;
-  text-align: center;
-  font-family: monospace;
-}
-
-.rb-mockup__body {
-  padding: var(--space-6);
-}
-
-.rb-mockup__search-wrap {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  background-color: var(--paper-50);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-1);
-  padding: var(--space-3) var(--space-4);
-  margin-bottom: var(--space-4);
-  color: var(--ink-400);
-  min-height: 44px;
-}
-
-.rb-mockup__search-wrap svg {
-  flex-shrink: 0;
-}
-
-.rb-mockup__query {
-  font-size: 0.875rem;
-  color: var(--ink-900);
-  flex: 1;
-}
-
-.rb-cursor {
-  color: var(--amber-500);
-  font-weight: 700;
-  animation: rb-blink 1s step-end infinite;
-  will-change: opacity;
-}
-
-@keyframes rb-blink {
-  50% { opacity: 0; }
-}
-
-.rb-mockup__label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--ink-400);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-bottom: var(--space-3);
-}
-
-.rb-mockup__results {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
-
-.rb-mockup__results.rb-results--visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.rb-result-card {
-  background-color: var(--paper-50);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-1);
-  padding: var(--space-3) var(--space-4);
-}
-
-.rb-result-card__tag {
-  display: inline-block;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--navy-700);
-  background-color: rgba(30, 58, 95, 0.08);
-  border-radius: 4px;
-  padding: 2px 6px;
-  margin-bottom: var(--space-2);
-}
-
-.rb-result-card__title {
-  font-size: 0.8125rem;
-  color: var(--ink-900);
-  line-height: 1.4;
-  margin-bottom: var(--space-2);
-}
-
-.rb-novelty-badge {
-  font-size: 0.6875rem;
-  font-weight: 700;
-  color: var(--amber-500);
-  letter-spacing: 0.02em;
-}
 
 /* ============================================================
    WHY WE EXIST
@@ -4655,8 +4508,7 @@ p { line-height: 1.7; }
    SMALL PHONE OVERRIDES (max-width: 479px)
 ============================================================ */
 @media (max-width: 479px) {
-  /* Hero: hide browser mockup, release fixed min-height */
-  .rb-mockup { display: none; }
+  /* Hero: release fixed min-height on very small screens */
   .rb-hero { min-height: auto; }
 
   /* Admin: collapse 3-col stats to 2-col */
