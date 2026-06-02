@@ -1847,7 +1847,9 @@
     if (!track) return;
 
     var cards = Array.from(track.querySelectorAll('.rb-team-card'));
-    var current = 0;
+    var current = 1; // IK is at index 1 (Saad=0 left, IK=1 center, Shabir=2 right)
+    var animating = false;
+    var TRANSITION_MS = 380;
 
     function getState(i) {
       var diff = (i - current + cards.length) % cards.length;
@@ -1865,10 +1867,14 @@
     }
 
     function advance(dir) {
+      if (animating) return;
+      animating = true;
       current = (current + dir + cards.length) % cards.length;
       render();
+      setTimeout(function () { animating = false; }, TRANSITION_MS);
     }
 
+    // Click side card to center it
     cards.forEach(function (card, i) {
       card.addEventListener('click', function () {
         if (card.dataset.state === 'side') {
@@ -1878,6 +1884,32 @@
       });
     });
 
+    // Hover side card to center it (desktop only)
+    var canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (canHover) {
+      cards.forEach(function (card, i) {
+        card.addEventListener('mouseenter', function () {
+          if (card.dataset.state === 'side') {
+            var diff = (i - current + cards.length) % cards.length;
+            advance(diff === 1 ? 1 : -1);
+          }
+        });
+      });
+    }
+
+    // Touch swipe support (mobile)
+    var touchStartX = 0;
+    track.addEventListener('touchstart', function (e) {
+      touchStartX = e.changedTouches[0].clientX;
+    }, { passive: true });
+    track.addEventListener('touchend', function (e) {
+      var delta = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(delta) > 50) {
+        advance(delta < 0 ? 1 : -1);
+      }
+    }, { passive: true });
+
+    // Arrow buttons
     var prev = document.getElementById('rb-team-prev');
     var next = document.getElementById('rb-team-next');
     if (prev) prev.addEventListener('click', function () { advance(-1); });
