@@ -17,11 +17,11 @@
     localStorage.setItem('rb-theme', theme);
   }
 
-  // On load, restore saved preference or respect OS preference
+  // On load, restore saved preference; default to dark for new visitors
   const savedTheme = localStorage.getItem('rb-theme');
   if (savedTheme) {
     applyTheme(savedTheme);
-  } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+  } else {
     applyTheme('dark');
   }
 
@@ -310,153 +310,6 @@
     img.setAttribute('loading', 'lazy');
   });
 
-  /* ============================================================
-     HERO NETWORK CANVAS
-     Drifting nodes + connecting edges evoke a citation graph.
-     Throttled to ~30fps. Paused when off-screen or tab hidden.
-     Static (no drift) when prefers-reduced-motion is set.
-  ============================================================ */
-  (function initHeroNetwork() {
-    const canvas = document.getElementById('rb-hero-network');
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    const heroSection = document.getElementById('rb-hero');
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    // Skip canvas on data-saver or very slow connections
-    const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    if (conn && (conn.saveData || String(conn.effectiveType).indexOf('2g') !== -1)) {
-      canvas.style.display = 'none';
-      return;
-    }
-
-    // Reduce node count on narrow viewports to keep the frame budget lean
-    const isMobile = window.innerWidth < 768;
-    const TOTAL_NODES = isMobile ? 30 : 60;
-    const HUB_COUNT   = isMobile ? 4  : 8;
-    const LINK_DIST     = 140;
-    const LINK_DIST_SQ  = LINK_DIST * LINK_DIST; // avoid sqrt for culled pairs
-    const MAX_EDGE_OPACITY = 0.25;
-    const FRAME_INTERVAL   = 1000 / 30;
-
-    let nodes = [];
-    let animId = null;
-    let heroVisible = true;
-    let pageVisible = !document.hidden;
-    let lastFrame = 0;
-    let resizeTimer = null;
-
-    function buildNodes() {
-      nodes = [];
-      const w = canvas.width;
-      const h = canvas.height;
-      for (let i = 0; i < TOTAL_NODES; i++) {
-        const isHub   = i < HUB_COUNT;
-        const isAmber = Math.random() < 0.2;
-        const baseR   = isHub ? 4 : (1.5 + Math.random());
-        nodes.push({
-          x: Math.random() * w,
-          y: Math.random() * h,
-          vx: (Math.random() - 0.5) * 0.3,
-          vy: (Math.random() - 0.5) * 0.3,
-          r: baseR, baseR: baseR,
-          isHub: isHub, isAmber: isAmber,
-          phase: Math.random() * Math.PI * 2,
-        });
-      }
-    }
-
-    function setSize() {
-      canvas.width  = heroSection.offsetWidth;
-      canvas.height = heroSection.offsetHeight;
-      buildNodes();
-    }
-
-    // Shared draw — used both by the animation loop and the one-shot static render
-    function drawScene() {
-      const w = canvas.width;
-      const h = canvas.height;
-      ctx.clearRect(0, 0, w, h);
-
-      // Edges — compare squared distance first to skip sqrt on far pairs
-      ctx.lineWidth = 0.75;
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const dx = nodes[i].x - nodes[j].x;
-          const dy = nodes[i].y - nodes[j].y;
-          const distSq = dx * dx + dy * dy;
-          if (distSq < LINK_DIST_SQ) {
-            const d     = Math.sqrt(distSq);
-            const alpha = (1 - d / LINK_DIST) * MAX_EDGE_OPACITY;
-            ctx.beginPath();
-            ctx.moveTo(nodes[i].x, nodes[i].y);
-            ctx.lineTo(nodes[j].x, nodes[j].y);
-            ctx.strokeStyle = 'rgba(232,236,243,' + alpha + ')';
-            ctx.stroke();
-          }
-        }
-      }
-
-      // Nodes
-      nodes.forEach(function (n) {
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-        ctx.fillStyle = n.isAmber ? 'rgba(232,163,61,0.5)' : 'rgba(232,236,243,0.4)';
-        ctx.fill();
-      });
-    }
-
-    function frame(ts) {
-      animId = requestAnimationFrame(frame);
-      if (!heroVisible || !pageVisible) return;
-      if (ts - lastFrame < FRAME_INTERVAL) return;
-      lastFrame = ts;
-
-      const w = canvas.width;
-      const h = canvas.height;
-      nodes.forEach(function (n) {
-        n.x += n.vx;
-        n.y += n.vy;
-        if (n.x <= 0 || n.x >= w) { n.vx *= -1; n.x = Math.max(0, Math.min(w, n.x)); }
-        if (n.y <= 0 || n.y >= h) { n.vy *= -1; n.y = Math.max(0, Math.min(h, n.y)); }
-        if (n.isHub) {
-          n.phase += 0.021;
-          n.r = n.baseR + 2 * Math.abs(Math.sin(n.phase));
-        }
-      });
-
-      drawScene();
-    }
-
-    // Pause when hero scrolls out of view
-    new IntersectionObserver(function (entries) {
-      heroVisible = entries[0].isIntersecting;
-    }, { threshold: 0 }).observe(heroSection);
-
-    // Pause when tab is hidden
-    document.addEventListener('visibilitychange', function () {
-      pageVisible = !document.hidden;
-    });
-
-    // Debounced ResizeObserver keeps canvas in sync with hero dimensions
-    new ResizeObserver(function () {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(function () {
-        setSize();
-        if (prefersReduced) drawScene();
-      }, 150);
-    }).observe(heroSection);
-
-    setSize();
-
-    if (prefersReduced) {
-      // Static network — draw once, no animation loop needed
-      drawScene();
-    } else {
-      animId = requestAnimationFrame(frame);
-    }
-  })();
 
   /* ============================================================
      MODE CARDS — 3D tilt + cursor spotlight

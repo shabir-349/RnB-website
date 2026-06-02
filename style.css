@@ -8,10 +8,10 @@
    ============================================================ */
 :root {
   /* Brand colors */
-  --navy-900: #0F2747;
-  --navy-700: #1E3A5F;
-  --amber-500: #E8A33D;
-  --amber-400: #F0B968;
+  --navy-900: #141414;
+  --navy-700: #1E1E1E;
+  --amber-500: #E8601A;
+  --amber-400: #F07840;
 
   /* Text */
   --ink-900: #0B1220;
@@ -64,16 +64,27 @@
    DARK MODE TOKENS
    ============================================================ */
 [data-theme="dark"] {
-  --bg: #0B1220;
-  --bg-elev: #131B2E;
-  --text: #E8ECF3;
-  --text-muted: #94A3B8;
-  --paper: #131B2E;
-  --paper-50: #0F1929;
-  --paper-100: #0B1220;
-  --border: #1E3A5F;
-  --ink-900: #E8ECF3;
-  --ink-600: #94A3B8;
+  --bg: #141414;
+  --bg-elev: #1E1E1E;
+  --text: #cccccc;
+  --text-muted: #999999;
+  --paper: #252525;
+  --paper-50: #1E1E1E;
+  --paper-100: #141414;
+  --border: #2a2a2a;
+  --ink-900: #ffffff;
+  --ink-600: #999999;
+}
+
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4 {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .rb-eyebrow {
+  color: var(--amber-500);
 }
 
 /* ============================================================
@@ -199,7 +210,7 @@ p { line-height: 1.7; }
 }
 
 [data-theme="dark"] .rb-section-heading {
-  color: var(--text);
+  color: #ffffff;
 }
 
 .rb-section-subhead {
@@ -356,6 +367,10 @@ p { line-height: 1.7; }
 
 .rb-nav__links a:hover {
   color: var(--navy-900);
+}
+
+[data-theme="dark"] .rb-nav__links a {
+  color: #cccccc;
 }
 
 [data-theme="dark"] .rb-nav__links a:hover {
@@ -547,17 +562,6 @@ p { line-height: 1.7; }
   min-height: 560px;
 }
 
-/* Canvas fills the entire hero behind all content */
-#rb-hero-network {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-  display: block;
-  pointer-events: none;
-  will-change: transform;
-}
 
 /* Warm amber accent glow — sits above canvas */
 .rb-hero::before {
@@ -606,6 +610,7 @@ p { line-height: 1.7; }
   font-family: 'Lora', Georgia, serif;
   font-weight: 400;
   font-size: clamp(2.25rem, 5vw, 4rem);
+  color: #ffffff;
   color: #F4F1EA;
   margin-bottom: var(--space-6);
   line-height: 1.12;
@@ -613,7 +618,7 @@ p { line-height: 1.7; }
 
 .rb-hero__subhead {
   font-size: clamp(1.0625rem, 2vw, 1.25rem);
-  color: rgba(232, 236, 243, 0.8);
+  color: #cccccc;
   margin-bottom: var(--space-8);
   max-width: 480px;
 }
@@ -637,7 +642,7 @@ p { line-height: 1.7; }
 
 .rb-hero__trust {
   font-size: 0.875rem;
-  color: rgba(232, 236, 243, 0.55);
+  color: #888888;
   font-weight: 500;
 }
 
