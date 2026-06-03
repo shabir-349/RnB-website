@@ -873,6 +873,9 @@
     var SPARKLE_SVG  = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>';
     var SHIELD_SVG   = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>';
     var DATABASE_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3"/></svg>';
+    var BARCHART_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/><line x1="2" x2="22" y1="20" y2="20"/></svg>';
+    var DOCUMENT_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M10 13H8"/><path d="M16 17H8"/><path d="M16 13h-2"/></svg>';
+    var BOOKS_SVG    = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>';
 
     var AGENT_CONFIGS = {
       topicscout: {
@@ -888,8 +891,26 @@
       },
       dataforge: {
         name: 'DataForge', meta: 'Generate synthetic datasets',
-        icon: DATABASE_SVG, minPlan: 'pro',
-        upgradeText: 'Upgrade to Pro to unlock DataForge and generate realistic synthetic datasets for methodology testing.',
+        icon: DATABASE_SVG, minPlan: 'scholar',
+        upgradeText: 'Upgrade to Scholar to unlock DataForge and generate realistic synthetic datasets for methodology testing.',
+        upgradeHref: 'payment.html?plan=scholar', upgradePlan: 'Scholar'
+      },
+      statsmith: {
+        name: 'StatSmith', meta: 'Statistical analysis',
+        icon: BARCHART_SVG, minPlan: 'pro',
+        upgradeText: 'Upgrade to Pro to unlock StatSmith and run the right statistical tests for your study design and data type.',
+        upgradeHref: 'payment.html?plan=pro', upgradePlan: 'Pro'
+      },
+      manuscriptai: {
+        name: 'ManuscriptAI', meta: 'Manuscript writing',
+        icon: DOCUMENT_SVG, minPlan: 'pro',
+        upgradeText: 'Upgrade to Pro to unlock ManuscriptAI and draft your research manuscript section by section with AI guidance.',
+        upgradeHref: 'payment.html?plan=pro', upgradePlan: 'Pro'
+      },
+      journalmatch: {
+        name: 'JournalMatch', meta: 'Journal targeting',
+        icon: BOOKS_SVG, minPlan: 'pro',
+        upgradeText: 'Upgrade to Pro to unlock JournalMatch and find the best-fit journals for your manuscript.',
         upgradeHref: 'payment.html?plan=pro', upgradePlan: 'Pro'
       }
     };
@@ -1287,13 +1308,17 @@
     }
 
     function applyPlanState(status, plan) {
-      var dash         = document.getElementById('rb-dash');
-      var pendingCard  = document.getElementById('rb-dash-pending');
-      var rejectedCard = document.getElementById('rb-dash-rejected');
-      var freeCard     = document.getElementById('rb-dash-free');
-      var upgradeBtn   = document.querySelector('#rb-dash-sidebar-footer .rb-btn--amber');
-      var planLabel    = document.querySelector('.rb-dash__plan-label');
-      var welcomeSub   = document.querySelector('.rb-dash__welcome-sub');
+      var dash          = document.getElementById('rb-dash');
+      var pendingCard   = document.getElementById('rb-dash-pending');
+      var rejectedCard  = document.getElementById('rb-dash-rejected');
+      var freeCard      = document.getElementById('rb-dash-free');
+      var upgradeBtn    = document.querySelector('#rb-dash-sidebar-footer .rb-btn--amber');
+      var planLabel     = document.querySelector('.rb-dash__plan-label');
+      var welcomeSub    = document.querySelector('.rb-dash__welcome-sub');
+      var upgradeBanner = document.getElementById('rb-dash-upgrade-banner');
+
+      // Upgrade banner: free users only
+      if (upgradeBanner) upgradeBanner.style.display = status ? 'none' : '';
 
       // Add CSS state class so existing stylesheet rules still fire
       if (dash && status) dash.classList.add('rb-dash--' + status);
@@ -1394,13 +1419,19 @@
         if (academySub) academySub.textContent = 'All 97 lessons unlocked.';
 
         // Unlock agent cards based on plan
-        var viabilityCard = document.querySelector('[data-agent="viabilitycheck"]');
-        var dataforgeCard = document.querySelector('[data-agent="dataforge"]');
+        var viabilityCard  = document.querySelector('[data-agent="viabilitycheck"]');
+        var dataforgeCard  = document.querySelector('[data-agent="dataforge"]');
+        var statsmithCard  = document.querySelector('[data-agent="statsmith"]');
+        var manuscriptCard = document.querySelector('[data-agent="manuscriptai"]');
+        var journalCard    = document.querySelector('[data-agent="journalmatch"]');
         if (plan === 'scholar' || plan === 'pro') {
           if (viabilityCard) viabilityCard.classList.remove('rb-agent-preview-card--locked');
+          if (dataforgeCard) dataforgeCard.classList.remove('rb-agent-preview-card--locked');
         }
         if (plan === 'pro') {
-          if (dataforgeCard) dataforgeCard.classList.remove('rb-agent-preview-card--locked');
+          if (statsmithCard)  statsmithCard.classList.remove('rb-agent-preview-card--locked');
+          if (manuscriptCard) manuscriptCard.classList.remove('rb-agent-preview-card--locked');
+          if (journalCard)    journalCard.classList.remove('rb-agent-preview-card--locked');
         }
       }
     }
