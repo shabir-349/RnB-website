@@ -27,6 +27,9 @@ const RB_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 /* ── Initialize client ───────────────────────────────────────────── */
 const rbSupabase = window.supabase.createClient(RB_SUPABASE_URL, RB_SUPABASE_KEY);
 
+// Fire session fetch immediately so it's in-flight before DOMContentLoaded
+const _rbSessionPromise = rbSupabase.auth.getSession();
+
 /* ── Auth helpers ────────────────────────────────────────────────── */
 
 /**
@@ -65,7 +68,7 @@ async function rbSignOut() {
  * Return the current session object, or null if logged out.
  */
 async function rbGetSession() {
-  const { data: { session } } = await rbSupabase.auth.getSession();
+  const { data: { session } } = await _rbSessionPromise;
   return session;
 }
 

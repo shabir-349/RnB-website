@@ -1101,8 +1101,10 @@
       if (e.key === 'Escape' && _wpopup.classList.contains('rb-watch-popup--open')) closeWatchPopup();
     });
 
+    document.addEventListener('DOMContentLoaded', function () {
     rbRequireAuth().then(function (session) {
       if (!session) return;
+      document.body.style.visibility = 'visible';
 
       var name = (session.user.user_metadata && session.user.user_metadata.full_name)
         ? session.user.user_metadata.full_name
@@ -1150,6 +1152,7 @@
               .subscribe();
           }
         });
+    });
     });
 
     function getUserLectureLevel(payment) {
