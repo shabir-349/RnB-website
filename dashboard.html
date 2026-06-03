@@ -53,6 +53,10 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
           Dashboard
         </a>
+        <a href="#rb-dash-agents" class="rb-dash__nav-link" id="rb-agents-nav-link">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+          AI Agents
+        </a>
         <a href="#" class="rb-dash__nav-link rb-dash__nav-link--locked" aria-label="Academy — upgrade required">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
           Academy
@@ -195,93 +199,168 @@
         </div>
       </div>
 
-      <!-- TopicScout AI -->
-      <section class="rb-dash-section rb-topicscout" id="rb-topicscout">
-        <div class="rb-dash-section__head">
-          <h2 class="rb-dash-section__title">&#10024; TopicScout AI</h2>
-        </div>
-        <p class="rb-dash-section__sub">Generate novel research topics tailored to your specialty</p>
-        <div class="rb-topicscout__form">
-          <div class="rb-topicscout__controls">
-            <div class="rb-topicscout__field">
-              <label class="rb-topicscout__label" for="rb-ts-population">Population</label>
-              <input type="text" id="rb-ts-population" class="rb-topicscout__input" placeholder="e.g. diabetic patients over 60, pregnant women in rural areas" autocomplete="off" />
-              <span id="rb-ts-pop-err" class="rb-ts-field-err" hidden>Population is required.</span>
+      <!-- Agent Panel -->
+      <section class="rb-agent-panel" id="rb-agent-panel">
+        <div class="rb-agent-panel__header">
+          <div class="rb-agent-panel__title-row">
+            <div class="rb-agent-panel__icon-box" id="rb-agent-panel-icon-box">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>
             </div>
-            <div class="rb-topicscout__field">
-              <label class="rb-topicscout__label" for="rb-ts-intervention">Intervention <span class="rb-topicscout__label-opt">(optional)</span></label>
-              <input type="text" id="rb-ts-intervention" class="rb-topicscout__input" placeholder="e.g. telemedicine, metformin, CBT" autocomplete="off" />
-            </div>
-            <div class="rb-topicscout__field rb-topicscout__field--full">
-              <label class="rb-topicscout__label" for="rb-ts-study-design">Study Design</label>
-              <select id="rb-ts-study-design" class="rb-topicscout__select">
-                <option value="">Select a study design&hellip;</option>
-                <option value="letter_to_editor">LTE</option>
-                <option value="narrative_review">Narrative review</option>
-                <option value="cross_sectional">Cross-sectional study</option>
-                <option value="cohort">Cohort study</option>
-                <option value="case_control">Case control study</option>
-                <option value="rct">RCT</option>
-                <option value="systematic_review_meta_analysis">Systematic review and meta-analysis</option>
-                <option value="network_meta_analysis">Network meta-analysis</option>
-              </select>
-              <span id="rb-ts-design-err" class="rb-ts-field-err" hidden>Study Design is required.</span>
+            <div>
+              <div class="rb-agent-panel__name" id="rb-agent-panel-name">TopicScout AI</div>
+              <div class="rb-agent-panel__meta" id="rb-agent-panel-meta"><em>Find novel research topics</em></div>
             </div>
           </div>
-          <button type="button" id="rb-ts-btn" class="rb-btn rb-btn--amber">
-            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>
-            Generate Topics
-          </button>
-          <p id="rb-ts-quota" class="rb-ts-quota" hidden aria-live="polite"></p>
+          <span class="rb-agent-panel__counter" id="rb-agent-panel-counter" aria-live="polite"></span>
         </div>
-        <div id="rb-ts-results" class="rb-topicscout__results" hidden></div>
+        <div class="rb-agent-panel__body">
+          <div id="rb-topicscout-form-inner">
+            <div class="rb-topicscout__form">
+              <div class="rb-topicscout__controls">
+                <div class="rb-topicscout__field">
+                  <label class="rb-topicscout__label" for="rb-ts-population">Population</label>
+                  <input type="text" id="rb-ts-population" class="rb-topicscout__input" placeholder="e.g. diabetic patients over 60, pregnant women in rural areas" autocomplete="off" />
+                  <span id="rb-ts-pop-err" class="rb-ts-field-err" hidden>Population is required.</span>
+                </div>
+                <div class="rb-topicscout__field">
+                  <label class="rb-topicscout__label" for="rb-ts-intervention">Intervention <span class="rb-topicscout__label-opt">(optional)</span></label>
+                  <input type="text" id="rb-ts-intervention" class="rb-topicscout__input" placeholder="e.g. telemedicine, metformin, CBT" autocomplete="off" />
+                </div>
+                <div class="rb-topicscout__field rb-topicscout__field--full">
+                  <label class="rb-topicscout__label" for="rb-ts-study-design">Study Design</label>
+                  <select id="rb-ts-study-design" class="rb-topicscout__select">
+                    <option value="">Select a study design&hellip;</option>
+                    <option value="letter_to_editor">LTE</option>
+                    <option value="narrative_review">Narrative review</option>
+                    <option value="cross_sectional">Cross-sectional study</option>
+                    <option value="cohort">Cohort study</option>
+                    <option value="case_control">Case control study</option>
+                    <option value="rct">RCT</option>
+                    <option value="systematic_review_meta_analysis">Systematic review and meta-analysis</option>
+                    <option value="network_meta_analysis">Network meta-analysis</option>
+                  </select>
+                  <span id="rb-ts-design-err" class="rb-ts-field-err" hidden>Study Design is required.</span>
+                </div>
+              </div>
+              <button type="button" id="rb-ts-btn" class="rb-btn rb-btn--amber">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>
+                Generate Topics
+              </button>
+              <p id="rb-ts-quota" class="rb-ts-quota" hidden aria-live="polite"></p>
+            </div>
+            <div id="rb-ts-results" class="rb-topicscout__results" hidden></div>
+          </div>
+          <div id="rb-agent-upgrade-prompt" class="rb-agent-upgrade-prompt" hidden>
+            <div class="rb-agent-upgrade-prompt__inner">
+              <div class="rb-agent-upgrade-prompt__icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              <h3 class="rb-agent-upgrade-prompt__title">This agent is locked</h3>
+              <p class="rb-agent-upgrade-prompt__text" id="rb-agent-upgrade-text">Upgrade to unlock this AI agent and accelerate your research.</p>
+              <a href="payment.html" class="rb-btn rb-btn--amber rb-agent-upgrade-prompt__cta" id="rb-agent-upgrade-cta">Upgrade to Scholar &rarr;</a>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <!-- Quick Actions -->
-      <section class="rb-dash-section">
+      <!-- AI Agents -->
+      <section class="rb-dash-section" id="rb-dash-agents">
         <div class="rb-dash-section__head">
-          <h2 class="rb-dash-section__title">Quick start</h2>
+          <h2 class="rb-dash-section__title">AI Agents</h2>
+          <a href="payment.html" class="rb-dash-section__cta">View all agents &rarr;</a>
         </div>
-        <div class="rb-dash-actions">
-          <a href="#" class="rb-dash-action rb-dash-action--free" aria-label="Browse free lessons">
-            <div class="rb-dash-action__icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        <div class="rb-agents-grid">
+
+          <div class="rb-agent-preview-card rb-agent-preview-card--active" data-agent="topicscout" role="button" tabindex="0" aria-label="TopicScout AI — open agent">
+            <div class="rb-agent-preview-card__top">
+              <div class="rb-agent-preview-card__icon-wrap">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>
+              </div>
+              <span class="rb-agent-preview-card__badge rb-agent-preview-card__badge--live">LIVE</span>
             </div>
-            <div class="rb-dash-action__body">
-              <p class="rb-dash-action__title">Browse Academy</p>
-              <p class="rb-dash-action__sub">3 free lessons available now</p>
+            <div class="rb-agent-preview-card__name">TopicScout</div>
+            <div class="rb-agent-preview-card__subtitle"><em>Topic generation</em></div>
+            <p class="rb-agent-preview-card__desc">Generate novel, publication-ready research topics from your PICO framework.</p>
+            <div class="rb-agent-preview-card__footer">
+              <span class="rb-agent-preview-card__open">Open &rarr;</span>
             </div>
-          </a>
-          <a href="payment.html" class="rb-dash-action rb-dash-action--locked" aria-label="Find a research topic — requires Scholar plan">
-            <div class="rb-dash-action__icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          </div>
+
+          <div class="rb-agent-preview-card rb-agent-preview-card--locked" data-agent="viabilitycheck" data-min-plan="scholar" role="button" tabindex="0" aria-label="ViabilityCheck — Scholar required">
+            <div class="rb-agent-preview-card__top">
+              <div class="rb-agent-preview-card__icon-wrap">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+              </div>
+              <span class="rb-agent-preview-card__badge rb-agent-preview-card__badge--scholar">SCHOLAR</span>
             </div>
-            <div class="rb-dash-action__body">
-              <p class="rb-dash-action__title">Find a Topic</p>
-              <p class="rb-dash-action__sub">AI topic scout &mdash; Scholar</p>
+            <div class="rb-agent-preview-card__name">ViabilityCheck</div>
+            <div class="rb-agent-preview-card__subtitle"><em>Feasibility analysis</em></div>
+            <p class="rb-agent-preview-card__desc">Assess whether your research idea is feasible before investing months of effort.</p>
+            <div class="rb-agent-preview-card__footer">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Locked"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             </div>
-            <svg class="rb-dash-action__lock" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          </a>
-          <a href="payment.html" class="rb-dash-action rb-dash-action--locked" aria-label="Start a meta-analysis — requires Scholar plan">
-            <div class="rb-dash-action__icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+          </div>
+
+          <div class="rb-agent-preview-card rb-agent-preview-card--locked" data-agent="dataforge" data-min-plan="scholar" role="button" tabindex="0" aria-label="DataForge — Scholar required">
+            <div class="rb-agent-preview-card__top">
+              <div class="rb-agent-preview-card__icon-wrap">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3"/></svg>
+              </div>
+              <span class="rb-agent-preview-card__badge rb-agent-preview-card__badge--scholar">SCHOLAR</span>
             </div>
-            <div class="rb-dash-action__body">
-              <p class="rb-dash-action__title">Start Meta-analysis</p>
-              <p class="rb-dash-action__sub">Full 13-phase workflow &mdash; Scholar</p>
+            <div class="rb-agent-preview-card__name">DataForge</div>
+            <div class="rb-agent-preview-card__subtitle"><em>Data generation</em></div>
+            <p class="rb-agent-preview-card__desc">Generate realistic synthetic datasets for methodology testing and study planning.</p>
+            <div class="rb-agent-preview-card__footer">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Locked"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             </div>
-            <svg class="rb-dash-action__lock" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          </a>
-          <a href="payment.html" class="rb-dash-action rb-dash-action--locked" aria-label="Track residency readiness — requires Scholar plan">
-            <div class="rb-dash-action__icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 20h.01M7 20v-4"/><path d="M12 20v-8"/><path d="M17 20V8"/><path d="M22 4v16"/></svg>
+          </div>
+
+          <div class="rb-agent-preview-card rb-agent-preview-card--locked" data-agent="statsmith" data-min-plan="pro" role="button" tabindex="0" aria-label="StatSmith — Pro required">
+            <div class="rb-agent-preview-card__top">
+              <div class="rb-agent-preview-card__icon-wrap">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/><line x1="2" x2="22" y1="20" y2="20"/></svg>
+              </div>
+              <span class="rb-agent-preview-card__badge rb-agent-preview-card__badge--pro">PRO</span>
             </div>
-            <div class="rb-dash-action__body">
-              <p class="rb-dash-action__title">Residency Tracker</p>
-              <p class="rb-dash-action__sub">Live match-readiness score &mdash; Scholar</p>
+            <div class="rb-agent-preview-card__name">StatSmith</div>
+            <div class="rb-agent-preview-card__subtitle"><em>Statistical analysis</em></div>
+            <p class="rb-agent-preview-card__desc">Run and interpret the right statistical tests for your study design and data type.</p>
+            <div class="rb-agent-preview-card__footer">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Locked"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             </div>
-            <svg class="rb-dash-action__lock" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          </a>
+          </div>
+
+          <div class="rb-agent-preview-card rb-agent-preview-card--locked" data-agent="manuscriptai" data-min-plan="pro" role="button" tabindex="0" aria-label="ManuscriptAI — Pro required">
+            <div class="rb-agent-preview-card__top">
+              <div class="rb-agent-preview-card__icon-wrap">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M10 13H8"/><path d="M16 17H8"/><path d="M16 13h-2"/></svg>
+              </div>
+              <span class="rb-agent-preview-card__badge rb-agent-preview-card__badge--pro">PRO</span>
+            </div>
+            <div class="rb-agent-preview-card__name">ManuscriptAI</div>
+            <div class="rb-agent-preview-card__subtitle"><em>Manuscript writing</em></div>
+            <p class="rb-agent-preview-card__desc">Draft and refine research manuscripts section by section with AI-guided writing assistance.</p>
+            <div class="rb-agent-preview-card__footer">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Locked"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+          </div>
+
+          <div class="rb-agent-preview-card rb-agent-preview-card--locked" data-agent="journalmatch" data-min-plan="pro" role="button" tabindex="0" aria-label="JournalMatch — Pro required">
+            <div class="rb-agent-preview-card__top">
+              <div class="rb-agent-preview-card__icon-wrap">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+              </div>
+              <span class="rb-agent-preview-card__badge rb-agent-preview-card__badge--pro">PRO</span>
+            </div>
+            <div class="rb-agent-preview-card__name">JournalMatch</div>
+            <div class="rb-agent-preview-card__subtitle"><em>Journal targeting</em></div>
+            <p class="rb-agent-preview-card__desc">Find the best-fit journals for your manuscript based on scope, impact, and acceptance rate.</p>
+            <div class="rb-agent-preview-card__footer">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Locked"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+          </div>
+
         </div>
       </section>
 
@@ -298,46 +377,6 @@
         </div>
       </section>
 
-      <!-- Research Modes (all locked) -->
-      <section class="rb-dash-section">
-        <div class="rb-dash-section__head">
-          <h2 class="rb-dash-section__title">Research Modes</h2>
-          <a href="payment.html" class="rb-dash-section__cta">Unlock all 6 modes &rarr;</a>
-        </div>
-        <p class="rb-dash-section__sub">All research modes require the Scholar plan.</p>
-        <div class="rb-dash-modes">
-          <a href="payment.html" class="rb-dash-mode" aria-label="Meta-analysis mode — Scholar required">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
-            <span>Meta-analysis</span>
-            <svg class="rb-dash-mode__lock" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          </a>
-          <a href="payment.html" class="rb-dash-mode" aria-label="Systematic Review mode — Scholar required">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
-            <span>Systematic Review</span>
-            <svg class="rb-dash-mode__lock" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          </a>
-          <a href="payment.html" class="rb-dash-mode" aria-label="Cross-sectional mode — Scholar required">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-            <span>Cross-sectional</span>
-            <svg class="rb-dash-mode__lock" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          </a>
-          <a href="payment.html" class="rb-dash-mode" aria-label="Case Report mode — Scholar required">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <span>Case Report</span>
-            <svg class="rb-dash-mode__lock" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          </a>
-          <a href="payment.html" class="rb-dash-mode" aria-label="RCT mode — Scholar required">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 12 11 14l4-4"/><path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9"/></svg>
-            <span>RCT</span>
-            <svg class="rb-dash-mode__lock" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          </a>
-          <a href="payment.html" class="rb-dash-mode" aria-label="Clinical Audit mode — Scholar required">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 20h.01M7 20v-4"/><path d="M12 20v-8"/><path d="M17 20V8"/><path d="M22 4v16"/></svg>
-            <span>Clinical Audit</span>
-            <svg class="rb-dash-mode__lock" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          </a>
-        </div>
-      </section>
 
     </main>
   </div>

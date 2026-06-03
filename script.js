@@ -856,6 +856,83 @@
   var _rbCallLoadQuota = null;
 
   /* ============================================================
+     AGENTS PANEL — card selection + panel content switching
+  ============================================================ */
+  (function initAgentsPanel() {
+    var cards = document.querySelectorAll('.rb-agent-preview-card');
+    if (!cards.length) return;
+
+    var panelName     = document.getElementById('rb-agent-panel-name');
+    var panelMeta     = document.getElementById('rb-agent-panel-meta');
+    var panelIconBox  = document.getElementById('rb-agent-panel-icon-box');
+    var formInner     = document.getElementById('rb-topicscout-form-inner');
+    var upgradePrompt = document.getElementById('rb-agent-upgrade-prompt');
+    var upgradeText   = document.getElementById('rb-agent-upgrade-text');
+    var upgradeCta    = document.getElementById('rb-agent-upgrade-cta');
+
+    var SPARKLE_SVG  = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>';
+    var SHIELD_SVG   = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>';
+    var DATABASE_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3"/></svg>';
+
+    var AGENT_CONFIGS = {
+      topicscout: {
+        name: 'TopicScout AI', meta: 'Find novel research topics',
+        icon: SPARKLE_SVG, minPlan: 'free',
+        upgradeText: null, upgradeHref: null, upgradePlan: null
+      },
+      viabilitycheck: {
+        name: 'ViabilityCheck', meta: 'Assess research feasibility',
+        icon: SHIELD_SVG, minPlan: 'scholar',
+        upgradeText: 'Upgrade to Scholar to unlock ViabilityCheck and assess whether your research idea is viable before investing months of effort.',
+        upgradeHref: 'payment.html', upgradePlan: 'Scholar'
+      },
+      dataforge: {
+        name: 'DataForge', meta: 'Generate synthetic datasets',
+        icon: DATABASE_SVG, minPlan: 'pro',
+        upgradeText: 'Upgrade to Pro to unlock DataForge and generate realistic synthetic datasets for methodology testing.',
+        upgradeHref: 'payment.html?plan=pro', upgradePlan: 'Pro'
+      }
+    };
+
+    var PLAN_RANK = { free: 0, scholar: 1, pro: 2 };
+
+    function activateCard(card) {
+      cards.forEach(function (c) { c.classList.remove('rb-agent-preview-card--active'); });
+      card.classList.add('rb-agent-preview-card--active');
+
+      var cfg = AGENT_CONFIGS[card.dataset.agent];
+      if (!cfg) return;
+
+      if (panelName)    panelName.textContent = cfg.name;
+      if (panelMeta)    panelMeta.innerHTML   = '<em>' + cfg.meta + '</em>';
+      if (panelIconBox) panelIconBox.innerHTML = cfg.icon;
+
+      var userRank = PLAN_RANK[rbDashboardPlan] != null ? PLAN_RANK[rbDashboardPlan] : 0;
+      var minRank  = PLAN_RANK[cfg.minPlan]     != null ? PLAN_RANK[cfg.minPlan]     : 0;
+
+      if (userRank >= minRank) {
+        if (formInner)     formInner.removeAttribute('hidden');
+        if (upgradePrompt) upgradePrompt.setAttribute('hidden', '');
+      } else {
+        if (formInner)     formInner.setAttribute('hidden', '');
+        if (upgradePrompt) upgradePrompt.removeAttribute('hidden');
+        if (upgradeText && cfg.upgradeText) upgradeText.textContent = cfg.upgradeText;
+        if (upgradeCta && cfg.upgradePlan) {
+          upgradeCta.textContent = 'Upgrade to ' + cfg.upgradePlan + ' →';
+          upgradeCta.href = cfg.upgradeHref;
+        }
+      }
+    }
+
+    cards.forEach(function (card) {
+      card.addEventListener('click', function () { activateCard(card); });
+      card.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activateCard(card); }
+      });
+    });
+  })();
+
+  /* ============================================================
      DASHBOARD AUTH GUARD + USER DISPLAY + PLAN STATE
   ============================================================ */
   (function initDashboard() {
@@ -1312,8 +1389,16 @@
         // Update section subtitles
         var academySub = document.querySelector('#rb-dash-academy .rb-dash-section__sub');
         if (academySub) academySub.textContent = 'All 97 lessons unlocked.';
-        var modesSub = document.querySelector('.rb-dash-section:last-of-type .rb-dash-section__sub');
-        if (modesSub) modesSub.textContent = 'All 6 research modes unlocked.';
+
+        // Unlock agent cards based on plan
+        var viabilityCard = document.querySelector('[data-agent="viabilitycheck"]');
+        var dataforgeCard = document.querySelector('[data-agent="dataforge"]');
+        if (plan === 'scholar' || plan === 'pro') {
+          if (viabilityCard) viabilityCard.classList.remove('rb-agent-preview-card--locked');
+        }
+        if (plan === 'pro') {
+          if (dataforgeCard) dataforgeCard.classList.remove('rb-agent-preview-card--locked');
+        }
       }
     }
   })();
@@ -1474,6 +1559,9 @@
         ? 'Daily limit reached. Upgrade your plan for more generations.'
         : remaining + ' / ' + limit + ' generation' + (limit === 1 ? '' : 's') + ' remaining today';
       btn.disabled = depleted;
+
+      var counter = document.getElementById('rb-agent-panel-counter');
+      if (counter) counter.textContent = remaining + '/' + limit + ' today';
     }
 
     async function loadQuota() {
