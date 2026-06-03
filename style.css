@@ -2504,7 +2504,7 @@ p { line-height: 1.7; }
 }
 
 @media (max-width: 767px) {
-  .rb-dash__main { padding: var(--space-6) var(--gutter-mobile) var(--space-16); }
+  .rb-dash__main { padding: var(--space-6) var(--gutter-mobile) 88px; }
 }
 
 .rb-dash-upgrade-banner {
@@ -3001,7 +3001,7 @@ p { line-height: 1.7; }
   scroll-snap-align: start;
 }
 
-@media (max-width: 559px) { .rb-agent-preview-card { min-width: 160px; } }
+@media (max-width: 559px) { .rb-agent-preview-card { min-width: 140px; } }
 
 .rb-agent-preview-card:hover { border-color: var(--amber-500); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
 
@@ -3074,6 +3074,62 @@ p { line-height: 1.7; }
 
 .rb-agent-preview-card__open { color: var(--amber-500); font-size: 0.8125rem; font-weight: 600; transition: color var(--transition); }
 .rb-agent-preview-card:hover .rb-agent-preview-card__open { color: var(--amber-400); }
+
+.rb-agents-swipe-hint {
+  display: none;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: var(--space-2);
+  text-align: center;
+}
+
+@media (max-width: 767px) {
+  .rb-agents-swipe-hint { display: block; }
+}
+
+/* ============================================================
+   MOBILE BOTTOM NAVIGATION
+   ============================================================ */
+.rb-mobile-bottom-nav { display: none; }
+
+@media (max-width: 767px) {
+  .rb-mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 200;
+    background-color: #0D0D0D;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    height: 60px;
+  }
+
+  .rb-mobile-bottom-nav__item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    color: rgba(255, 255, 255, 0.4);
+    text-decoration: none;
+    padding: 8px 4px;
+    transition: color var(--transition);
+  }
+
+  .rb-mobile-bottom-nav__item--active,
+  .rb-mobile-bottom-nav__item:hover {
+    color: var(--amber-500);
+  }
+
+  .rb-mobile-bottom-nav__label {
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1;
+  }
+}
 
 /* Copy toast */
 .rb-copy-toast {
@@ -4907,7 +4963,7 @@ p { line-height: 1.7; }
   gap: var(--space-4);
 }
 
-@media (max-width: 600px) {
+@media (max-width: 767px) {
   .rb-topicscout__controls { grid-template-columns: 1fr; }
 }
 
