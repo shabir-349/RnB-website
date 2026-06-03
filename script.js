@@ -2040,4 +2040,256 @@
     render();
   })();
 
+  /* ============================================================
+     VIABILITY CHECK — viability-check.html
+  ============================================================ */
+  (function initViabilityCheck() {
+    var btn      = document.getElementById('rb-vc-btn');
+    var topicEl  = document.getElementById('rb-vc-topic');
+    var designEl = document.getElementById('rb-vc-design');
+    if (!btn || !topicEl || !designEl) return;
+
+    var loadingEl = document.getElementById('rb-vc-loading');
+    var resultsEl = document.getElementById('rb-vc-results');
+
+    // Auth guard — same DOMContentLoaded pattern as dashboard
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof rbRequireAuth !== 'function') return;
+      rbRequireAuth().then(function (session) {
+        if (!session) return;
+        document.body.style.visibility = 'visible';
+        var name = (session.user.user_metadata && session.user.user_metadata.full_name)
+          ? session.user.user_metadata.full_name
+          : session.user.email;
+        var usernameEl = document.querySelector('.rb-dash-nav__username');
+        if (usernameEl) usernameEl.textContent = name.split(' ')[0];
+        var avatarEl = document.querySelector('.rb-dash-nav__avatar');
+        if (avatarEl) avatarEl.textContent = name.charAt(0).toUpperCase();
+      });
+    });
+
+    var STATUS_MESSAGES = [
+      'Reading your research topic…',
+      'Scanning existing literature…',
+      'Assessing feasibility…',
+      'Evaluating novelty…',
+      'Estimating publishability…',
+      'Generating your report…'
+    ];
+
+    function escHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function scoreClass(n) {
+      if (n >= 70) return 'high';
+      if (n >= 50) return 'medium';
+      return 'low';
+    }
+
+    function verdictTier(verdict) {
+      if (!verdict) return 'medium';
+      var v = verdict.toLowerCase();
+      if (v.includes('high') || v.includes('strong') || v.includes('excellent') || v.includes('publishable')) return 'high';
+      if (v.includes('not') || v.includes('poor') || v.includes('reject')) return 'low';
+      return 'medium';
+    }
+
+    function showToast(msg) {
+      var t = document.createElement('div');
+      t.className = 'rb-toast rb-ts-toast--error rb-toast--fade';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      t.getBoundingClientRect();
+      t.classList.remove('rb-toast--fade');
+      setTimeout(function () {
+        t.classList.add('rb-toast--fade');
+        setTimeout(function () { if (t.parentNode) t.remove(); }, 350);
+      }, 4000);
+    }
+
+    function renderResults(data) {
+      if (!resultsEl) return;
+
+      var tier  = verdictTier(data.verdict);
+      var icons = {
+        high:   '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>',
+        medium: '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
+        low:    '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'
+      };
+
+      // Verdict banner
+      var html = '<div class="rb-vc-verdict rb-vc-verdict--' + tier + '" role="status">'
+        + '<div class="rb-vc-verdict__icon">' + icons[tier] + '</div>'
+        + '<div><div class="rb-vc-verdict__label">Verdict</div>'
+        + '<div class="rb-vc-verdict__text">' + escHtml(data.verdict || 'No verdict returned') + '</div></div>'
+        + '</div>';
+
+      // Score cards
+      var scores   = data.scores || {};
+      var scoreKeys = [
+        { key: 'feasibility',    label: 'Feasibility' },
+        { key: 'novelty',        label: 'Novelty' },
+        { key: 'publishability', label: 'Publishability' }
+      ];
+      html += '<div class="rb-vc-scores">';
+      scoreKeys.forEach(function (s) {
+        var n   = typeof scores[s.key] === 'number' ? Math.max(0, Math.min(100, scores[s.key])) : 0;
+        var cls = scoreClass(n);
+        html += '<div class="rb-vc-score-card">'
+          + '<div class="rb-vc-score-card__label">' + s.label + '</div>'
+          + '<div class="rb-vc-score-card__num-row">'
+          + '<span class="rb-vc-score-card__num rb-vc-score-card__num--' + cls + '">' + n + '</span>'
+          + '<span class="rb-vc-score-card__denom">/100</span>'
+          + '</div>'
+          + '<div class="rb-vc-score-card__bar"><div class="rb-vc-score-card__bar-fill rb-vc-score-card__bar-fill--' + cls + '" style="width:0%"></div></div>'
+          + '</div>';
+      });
+      html += '</div>';
+
+      // Literature landscape
+      html += '<div class="rb-vc-section">'
+        + '<div class="rb-vc-section__title">Literature Landscape</div>'
+        + '<p class="rb-vc-prose">' + escHtml(data.literature || '') + '</p>'
+        + '</div>';
+
+      // Research gaps
+      var gaps = Array.isArray(data.gaps) ? data.gaps : [];
+      html += '<div class="rb-vc-section">'
+        + '<div class="rb-vc-section__title">Research Gaps</div>'
+        + '<ul class="rb-vc-list">'
+        + gaps.map(function (g) {
+            return '<li class="rb-vc-list__item"><span class="rb-vc-list__dot" aria-hidden="true"></span><span>' + escHtml(g) + '</span></li>';
+          }).join('')
+        + '</ul></div>';
+
+      // PICO grid
+      var pico = data.pico || {};
+      var picoItems = [
+        { letter: 'P', label: 'Population',   key: 'population' },
+        { letter: 'I', label: 'Intervention', key: 'intervention' },
+        { letter: 'C', label: 'Comparison',   key: 'comparison' },
+        { letter: 'O', label: 'Outcome',      key: 'outcome' }
+      ];
+      html += '<div class="rb-vc-section">'
+        + '<div class="rb-vc-section__title">PICO Framework</div>'
+        + '<div class="rb-vc-pico-grid">'
+        + picoItems.map(function (p) {
+            return '<div class="rb-vc-pico-cell">'
+              + '<div class="rb-vc-pico-cell__letter">' + p.letter + '</div>'
+              + '<div class="rb-vc-pico-cell__label">' + p.label + '</div>'
+              + '<div class="rb-vc-pico-cell__text">' + escHtml(pico[p.key] || '—') + '</div>'
+              + '</div>';
+          }).join('')
+        + '</div></div>';
+
+      // Limitations
+      var lims = Array.isArray(data.limitations) ? data.limitations : [];
+      html += '<div class="rb-vc-section">'
+        + '<div class="rb-vc-section__title">Limitations</div>'
+        + '<ul class="rb-vc-list">'
+        + lims.map(function (l) {
+            return '<li class="rb-vc-list__item"><span class="rb-vc-list__dot" aria-hidden="true"></span><span>' + escHtml(l) + '</span></li>';
+          }).join('')
+        + '</ul></div>';
+
+      resultsEl.innerHTML = html;
+      resultsEl.removeAttribute('hidden');
+
+      // Animate score bars after paint
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          resultsEl.querySelectorAll('.rb-vc-score-card__bar-fill').forEach(function (fill, i) {
+            var n = typeof scores[scoreKeys[i].key] === 'number' ? Math.max(0, Math.min(100, scores[scoreKeys[i].key])) : 0;
+            fill.style.width = n + '%';
+          });
+        });
+      });
+    }
+
+    // Clear inline errors on correction
+    topicEl.addEventListener('input', function () {
+      var e = document.getElementById('rb-vc-topic-err');
+      if (e) e.setAttribute('hidden', '');
+      topicEl.classList.remove('rb-ts-input--err');
+    });
+    designEl.addEventListener('change', function () {
+      var e = document.getElementById('rb-vc-design-err');
+      if (e) e.setAttribute('hidden', '');
+      designEl.classList.remove('rb-ts-input--err');
+    });
+
+    btn.addEventListener('click', async function () {
+      var topic  = topicEl.value.trim();
+      var design = designEl.value;
+
+      var valid     = true;
+      var topicErr  = document.getElementById('rb-vc-topic-err');
+      var designErr = document.getElementById('rb-vc-design-err');
+      if (!topic) {
+        if (topicErr) topicErr.removeAttribute('hidden');
+        topicEl.classList.add('rb-ts-input--err');
+        valid = false;
+      }
+      if (!design) {
+        if (designErr) designErr.removeAttribute('hidden');
+        designEl.classList.add('rb-ts-input--err');
+        valid = false;
+      }
+      if (!valid) return;
+
+      var userId = null;
+      if (typeof rbGetSession === 'function') {
+        var session = await rbGetSession();
+        if (session) userId = session.user.id;
+      }
+
+      btn.disabled = true;
+      if (resultsEl) { resultsEl.setAttribute('hidden', ''); resultsEl.innerHTML = ''; }
+      if (loadingEl) loadingEl.removeAttribute('hidden');
+
+      var msgEl  = document.getElementById('rb-vc-status-msg');
+      var msgIdx = 0;
+      var msgInterval = setInterval(function () {
+        if (msgIdx >= STATUS_MESSAGES.length - 1) { clearInterval(msgInterval); return; }
+        msgIdx++;
+        if (msgEl) {
+          msgEl.classList.remove('rb-ts-status-msg--visible');
+          setTimeout(function () {
+            msgEl.textContent = STATUS_MESSAGES[msgIdx];
+            msgEl.classList.add('rb-ts-status-msg--visible');
+          }, 300);
+        }
+      }, 2000);
+
+      try {
+        var res  = await fetch('/api/viability-check', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ topic: topic, studyDesign: design, userId: userId })
+        });
+
+        clearInterval(msgInterval);
+        if (loadingEl) loadingEl.setAttribute('hidden', '');
+
+        var data = await res.json();
+
+        if (!res.ok) {
+          showToast((data && data.error) ? data.error : 'Failed to check viability. Please try again.');
+        } else {
+          renderResults(data);
+          resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      } catch (err) {
+        clearInterval(msgInterval);
+        if (loadingEl) loadingEl.setAttribute('hidden', '');
+        showToast((err && err.message) ? err.message : 'Failed to check viability. Please try again.');
+      }
+
+      btn.disabled = false;
+    });
+  })();
+
 })();

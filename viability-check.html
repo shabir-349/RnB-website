@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ViabilityCheck — R&amp;B Research and Beyond</title>
+  <meta name="description" content="Assess whether your research idea is feasible before investing months of effort." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/jpeg" href="./logo.jpg" />
+</head>
+<body style="visibility: hidden;">
+
+  <header class="rb-nav rb-dash-nav" id="rb-nav" role="banner">
+    <div class="rb-nav__inner">
+      <a href="dashboard.html" class="rb-vc-back-link" aria-label="Back to dashboard">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+        Dashboard
+      </a>
+      <a href="index.html" class="rb-logo" aria-label="R&B — Research and Beyond home">R&amp;B</a>
+      <div class="rb-dash-nav__breadcrumb" aria-label="Current page">ViabilityCheck</div>
+      <div class="rb-nav__actions rb-dash-nav__actions">
+        <button class="rb-theme-toggle" id="rb-theme-toggle" aria-label="Toggle dark mode">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-sun" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-moon" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        </button>
+        <div class="rb-dash-nav__user">
+          <div class="rb-dash-nav__avatar" aria-hidden="true">A</div>
+          <span class="rb-dash-nav__username">Ahmed</span>
+        </div>
+        <a href="signin.html" class="rb-btn rb-btn--outline rb-dash-nav__signout rb-signout-trigger" id="rb-signout-btn">Sign out</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="rb-vc-page">
+    <div class="rb-container">
+
+      <!-- Page header -->
+      <div class="rb-vc-header">
+        <div class="rb-vc-header__title-row">
+          <h1 class="rb-vc-title">ViabilityCheck</h1>
+          <span class="rb-vc-scholar-badge">Scholar</span>
+        </div>
+        <p class="rb-vc-header__sub">Assess whether your research idea is feasible before investing months of effort.</p>
+      </div>
+
+      <!-- Form -->
+      <div class="rb-vc-form-card">
+        <div class="rb-vc-form">
+          <div class="rb-topicscout__field rb-topicscout__field--full">
+            <label class="rb-topicscout__label" for="rb-vc-topic">Research Topic</label>
+            <input
+              type="text"
+              id="rb-vc-topic"
+              class="rb-topicscout__input"
+              placeholder="e.g. Telemedicine for diabetic management in rural Pakistan"
+              autocomplete="off"
+            />
+            <span id="rb-vc-topic-err" class="rb-ts-field-err" hidden>Research topic is required.</span>
+          </div>
+          <div class="rb-topicscout__field rb-topicscout__field--full">
+            <label class="rb-topicscout__label" for="rb-vc-design">Study Design</label>
+            <select id="rb-vc-design" class="rb-topicscout__select">
+              <option value="">Select a study design&hellip;</option>
+              <option value="letter_to_editor">LTE</option>
+              <option value="narrative_review">Narrative review</option>
+              <option value="cross_sectional">Cross-sectional study</option>
+              <option value="cohort">Cohort study</option>
+              <option value="case_control">Case control study</option>
+              <option value="rct">RCT</option>
+              <option value="systematic_review_meta_analysis">Systematic review and meta-analysis</option>
+              <option value="network_meta_analysis">Network meta-analysis</option>
+            </select>
+            <span id="rb-vc-design-err" class="rb-ts-field-err" hidden>Study Design is required.</span>
+          </div>
+          <div>
+            <button type="button" id="rb-vc-btn" class="rb-btn rb-btn--amber">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+              Check viability
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading state -->
+      <div id="rb-vc-loading" hidden>
+        <div class="rb-ts-status-loading">
+          <div class="rb-ts-status-row">
+            <span class="rb-ts-status-dot" aria-hidden="true"></span>
+            <span class="rb-ts-status-msg rb-ts-status-msg--visible" id="rb-vc-status-msg">Reading your research topic&hellip;</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results — rendered by JS -->
+      <div id="rb-vc-results" class="rb-vc-results" hidden></div>
+
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="supabase.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
