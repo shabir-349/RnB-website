@@ -822,11 +822,11 @@
         })
       }).catch(function (err) { console.error('admin notify error:', err); });
 
-      // Success — hide form, show confirmation card
-      var proofSection = document.getElementById('rb-proof-section');
-      var confirmCard  = document.getElementById('rb-payment-confirm');
-      if (proofSection) proofSection.hidden = true;
-      if (confirmCard)  confirmCard.hidden = false;
+      // Success — hide all payment content, show only confirmation card
+      var formArea    = document.getElementById('rb-payment-form-area');
+      var confirmCard = document.getElementById('rb-payment-confirm');
+      if (formArea)    formArea.hidden = true;
+      if (confirmCard) confirmCard.hidden = false;
     });
   })();
 
