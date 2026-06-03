@@ -880,36 +880,36 @@
     var AGENT_CONFIGS = {
       topicscout: {
         name: 'TopicScout AI', meta: 'Find novel research topics',
-        icon: SPARKLE_SVG, minPlan: 'free',
+        icon: SPARKLE_SVG, minPlan: 'free', pageHref: null,
         upgradeText: null, upgradeHref: null, upgradePlan: null
       },
       viabilitycheck: {
         name: 'ViabilityCheck', meta: 'Assess research feasibility',
-        icon: SHIELD_SVG, minPlan: 'scholar',
+        icon: SHIELD_SVG, minPlan: 'scholar', pageHref: 'viability-check.html',
         upgradeText: 'Upgrade to Scholar to unlock ViabilityCheck and assess whether your research idea is viable before investing months of effort.',
         upgradeHref: 'payment.html?plan=scholar', upgradePlan: 'Scholar'
       },
       dataforge: {
         name: 'DataForge', meta: 'Generate synthetic datasets',
-        icon: DATABASE_SVG, minPlan: 'scholar',
+        icon: DATABASE_SVG, minPlan: 'scholar', pageHref: 'dataforge.html',
         upgradeText: 'Upgrade to Scholar to unlock DataForge and generate realistic synthetic datasets for methodology testing.',
         upgradeHref: 'payment.html?plan=scholar', upgradePlan: 'Scholar'
       },
       statsmith: {
         name: 'StatSmith', meta: 'Statistical analysis',
-        icon: BARCHART_SVG, minPlan: 'pro',
+        icon: BARCHART_SVG, minPlan: 'pro', pageHref: null,
         upgradeText: 'Upgrade to Pro to unlock StatSmith and run the right statistical tests for your study design and data type.',
         upgradeHref: 'payment.html?plan=pro', upgradePlan: 'Pro'
       },
       manuscriptai: {
         name: 'ManuscriptAI', meta: 'Manuscript writing',
-        icon: DOCUMENT_SVG, minPlan: 'pro',
+        icon: DOCUMENT_SVG, minPlan: 'pro', pageHref: null,
         upgradeText: 'Upgrade to Pro to unlock ManuscriptAI and draft your research manuscript section by section with AI guidance.',
         upgradeHref: 'payment.html?plan=pro', upgradePlan: 'Pro'
       },
       journalmatch: {
         name: 'JournalMatch', meta: 'Journal targeting',
-        icon: BOOKS_SVG, minPlan: 'pro',
+        icon: BOOKS_SVG, minPlan: 'pro', pageHref: null,
         upgradeText: 'Upgrade to Pro to unlock JournalMatch and find the best-fit journals for your manuscript.',
         upgradeHref: 'payment.html?plan=pro', upgradePlan: 'Pro'
       }
@@ -932,6 +932,10 @@
       var minRank  = PLAN_RANK[cfg.minPlan]     != null ? PLAN_RANK[cfg.minPlan]     : 0;
 
       if (userRank >= minRank) {
+        if (cfg.pageHref) {
+          window.location.href = cfg.pageHref;
+          return;
+        }
         if (formInner)     formInner.removeAttribute('hidden');
         if (upgradePrompt) upgradePrompt.setAttribute('hidden', '');
       } else {
@@ -1424,14 +1428,37 @@
         var statsmithCard  = document.querySelector('[data-agent="statsmith"]');
         var manuscriptCard = document.querySelector('[data-agent="manuscriptai"]');
         var journalCard    = document.querySelector('[data-agent="journalmatch"]');
+
+        var CARD_OPEN_HTML  = '<span class="rb-agent-preview-card__open">Open &rarr;</span>';
+        var CARD_LOCK_SVG   = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+        var CARD_UPGRADE_PRO = CARD_LOCK_SVG + '<span class="rb-agent-preview-card__upgrade-label">Upgrade to Pro</span>';
+
+        function _unlockAgentCard(card, label) {
+          if (!card) return;
+          card.classList.remove('rb-agent-preview-card--locked');
+          card.setAttribute('aria-label', label + ' — open agent');
+          var footer = card.querySelector('.rb-agent-preview-card__footer');
+          if (footer) footer.innerHTML = CARD_OPEN_HTML;
+        }
+
+        function _markUpgradePro(card) {
+          if (!card) return;
+          var footer = card.querySelector('.rb-agent-preview-card__footer');
+          if (footer) footer.innerHTML = CARD_UPGRADE_PRO;
+        }
+
         if (plan === 'scholar' || plan === 'pro') {
-          if (viabilityCard) viabilityCard.classList.remove('rb-agent-preview-card--locked');
-          if (dataforgeCard) dataforgeCard.classList.remove('rb-agent-preview-card--locked');
+          _unlockAgentCard(viabilityCard, 'ViabilityCheck');
+          _unlockAgentCard(dataforgeCard, 'DataForge');
         }
         if (plan === 'pro') {
-          if (statsmithCard)  statsmithCard.classList.remove('rb-agent-preview-card--locked');
-          if (manuscriptCard) manuscriptCard.classList.remove('rb-agent-preview-card--locked');
-          if (journalCard)    journalCard.classList.remove('rb-agent-preview-card--locked');
+          _unlockAgentCard(statsmithCard, 'StatSmith');
+          _unlockAgentCard(manuscriptCard, 'ManuscriptAI');
+          _unlockAgentCard(journalCard, 'JournalMatch');
+        } else if (plan === 'scholar') {
+          _markUpgradePro(statsmithCard);
+          _markUpgradePro(manuscriptCard);
+          _markUpgradePro(journalCard);
         }
       }
     }
