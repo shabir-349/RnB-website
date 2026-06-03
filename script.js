@@ -884,7 +884,7 @@
         name: 'ViabilityCheck', meta: 'Assess research feasibility',
         icon: SHIELD_SVG, minPlan: 'scholar',
         upgradeText: 'Upgrade to Scholar to unlock ViabilityCheck and assess whether your research idea is viable before investing months of effort.',
-        upgradeHref: 'payment.html', upgradePlan: 'Scholar'
+        upgradeHref: 'payment.html?plan=scholar', upgradePlan: 'Scholar'
       },
       dataforge: {
         name: 'DataForge', meta: 'Generate synthetic datasets',
