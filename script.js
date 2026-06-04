@@ -2003,7 +2003,8 @@
     function getState(i) {
       var diff = (i - current + cards.length) % cards.length;
       if (diff === 0) return 'center';
-      if (diff === 1 || diff === cards.length - 1) return 'side';
+      if (diff === 1) return 'side-right';
+      if (diff === cards.length - 1) return 'side-left';
       return 'hidden';
     }
 
@@ -2023,10 +2024,14 @@
       setTimeout(function () { animating = false; }, TRANSITION_MS);
     }
 
+    function isSideCard(card) {
+      return card.dataset.state === 'side-left' || card.dataset.state === 'side-right';
+    }
+
     // Click side card to center it
     cards.forEach(function (card, i) {
       card.addEventListener('click', function () {
-        if (card.dataset.state === 'side') {
+        if (isSideCard(card)) {
           var diff = (i - current + cards.length) % cards.length;
           advance(diff === 1 ? 1 : -1);
         }
@@ -2038,7 +2043,7 @@
     if (canHover) {
       cards.forEach(function (card, i) {
         card.addEventListener('mouseenter', function () {
-          if (card.dataset.state === 'side') {
+          if (isSideCard(card)) {
             var diff = (i - current + cards.length) % cards.length;
             advance(diff === 1 ? 1 : -1);
           }

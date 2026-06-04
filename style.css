@@ -1355,7 +1355,8 @@ p { line-height: 1.7; }
   z-index: 2;
 }
 
-.rb-team-card[data-state="side"] {
+.rb-team-card[data-state="side-left"],
+.rb-team-card[data-state="side-right"] {
   opacity: 0.4;
   transform: scale(0.85);
   filter: blur(3px);
@@ -1446,13 +1447,68 @@ p { line-height: 1.7; }
 }
 
 @media (max-width: 767px) {
-  .rb-team-card[data-state="side"] {
-    display: none;
+  /* Arrows float over the carousel so the track can be full-width */
+  .rb-team__carousel {
+    overflow: hidden;
+    gap: 0;
+    padding: var(--space-8) 0;
+    position: relative;
   }
 
-  .rb-team-card {
+  .rb-team__arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 4;
+  }
+
+  .rb-team__arrow--prev { left: var(--space-2); }
+  .rb-team__arrow--next { right: var(--space-2); }
+
+  /* Track: full-width clipping viewport for the cards */
+  .rb-team__track {
+    position: relative;
     width: 100%;
-    max-width: 320px;
+    height: 360px;
+    overflow: visible;
+    display: block;
+    gap: 0;
+  }
+
+  /* All cards are absolutely stacked; JS translates them into position */
+  .rb-team-card {
+    position: absolute;
+    width: 72%;
+    left: 14%;
+    top: 0;
+    max-width: none;
+  }
+
+  .rb-team-card[data-state="center"] {
+    transform: translateX(0);
+    z-index: 2;
+  }
+
+  /*
+   * translateX(%) is relative to the card's own width (72% of track).
+   * We want the side card's near edge flush with the track edge so 40%
+   * of the card is visible and 60% is clipped by the carousel.
+   * 40% visible → near edge at (track_width - 0.4 * card_width) from track left
+   *             = (100% - 0.4*72%) = 71.2% of track from left
+   * Natural left = 14%; delta = 57.2% of track = 57.2/72 * 100% ≈ 79.5% of card width.
+   */
+  .rb-team-card[data-state="side-left"] {
+    transform: translateX(-79.5%);
+    opacity: 0.4;
+    filter: blur(4px);
+    z-index: 1;
+  }
+
+  .rb-team-card[data-state="side-right"] {
+    transform: translateX(79.5%);
+    opacity: 0.4;
+    filter: blur(4px);
+    z-index: 1;
   }
 }
 
