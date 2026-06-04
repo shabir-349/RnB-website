@@ -81,7 +81,20 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
               Check viability
             </button>
+            <p id="rb-vc-quota" class="rb-ts-quota" hidden aria-live="polite"></p>
           </div>
+        </div>
+      </div>
+
+      <!-- Locked state — shown for free-plan users -->
+      <div id="rb-vc-locked" class="rb-agent-upgrade-prompt" hidden>
+        <div class="rb-agent-upgrade-prompt__inner">
+          <div class="rb-agent-upgrade-prompt__icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <h3 class="rb-agent-upgrade-prompt__title">Scholar Plan Required</h3>
+          <p class="rb-agent-upgrade-prompt__text">ViabilityCheck assesses whether your research idea is feasible before you invest months of effort. Upgrade to Scholar to unlock this agent.</p>
+          <a href="payment.html?plan=scholar" class="rb-btn rb-btn--amber rb-agent-upgrade-prompt__cta">Upgrade to Scholar &rarr;</a>
         </div>
       </div>
 

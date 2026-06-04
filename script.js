@@ -2114,22 +2114,12 @@
 
     var loadingEl = document.getElementById('rb-vc-loading');
     var resultsEl = document.getElementById('rb-vc-results');
+    var quotaEl   = document.getElementById('rb-vc-quota');
+    var formCard  = document.querySelector('.rb-vc-form-card');
+    var lockedEl  = document.getElementById('rb-vc-locked');
 
-    // Auth guard — same DOMContentLoaded pattern as dashboard
-    document.addEventListener('DOMContentLoaded', function () {
-      if (typeof rbRequireAuth !== 'function') return;
-      rbRequireAuth().then(function (session) {
-        if (!session) return;
-        document.body.style.visibility = 'visible';
-        var name = (session.user.user_metadata && session.user.user_metadata.full_name)
-          ? session.user.user_metadata.full_name
-          : session.user.email;
-        var usernameEl = document.querySelector('.rb-dash-nav__username');
-        if (usernameEl) usernameEl.textContent = name.split(' ')[0];
-        var avatarEl = document.querySelector('.rb-dash-nav__avatar');
-        if (avatarEl) avatarEl.textContent = name.charAt(0).toUpperCase();
-      });
-    });
+    var vcUserPlan = 'free';
+    var vcUserId   = null;
 
     var STATUS_MESSAGES = [
       'Reading your research topic…',
@@ -2146,20 +2136,6 @@
         .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    function scoreClass(n) {
-      if (n >= 70) return 'high';
-      if (n >= 50) return 'medium';
-      return 'low';
-    }
-
-    function verdictTier(verdict) {
-      if (!verdict) return 'medium';
-      var v = verdict.toLowerCase();
-      if (v.includes('high') || v.includes('strong') || v.includes('excellent') || v.includes('publishable')) return 'high';
-      if (v.includes('not') || v.includes('poor') || v.includes('reject')) return 'low';
-      return 'medium';
-    }
-
     function showToast(msg) {
       var t = document.createElement('div');
       t.className = 'rb-toast rb-ts-toast--error rb-toast--fade';
@@ -2173,90 +2149,134 @@
       }, 4000);
     }
 
+    function renderVcQuota(count, limit) {
+      if (!quotaEl) return;
+      var remaining = Math.max(0, limit - count);
+      var depleted  = remaining === 0;
+      quotaEl.removeAttribute('hidden');
+      quotaEl.className = 'rb-ts-quota'
+        + (depleted ? ' rb-ts-quota--depleted' : (remaining === 1 ? ' rb-ts-quota--warning' : ''));
+      quotaEl.textContent = depleted
+        ? 'Daily limit reached. Upgrade your plan for more checks.'
+        : remaining + ' / ' + limit + ' check' + (limit === 1 ? '' : 's') + ' remaining today';
+      if (depleted) btn.disabled = true;
+    }
+
+    async function loadVcQuota() {
+      if (!quotaEl || !vcUserId) return;
+      try {
+        var res = await fetch('/api/check-viability?userId=' + encodeURIComponent(vcUserId) + '&plan=' + encodeURIComponent(vcUserPlan));
+        if (!res.ok) return;
+        var data = await res.json();
+        if (data && data.usage) renderVcQuota(data.usage.count, data.usage.limit);
+      } catch (e) {}
+    }
+
     function renderResults(data) {
       if (!resultsEl) return;
 
-      var tier  = verdictTier(data.verdict);
-      var icons = {
-        high:   '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>',
-        medium: '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
-        low:    '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'
-      };
+      // 1. Verdict banner
+      var v = (data.verdict || '').toLowerCase();
+      var verdictClass = v === 'viable' ? 'viable' : (v === 'conditionally_viable' ? 'conditionally-viable' : 'not-viable');
+      var verdictLabel = v === 'viable' ? 'Viable' : (v === 'conditionally_viable' ? 'Conditionally Viable' : 'Not Viable');
+      var CHECK_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+      var WARN_SVG  = '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>';
+      var X_SVG     = '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+      var iconMap   = { 'viable': CHECK_SVG, 'conditionally-viable': WARN_SVG, 'not-viable': X_SVG };
 
-      // Verdict banner
-      var html = '<div class="rb-vc-verdict rb-vc-verdict--' + tier + '" role="status">'
-        + '<div class="rb-vc-verdict__icon">' + icons[tier] + '</div>'
-        + '<div><div class="rb-vc-verdict__label">Verdict</div>'
-        + '<div class="rb-vc-verdict__text">' + escHtml(data.verdict || 'No verdict returned') + '</div></div>'
+      var confidenceHtml = '';
+      if (data.confidence != null) {
+        var conf = typeof data.confidence === 'number'
+          ? Math.round(data.confidence) + '%'
+          : escHtml(String(data.confidence));
+        confidenceHtml = '<span class="rb-vc-confidence-badge">' + conf + ' confidence</span>';
+      }
+
+      var html = '<div class="rb-vc-verdict rb-vc-verdict--' + verdictClass + '" role="status">'
+        + '<div class="rb-vc-verdict__icon">' + (iconMap[verdictClass] || WARN_SVG) + '</div>'
+        + '<div class="rb-vc-verdict__body">'
+        + '<div class="rb-vc-verdict__top-row"><div class="rb-vc-verdict__label">Verdict</div>' + confidenceHtml + '</div>'
+        + '<div class="rb-vc-verdict__text">' + escHtml(verdictLabel) + '</div>'
+        + '</div>'
         + '</div>';
 
-      // Score cards
-      var scores   = data.scores || {};
+      // 2. Score cards (orange)
       var scoreKeys = [
-        { key: 'feasibility',    label: 'Feasibility' },
-        { key: 'novelty',        label: 'Novelty' },
-        { key: 'publishability', label: 'Publishability' }
+        { key: 'viability_score',            label: 'Viability Score' },
+        { key: 'novelty_score',              label: 'Novelty Score' },
+        { key: 'methodological_feasibility', label: 'Methodological Feasibility' }
       ];
       html += '<div class="rb-vc-scores">';
       scoreKeys.forEach(function (s) {
-        var n   = typeof scores[s.key] === 'number' ? Math.max(0, Math.min(100, scores[s.key])) : 0;
-        var cls = scoreClass(n);
+        var n = typeof data[s.key] === 'number' ? Math.max(0, Math.min(100, data[s.key])) : 0;
         html += '<div class="rb-vc-score-card">'
-          + '<div class="rb-vc-score-card__label">' + s.label + '</div>'
+          + '<div class="rb-vc-score-card__label">' + escHtml(s.label) + '</div>'
           + '<div class="rb-vc-score-card__num-row">'
-          + '<span class="rb-vc-score-card__num rb-vc-score-card__num--' + cls + '">' + n + '</span>'
+          + '<span class="rb-vc-score-card__num rb-vc-score-card__num--orange">' + n + '</span>'
           + '<span class="rb-vc-score-card__denom">/100</span>'
           + '</div>'
-          + '<div class="rb-vc-score-card__bar"><div class="rb-vc-score-card__bar-fill rb-vc-score-card__bar-fill--' + cls + '" style="width:0%"></div></div>'
+          + '<div class="rb-vc-score-card__bar"><div class="rb-vc-score-card__bar-fill rb-vc-score-card__bar-fill--orange" style="width:0%" data-target="' + n + '"></div></div>'
           + '</div>';
       });
       html += '</div>';
 
-      // Literature landscape
-      html += '<div class="rb-vc-section">'
-        + '<div class="rb-vc-section__title">Literature Landscape</div>'
-        + '<p class="rb-vc-prose">' + escHtml(data.literature || '') + '</p>'
+      // 3. Publication potential badge
+      var pubPot = (data.publication_potential || '').toLowerCase();
+      if (pubPot) {
+        var pubPotLabels = { low: 'Low', moderate: 'Moderate', high: 'High', very_high: 'Very High' };
+        html += '<div class="rb-vc-pubpot-row">'
+          + '<span class="rb-vc-pubpot-label">Publication Potential</span>'
+          + '<span class="rb-vc-pubpot rb-vc-pubpot--' + escHtml(pubPot) + '">'
+          + escHtml(pubPotLabels[pubPot] || pubPot.replace(/_/g, ' '))
+          + '</span>'
+          + '</div>';
+      }
+
+      // 4. Three bullet lists side by side
+      var strengths     = Array.isArray(data.key_strengths)          ? data.key_strengths          : [];
+      var concerns      = Array.isArray(data.key_concerns)           ? data.key_concerns           : [];
+      var modifications = Array.isArray(data.required_modifications)  ? data.required_modifications  : [];
+
+      function makeBulletList(items, dotCls) {
+        if (!items.length) return '<p class="rb-vc-prose rb-vc-prose--sm rb-vc-prose--italic">None identified.</p>';
+        return '<ul class="rb-vc-list">' + items.map(function (item) {
+          return '<li class="rb-vc-list__item">'
+            + '<span class="rb-vc-list__dot ' + dotCls + '" aria-hidden="true"></span>'
+            + '<span>' + escHtml(item) + '</span>'
+            + '</li>';
+        }).join('') + '</ul>';
+      }
+
+      html += '<div class="rb-vc-three-cols">'
+        + '<div class="rb-vc-section">'
+        + '<div class="rb-vc-section__title"><span class="rb-vc-section__title-dot rb-vc-section__title-dot--green" aria-hidden="true"></span>Key Strengths</div>'
+        + makeBulletList(strengths, 'rb-vc-list__dot--green')
+        + '</div>'
+        + '<div class="rb-vc-section">'
+        + '<div class="rb-vc-section__title"><span class="rb-vc-section__title-dot rb-vc-section__title-dot--red" aria-hidden="true"></span>Key Concerns</div>'
+        + makeBulletList(concerns, 'rb-vc-list__dot--red')
+        + '</div>'
+        + '<div class="rb-vc-section">'
+        + '<div class="rb-vc-section__title"><span class="rb-vc-section__title-dot rb-vc-section__title-dot--amber" aria-hidden="true"></span>Required Modifications</div>'
+        + makeBulletList(modifications, 'rb-vc-list__dot--amber')
+        + '</div>'
         + '</div>';
 
-      // Research gaps
-      var gaps = Array.isArray(data.gaps) ? data.gaps : [];
-      html += '<div class="rb-vc-section">'
-        + '<div class="rb-vc-section__title">Research Gaps</div>'
-        + '<ul class="rb-vc-list">'
-        + gaps.map(function (g) {
-            return '<li class="rb-vc-list__item"><span class="rb-vc-list__dot" aria-hidden="true"></span><span>' + escHtml(g) + '</span></li>';
-          }).join('')
-        + '</ul></div>';
+      // 5. Evidence gap assessment (amber left border)
+      if (data.evidence_gap_assessment) {
+        html += '<div class="rb-vc-evidence-gap">'
+          + '<div class="rb-vc-evidence-gap__title">Evidence Gap Assessment</div>'
+          + '<p class="rb-vc-prose">' + escHtml(data.evidence_gap_assessment) + '</p>'
+          + '</div>';
+      }
 
-      // PICO grid
-      var pico = data.pico || {};
-      var picoItems = [
-        { letter: 'P', label: 'Population',   key: 'population' },
-        { letter: 'I', label: 'Intervention', key: 'intervention' },
-        { letter: 'C', label: 'Comparison',   key: 'comparison' },
-        { letter: 'O', label: 'Outcome',      key: 'outcome' }
-      ];
-      html += '<div class="rb-vc-section">'
-        + '<div class="rb-vc-section__title">PICO Framework</div>'
-        + '<div class="rb-vc-pico-grid">'
-        + picoItems.map(function (p) {
-            return '<div class="rb-vc-pico-cell">'
-              + '<div class="rb-vc-pico-cell__letter">' + p.letter + '</div>'
-              + '<div class="rb-vc-pico-cell__label">' + p.label + '</div>'
-              + '<div class="rb-vc-pico-cell__text">' + escHtml(pico[p.key] || '—') + '</div>'
-              + '</div>';
-          }).join('')
-        + '</div></div>';
-
-      // Limitations
-      var lims = Array.isArray(data.limitations) ? data.limitations : [];
-      html += '<div class="rb-vc-section">'
-        + '<div class="rb-vc-section__title">Limitations</div>'
-        + '<ul class="rb-vc-list">'
-        + lims.map(function (l) {
-            return '<li class="rb-vc-list__item"><span class="rb-vc-list__dot" aria-hidden="true"></span><span>' + escHtml(l) + '</span></li>';
-          }).join('')
-        + '</ul></div>';
+      // 6. Final recommendation (dark bg, white text)
+      if (data.final_recommendation) {
+        html += '<div class="rb-vc-recommendation">'
+          + '<div class="rb-vc-recommendation__label">Final Recommendation</div>'
+          + '<p class="rb-vc-recommendation__text">' + escHtml(data.final_recommendation) + '</p>'
+          + '</div>';
+      }
 
       resultsEl.innerHTML = html;
       resultsEl.removeAttribute('hidden');
@@ -2264,13 +2284,50 @@
       // Animate score bars after paint
       requestAnimationFrame(function () {
         requestAnimationFrame(function () {
-          resultsEl.querySelectorAll('.rb-vc-score-card__bar-fill').forEach(function (fill, i) {
-            var n = typeof scores[scoreKeys[i].key] === 'number' ? Math.max(0, Math.min(100, scores[scoreKeys[i].key])) : 0;
-            fill.style.width = n + '%';
+          resultsEl.querySelectorAll('.rb-vc-score-card__bar-fill[data-target]').forEach(function (fill) {
+            fill.style.width = fill.getAttribute('data-target') + '%';
           });
         });
       });
     }
+
+    // Auth guard + plan check
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof rbRequireAuth !== 'function') return;
+      rbRequireAuth().then(function (session) {
+        if (!session) return;
+        document.body.style.visibility = 'visible';
+        vcUserId = session.user.id;
+
+        var name = (session.user.user_metadata && session.user.user_metadata.full_name)
+          ? session.user.user_metadata.full_name
+          : session.user.email;
+        var usernameEl = document.querySelector('.rb-dash-nav__username');
+        if (usernameEl) usernameEl.textContent = name.split(' ')[0];
+        var avatarEl = document.querySelector('.rb-dash-nav__avatar');
+        if (avatarEl) avatarEl.textContent = name.charAt(0).toUpperCase();
+
+        // Check approved plan — gate the form for non-Scholar users
+        rbSupabase.from('payments')
+          .select('status, plan')
+          .eq('user_id', session.user.id)
+          .eq('status', 'approved')
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .then(function (result) {
+            var payment = result.data && result.data.length ? result.data[0] : null;
+            vcUserPlan = payment ? (payment.plan || 'free') : 'free';
+            var hasPlan = vcUserPlan === 'scholar' || vcUserPlan === 'pro';
+
+            if (!hasPlan) {
+              if (formCard) formCard.setAttribute('hidden', '');
+              if (lockedEl) lockedEl.removeAttribute('hidden');
+            } else {
+              loadVcQuota();
+            }
+          });
+      });
+    });
 
     // Clear inline errors on correction
     topicEl.addEventListener('input', function () {
@@ -2303,35 +2360,32 @@
       }
       if (!valid) return;
 
-      var userId = null;
-      if (typeof rbGetSession === 'function') {
-        var session = await rbGetSession();
-        if (session) userId = session.user.id;
-      }
-
       btn.disabled = true;
       if (resultsEl) { resultsEl.setAttribute('hidden', ''); resultsEl.innerHTML = ''; }
       if (loadingEl) loadingEl.removeAttribute('hidden');
 
       var msgEl  = document.getElementById('rb-vc-status-msg');
       var msgIdx = 0;
+      if (msgEl) { msgEl.textContent = STATUS_MESSAGES[0]; msgEl.classList.add('rb-ts-status-msg--visible'); }
+
       var msgInterval = setInterval(function () {
         if (msgIdx >= STATUS_MESSAGES.length - 1) { clearInterval(msgInterval); return; }
         msgIdx++;
         if (msgEl) {
           msgEl.classList.remove('rb-ts-status-msg--visible');
           setTimeout(function () {
+            if (!msgEl) return;
             msgEl.textContent = STATUS_MESSAGES[msgIdx];
             msgEl.classList.add('rb-ts-status-msg--visible');
           }, 300);
         }
-      }, 2000);
+      }, 2500);
 
       try {
-        var res  = await fetch('/api/viability-check', {
+        var res = await fetch('/api/check-viability', {
           method:  'POST',
           headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({ topic: topic, studyDesign: design, userId: userId })
+          body:    JSON.stringify({ topic: topic, studyDesign: design, userId: vcUserId, plan: vcUserPlan })
         });
 
         clearInterval(msgInterval);
@@ -2339,9 +2393,16 @@
 
         var data = await res.json();
 
+        if (res.status === 429) {
+          var u = data.usage || {};
+          renderVcQuota(u.count != null ? u.count : 999, u.limit != null ? u.limit : 999);
+          return;
+        }
+
         if (!res.ok) {
           showToast((data && data.error) ? data.error : 'Failed to check viability. Please try again.');
         } else {
+          if (data.usage) renderVcQuota(data.usage.count, data.usage.limit);
           renderResults(data);
           resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
@@ -2351,7 +2412,9 @@
         showToast((err && err.message) ? err.message : 'Failed to check viability. Please try again.');
       }
 
-      btn.disabled = false;
+      if (!quotaEl || !quotaEl.classList.contains('rb-ts-quota--depleted')) {
+        btn.disabled = false;
+      }
     });
   })();
 

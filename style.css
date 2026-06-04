@@ -6019,3 +6019,175 @@ p { line-height: 1.7; }
   line-height: 1.55;
   color: var(--text);
 }
+
+/* ── Verdict: new structured verdicts ───────────────────── */
+.rb-vc-verdict--viable {
+  background-color: rgba(56, 161, 105, 0.08);
+  border-color: rgba(56, 161, 105, 0.3);
+  color: #276749;
+}
+[data-theme="dark"] .rb-vc-verdict--viable {
+  background-color: rgba(56, 161, 105, 0.1);
+  border-color: rgba(56, 161, 105, 0.22);
+  color: #68D391;
+}
+.rb-vc-verdict--conditionally-viable {
+  background-color: rgba(232, 163, 61, 0.08);
+  border-color: rgba(232, 163, 61, 0.3);
+  color: #92610E;
+}
+[data-theme="dark"] .rb-vc-verdict--conditionally-viable {
+  background-color: rgba(232, 163, 61, 0.1);
+  border-color: rgba(232, 163, 61, 0.22);
+  color: var(--amber-400);
+}
+.rb-vc-verdict--not-viable {
+  background-color: rgba(197, 48, 48, 0.08);
+  border-color: rgba(197, 48, 48, 0.25);
+  color: #C53030;
+}
+[data-theme="dark"] .rb-vc-verdict--not-viable {
+  background-color: rgba(252, 129, 129, 0.08);
+  border-color: rgba(252, 129, 129, 0.18);
+  color: #FC8181;
+}
+
+/* Verdict inner layout */
+.rb-vc-verdict__body { flex: 1; }
+.rb-vc-verdict__top-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: 4px;
+}
+
+/* Confidence badge — inherits verdict color */
+.rb-vc-confidence-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  border: 1px solid currentColor;
+  opacity: 0.75;
+}
+
+/* ── Score cards: orange variant ────────────────────────── */
+.rb-vc-score-card__num--orange     { color: var(--amber-500); }
+[data-theme="dark"] .rb-vc-score-card__num--orange { color: var(--amber-400); }
+.rb-vc-score-card__bar-fill--orange { background-color: var(--amber-500); }
+[data-theme="dark"] .rb-vc-score-card__bar-fill--orange { background-color: var(--amber-400); }
+
+/* ── Publication potential badge ────────────────────────── */
+.rb-vc-pubpot-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-6);
+  background-color: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2);
+}
+.rb-vc-pubpot-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.rb-vc-pubpot {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #ffffff;
+}
+.rb-vc-pubpot--low       { background-color: #718096; }
+.rb-vc-pubpot--moderate  { background-color: #3182CE; }
+.rb-vc-pubpot--high      { background-color: var(--amber-500); }
+.rb-vc-pubpot--very_high { background-color: #38A169; }
+[data-theme="dark"] .rb-vc-pubpot--moderate  { background-color: #4299E1; }
+[data-theme="dark"] .rb-vc-pubpot--very_high { background-color: #48BB78; }
+
+/* ── Three-column layout for bullet lists ───────────────── */
+.rb-vc-three-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-4);
+}
+@media (max-width: 768px) { .rb-vc-three-cols { grid-template-columns: 1fr; } }
+
+/* Colored title dots */
+.rb-vc-section__title-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+.rb-vc-section__title-dot--green { background-color: #38A169; }
+.rb-vc-section__title-dot--red   { background-color: #C53030; }
+.rb-vc-section__title-dot--amber { background-color: var(--amber-500); }
+[data-theme="dark"] .rb-vc-section__title-dot--green { background-color: #68D391; }
+[data-theme="dark"] .rb-vc-section__title-dot--red   { background-color: #FC8181; }
+[data-theme="dark"] .rb-vc-section__title-dot--amber { background-color: var(--amber-400); }
+
+/* Colored list dots */
+.rb-vc-list__dot--green { background-color: #38A169; }
+.rb-vc-list__dot--red   { background-color: #C53030; }
+.rb-vc-list__dot--amber { background-color: var(--amber-500); }
+[data-theme="dark"] .rb-vc-list__dot--green { background-color: #68D391; }
+[data-theme="dark"] .rb-vc-list__dot--red   { background-color: #FC8181; }
+[data-theme="dark"] .rb-vc-list__dot--amber { background-color: var(--amber-400); }
+
+/* Prose variants */
+.rb-vc-prose--sm     { font-size: 0.875rem; }
+.rb-vc-prose--italic { font-style: italic; }
+
+/* ── Evidence gap assessment (amber left border) ─────────── */
+.rb-vc-evidence-gap {
+  background-color: var(--paper);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--amber-500);
+  border-radius: var(--radius-2);
+  padding: var(--space-6);
+}
+[data-theme="dark"] .rb-vc-evidence-gap { border-left-color: var(--amber-400); }
+.rb-vc-evidence-gap__title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Final recommendation (dark bg, white text) ─────────── */
+.rb-vc-recommendation {
+  background-color: #1A1A1A;
+  border-radius: var(--radius-2);
+  padding: var(--space-6);
+}
+[data-theme="dark"] .rb-vc-recommendation {
+  background-color: #0D0D0D;
+  border: 1px solid #333333;
+}
+.rb-vc-recommendation__label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--amber-400);
+  margin-bottom: var(--space-3);
+}
+.rb-vc-recommendation__text {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: #ffffff;
+  font-weight: 500;
+}
