@@ -82,6 +82,118 @@ OUTPUT — return ONLY this JSON object, exact keys:
 
 If the input is too vague to assess (e.g. no topic, or a single ambiguous word), return overall_verdict "not_viable", low scores, confidence "low", and put the reason in key_concerns and required_modifications (ask for a clearer topic/question/PICO).`;
 
+/* ── Fetch with hard timeout ────────────────────────────── */
+async function fetchWithTimeout(url, options = {}, ms = 5000) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), ms);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(id);
+  }
+}
+
+/* ── PubMed enrichment ──────────────────────────────────── */
+async function getPubMedContext(topic) {
+  try {
+    // Step 1: Extract MeSH search terms via GPT
+    const termRes = await fetchWithTimeout(
+      'https://api.openai.com/v1/chat/completions',
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4.1-mini',
+          messages: [
+            {
+              role: 'system',
+              content: 'Extract 2-3 proper PubMed MeSH search terms from this research topic. Return ONLY the search query string for PubMed, no explanation. Use AND/OR operators. Example: for \'PPI use and dementia risk\' return: "proton pump inhibitors" AND "dementia"',
+            },
+            { role: 'user', content: topic },
+          ],
+          max_tokens: 100,
+          temperature: 0.1,
+        }),
+      },
+      5000
+    );
+
+    if (!termRes.ok) throw new Error(`GPT term extraction: ${termRes.status}`);
+    const termData = await termRes.json();
+    const keywords = termData.choices?.[0]?.message?.content?.trim();
+    if (!keywords) throw new Error('No keywords extracted');
+    console.log('[PubMed] keywords:', keywords);
+
+    // Step 2: Main PubMed search (top 5 articles)
+    const searchRes = await fetchWithTimeout(
+      `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&retmode=json&retmax=5&term=${encodeURIComponent(keywords)}`,
+      {},
+      5000
+    );
+    if (!searchRes.ok) throw new Error(`esearch: ${searchRes.status}`);
+    const searchData = await searchRes.json();
+
+    const ids = searchData.esearchresult?.idlist || [];
+    const totalCount = parseInt(searchData.esearchresult?.count || '0', 10);
+    console.log('[PubMed] total:', totalCount, '| ids:', ids);
+
+    // Step 3: Fetch article summaries (titles + dates)
+    let articleLines = [];
+    if (ids.length > 0) {
+      const summaryRes = await fetchWithTimeout(
+        `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&retmode=json&id=${ids.join(',')}`,
+        {},
+        5000
+      );
+      if (summaryRes.ok) {
+        const summaryData = await summaryRes.json();
+        const uids = summaryData.result?.uids || [];
+        articleLines = uids.map((uid, i) => {
+          const art  = summaryData.result[uid];
+          const year = art?.pubdate?.split(' ')[0] || '?';
+          return `${i + 1}. ${art?.title || 'Unknown title'} (${year})`;
+        });
+      }
+    }
+
+    // Step 4: Systematic review / meta-analysis count
+    const reviewKeywords = `${keywords} AND ("systematic review" OR "meta-analysis")`;
+    const reviewRes = await fetchWithTimeout(
+      `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&retmode=json&retmax=1&term=${encodeURIComponent(reviewKeywords)}`,
+      {},
+      5000
+    );
+    let reviewCount = 0;
+    if (reviewRes.ok) {
+      const reviewData = await reviewRes.json();
+      reviewCount = parseInt(reviewData.esearchresult?.count || '0', 10);
+    }
+    console.log('[PubMed] systematic reviews/meta-analyses:', reviewCount);
+
+    // Step 5: Build context string
+    const articleBlock = articleLines.length > 0
+      ? articleLines.join('\n')
+      : 'No articles retrieved.';
+
+    const context =
+      `PubMed search results for '${topic}':\n` +
+      `Total articles found: ${totalCount}.\n` +
+      `Systematic reviews/meta-analyses found: ${reviewCount}.\n` +
+      `Search query used: ${keywords}\n` +
+      `Most recent 5 articles:\n${articleBlock}`;
+
+    console.log('[PubMed] context built successfully');
+    return context;
+
+  } catch (err) {
+    console.error('[PubMed] search failed (non-fatal):', err.message);
+    return null;
+  }
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -159,7 +271,12 @@ export default async function handler(req, res) {
     }
   }
 
-  const userMessage = JSON.stringify({ topic, study_design: studyDesign });
+  // PubMed enrichment — runs before OpenAI call; failure is non-blocking
+  const pubmedContext = await getPubMedContext(topic);
+  const contextPrefix = pubmedContext
+    ? `[SYSTEM LITERATURE RETRIEVAL]\n${pubmedContext}\n[END RETRIEVAL]\n\n`
+    : '';
+  const userMessage = contextPrefix + JSON.stringify({ topic, study_design: studyDesign });
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -176,7 +293,7 @@ export default async function handler(req, res) {
         ],
         temperature: 0.3,
         top_p: 0.9,
-        max_tokens: 1500,
+        max_tokens: 2500,
         response_format: { type: 'json_object' },
       }),
     });
