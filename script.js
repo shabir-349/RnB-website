@@ -1147,20 +1147,38 @@
         welcomeEl.textContent = 'Welcome back, ' + firstName + '.';
       }
 
-      // Query the payments table for this user's latest payment record
+      // Query the payments table — fetch enough rows to detect upgrading scenario
       rbSupabase.from('payments')
         .select('*')
         .eq('user_id', session.user.id)
         .order('created_at', { ascending: false })
-        .limit(1)
+        .limit(10)
         .then(function (result) {
-          var payment = result.data && result.data.length ? result.data[0] : null;
-          applyPlanState(payment ? payment.status : null, payment ? payment.plan : null);
-          rbDashboardPlan = getUserLectureLevel(payment);
+          var payments = result.data || [];
+          var latestPayment  = payments[0] || null;
+          var latestPending  = payments.find(function (p) { return p.status === 'pending';  }) || null;
+          var latestApproved = payments.find(function (p) { return p.status === 'approved'; }) || null;
+
+          // Detect upgrade-pending: user has an approved plan and a pending upgrade payment
+          // for a higher-tier plan — retain access to the approved plan.
+          var PLAN_RANK = { free: 0, scholar: 1, pro: 2 };
+          var isUpgradePending = !!(
+            latestPending && latestApproved &&
+            (PLAN_RANK[latestPending.plan] || 0) > (PLAN_RANK[latestApproved.plan] || 0)
+          );
+
+          var effectivePayment = isUpgradePending ? latestApproved : latestPayment;
+
+          applyPlanState(effectivePayment ? effectivePayment.status : null, effectivePayment ? effectivePayment.plan : null);
+          rbDashboardPlan = getUserLectureLevel(effectivePayment);
           loadLectures(rbDashboardPlan);
           if (typeof _rbCallLoadQuota === 'function') _rbCallLoadQuota();
 
-          if (payment && payment.status === 'pending') {
+          if (isUpgradePending) {
+            showUpgradePendingBanner(latestApproved.plan, latestPending.plan);
+          }
+
+          if (latestPending) {
             rbSupabase
               .channel('rb-payment-watch-' + session.user.id)
               .on('postgres_changes', {
@@ -1183,6 +1201,19 @@
     function getUserLectureLevel(payment) {
       if (!payment || payment.status !== 'approved') return 'free';
       return payment.plan === 'pro' ? 'pro' : 'scholar';
+    }
+
+    function showUpgradePendingBanner(currentPlan, pendingPlan) {
+      var banner = document.getElementById('rb-dash-upgrade-pending-banner');
+      var msgEl  = document.getElementById('rb-dash-upgrade-pending-msg');
+      if (!banner) return;
+      var names = { scholar: 'Scholar', pro: 'Pro' };
+      var toName   = names[pendingPlan]  || pendingPlan;
+      var fromName = names[currentPlan]  || currentPlan;
+      if (msgEl) {
+        msgEl.textContent = 'Your ' + toName + ' plan upgrade is under review. You still have full ' + fromName + ' access. ' + toName + ' content will unlock once your payment is approved.';
+      }
+      banner.classList.add('rb-dash-upgrade-pending-banner--visible');
     }
 
     function rbEscHtml(str) {
