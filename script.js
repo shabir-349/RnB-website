@@ -1594,6 +1594,25 @@
   })();
 
   /* ============================================================
+     FEATURED AGENT LINKS — auth-aware redirect on landing page
+     Logged in → dashboard.html; logged out → signup.html
+  ============================================================ */
+  (function initAgentCardLinks() {
+    var links = document.querySelectorAll('.rb-agent-card__link');
+    if (!links.length) return;
+    if (typeof rbGetSession !== 'function') return;
+
+    links.forEach(function (link) {
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        rbGetSession().then(function (session) {
+          window.location.href = session ? 'dashboard.html' : 'signup.html';
+        });
+      });
+    });
+  })();
+
+  /* ============================================================
      LOGOUT HANDLER
   ============================================================ */
   (function initLogout() {
