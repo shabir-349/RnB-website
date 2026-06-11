@@ -1626,6 +1626,37 @@
   })();
 
   /* ============================================================
+     DASHBOARD USER MENU DROPDOWN
+  ============================================================ */
+  (function initUserMenuDropdown() {
+    var btn      = document.getElementById('rb-dash-user-btn');
+    var dropdown = document.getElementById('rb-dash-user-dropdown');
+    if (!btn || !dropdown) return;
+
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var isOpen = !dropdown.hidden;
+      dropdown.hidden = isOpen;
+      btn.setAttribute('aria-expanded', String(!isOpen));
+    });
+
+    document.addEventListener('click', function () {
+      if (!dropdown.hidden) {
+        dropdown.hidden = true;
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !dropdown.hidden) {
+        dropdown.hidden = true;
+        btn.setAttribute('aria-expanded', 'false');
+        btn.focus();
+      }
+    });
+  })();
+
+  /* ============================================================
      TOPICSCOUT AI — generate research topics via OpenAI
   ============================================================ */
   (function initTopicScout() {
