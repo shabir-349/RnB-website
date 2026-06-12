@@ -14,7 +14,8 @@
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap"></noscript>
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" type="image/jpeg" href="./logo.jpg" />
-  <style>/* critical */body{margin:0;background:#141414;color:#e0e0e0}#welcome-skeleton{height:80px;background:#1e1e1e;border-radius:8px;margin-bottom:16px}</style>
+  <style>/* critical */body{margin:0;background:#141414;color:#e0e0e0}#welcome-skeleton{height:80px;background:#1e1e1e;border-radius:8px;margin-bottom:16px}.skeleton-pulse{background:linear-gradient(90deg,#1e1e1e 25%,#2a2a2a 50%,#1e1e1e 75%);background-size:200% 100%;animation:shimmer 1.5s infinite}@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}</style>
+  <meta http-equiv="Cache-Control" content="public, max-age=31536000">
 </head>
 <body style="visibility: hidden;">
 
@@ -32,7 +33,7 @@
         <div class="rb-dash-nav__user-menu" id="rb-dash-user-menu">
           <button class="rb-dash-nav__user" id="rb-dash-user-btn" aria-haspopup="true" aria-expanded="false" aria-label="User menu">
             <div class="rb-dash-nav__avatar" aria-hidden="true">A</div>
-            <span class="rb-dash-nav__username">Ahmed</span>
+            <span class="rb-dash-nav__username skeleton-pulse" style="min-height:16px;min-width:60px;display:inline-block">Ahmed</span>
           </button>
           <div class="rb-dash-nav__dropdown" id="rb-dash-user-dropdown" hidden>
             <button type="button" class="rb-dash-nav__dropdown-item rb-signout-trigger" id="rb-signout-btn">
@@ -97,7 +98,7 @@
 
       <div class="rb-dash__sidebar-footer" id="rb-dash-sidebar-footer">
         <a href="payment.html?plan=scholar" class="rb-btn rb-btn--amber rb-btn--full">Upgrade to Scholar</a>
-        <p class="rb-dash__plan-label" style="min-height:28px;display:block">You are on the <strong>Free plan</strong></p>
+        <p class="rb-dash__plan-label skeleton-pulse" style="min-height:28px;display:block">You are on the <strong>Free plan</strong></p>
       </div>
 
     </aside>
@@ -106,7 +107,7 @@
     <main class="rb-dash__main" id="rb-dash-main">
 
       <!-- Payment pending banner (shown only when status = pending) -->
-      <div class="rb-dash-pending-banner" id="rb-dash-pending-banner" role="status" aria-label="Payment review status" style="min-height:52px">
+      <div class="rb-dash-pending-banner" id="rb-dash-pending-banner" role="status" aria-label="Payment review status" style="min-height:52px" hidden>
         <div class="rb-dash-pending-banner__content">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           <span>Your payment is under review. We'll unlock your content within 24 hours — usually faster.</span>
@@ -115,7 +116,7 @@
       </div>
 
       <!-- Upgrade-pending banner: shown when user has an approved plan and a pending upgrade payment -->
-      <div class="rb-dash-upgrade-pending-banner" id="rb-dash-upgrade-pending-banner" role="status" aria-label="Plan upgrade under review" style="min-height:52px">
+      <div class="rb-dash-upgrade-pending-banner" id="rb-dash-upgrade-pending-banner" role="status" aria-label="Plan upgrade under review" style="min-height:52px" hidden>
         <div class="rb-dash-upgrade-pending-banner__content">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           <span id="rb-dash-upgrade-pending-msg">Your Pro plan upgrade is under review. You still have full Scholar access. Pro content will unlock once your payment is approved.</span>
@@ -137,13 +138,13 @@
       <!-- Welcome -->
       <div class="rb-dash__welcome" style="min-height:80px">
         <div>
-          <h1 class="rb-dash__welcome-heading">Welcome back, Ahmed</h1>
-          <p class="rb-dash__welcome-sub" style="min-height:24px">Your research journey starts here. 3 free lessons available to begin.</p>
+          <h1 class="rb-dash__welcome-heading skeleton-pulse" style="min-height:36px">Welcome back, Ahmed</h1>
+          <p class="rb-dash__welcome-sub skeleton-pulse" style="min-height:24px">Your research journey starts here. 3 free lessons available to begin.</p>
         </div>
       </div>
 
       <!-- Payment status cards — JS reveals the appropriate one -->
-      <div class="rb-dash-status-card rb-dash-status-card--pending" id="rb-dash-pending" role="status" aria-label="Payment under review" style="min-height:120px">
+      <div class="rb-dash-status-card rb-dash-status-card--pending" id="rb-dash-pending" role="status" aria-label="Payment under review" style="min-height:120px" hidden>
         <div class="rb-dash-status-card__icon">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg>
         </div>
@@ -151,7 +152,7 @@
         <p class="rb-dash-status-card__text">Your payment is being reviewed. This usually takes less than 24 hours. You'll get full access once approved.</p>
       </div>
 
-      <div class="rb-dash-status-card rb-dash-status-card--rejected" id="rb-dash-rejected" role="alert" aria-label="Payment rejected" style="min-height:200px">
+      <div class="rb-dash-status-card rb-dash-status-card--rejected" id="rb-dash-rejected" role="alert" aria-label="Payment rejected" style="min-height:200px" hidden>
         <div class="rb-dash-status-card__icon">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
         </div>
@@ -174,7 +175,7 @@
         </div>
       </div>
 
-      <div class="rb-dash-status-card rb-dash-status-card--free" id="rb-dash-free" aria-label="Free plan" style="min-height:120px">
+      <div class="rb-dash-status-card rb-dash-status-card--free" id="rb-dash-free" aria-label="Free plan" style="min-height:120px" hidden>
         <h2 class="rb-dash-status-card__heading">You're on the Free Plan</h2>
         <p class="rb-dash-status-card__text">Upgrade to Scholar or Pro to unlock all 13 agents, full Academy, and research modes.</p>
         <div class="rb-dash-status-card__actions">
@@ -205,7 +206,7 @@
               <div class="rb-agent-panel__meta" id="rb-agent-panel-meta"><em>Find novel research topics</em></div>
             </div>
           </div>
-          <span class="rb-agent-panel__counter" id="rb-agent-panel-counter" aria-live="polite"></span>
+          <span class="rb-agent-panel__counter skeleton-pulse" id="rb-agent-panel-counter" style="min-height:20px;min-width:80px;display:inline-block" aria-live="polite"></span>
         </div>
         <div class="rb-agent-panel__body">
           <div id="rb-topicscout-form-inner">

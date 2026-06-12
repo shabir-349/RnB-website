@@ -1137,7 +1137,7 @@
         : session.user.email;
 
       var usernameEl = document.querySelector('.rb-dash-nav__username');
-      if (usernameEl) usernameEl.textContent = name;
+      if (usernameEl) { usernameEl.textContent = name; usernameEl.classList.remove('skeleton-pulse'); }
 
       var avatarEl = document.querySelector('.rb-dash-nav__avatar');
       if (avatarEl) avatarEl.textContent = name.charAt(0).toUpperCase();
@@ -1146,6 +1146,7 @@
       if (welcomeEl) {
         var firstName = name.split(' ')[0];
         welcomeEl.textContent = 'Welcome back, ' + firstName + '.';
+        welcomeEl.classList.remove('skeleton-pulse');
       }
 
       // Query the payments table — fetch enough rows to detect upgrading scenario
@@ -1352,6 +1353,12 @@
       var planLabel     = document.querySelector('.rb-dash__plan-label');
       var welcomeSub    = document.querySelector('.rb-dash__welcome-sub');
       var upgradeBanner = document.getElementById('rb-dash-upgrade-banner');
+
+      // Remove skeleton shimmer now that plan state is known
+      var _skCounter = document.getElementById('rb-agent-panel-counter');
+      if (planLabel) planLabel.classList.remove('skeleton-pulse');
+      if (welcomeSub) welcomeSub.classList.remove('skeleton-pulse');
+      if (_skCounter) _skCounter.classList.remove('skeleton-pulse');
 
       // Upgrade banner: free users only
       if (upgradeBanner) upgradeBanner.style.display = status ? 'none' : '';
@@ -1704,7 +1711,7 @@
       btn.disabled = depleted;
 
       var counter = document.getElementById('rb-agent-panel-counter');
-      if (counter) counter.textContent = remaining + '/' + limit + ' today';
+      if (counter) { counter.textContent = remaining + '/' + limit + ' today'; counter.classList.remove('skeleton-pulse'); }
     }
 
     async function loadQuota() {
@@ -2355,7 +2362,7 @@
           ? session.user.user_metadata.full_name
           : session.user.email;
         var usernameEl = document.querySelector('.rb-dash-nav__username');
-        if (usernameEl) usernameEl.textContent = name.split(' ')[0];
+        if (usernameEl) { usernameEl.textContent = name.split(' ')[0]; usernameEl.classList.remove('skeleton-pulse'); }
         var avatarEl = document.querySelector('.rb-dash-nav__avatar');
         if (avatarEl) avatarEl.textContent = name.charAt(0).toUpperCase();
 
