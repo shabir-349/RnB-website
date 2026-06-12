@@ -880,12 +880,12 @@
     var AGENT_CONFIGS = {
       topicscout: {
         name: 'TopicScout AI', meta: 'Find novel research topics',
-        icon: SPARKLE_SVG, minPlan: 'free', pageHref: '#rb-dash-agents',
+        icon: SPARKLE_SVG, minPlan: 'free', pageHref: null,
         upgradeText: null, upgradeHref: null, upgradePlan: null
       },
       viabilitycheck: {
         name: 'ViabilityCheck', meta: 'Assess research feasibility',
-        icon: SHIELD_SVG, minPlan: 'scholar', pageHref: 'viability-check.html', alwaysNavigate: true,
+        icon: SHIELD_SVG, minPlan: 'scholar', pageHref: 'viability-check.html',
         upgradeText: 'Upgrade to Scholar to unlock ViabilityCheck and assess whether your research idea is viable before investing months of effort.',
         upgradeHref: 'payment.html?plan=scholar', upgradePlan: 'Scholar'
       },
@@ -930,11 +930,6 @@
 
       var userRank = PLAN_RANK[rbDashboardPlan] != null ? PLAN_RANK[rbDashboardPlan] : 0;
       var minRank  = PLAN_RANK[cfg.minPlan]     != null ? PLAN_RANK[cfg.minPlan]     : 0;
-
-      if (cfg.alwaysNavigate && cfg.pageHref) {
-        window.location.href = cfg.pageHref;
-        return;
-      }
 
       if (userRank >= minRank) {
         if (cfg.pageHref) {
