@@ -880,7 +880,7 @@
     var AGENT_CONFIGS = {
       topicscout: {
         name: 'TopicScout AI', meta: 'Find novel research topics',
-        icon: SPARKLE_SVG, minPlan: 'free', pageHref: 'topicscout.html', alwaysNavigate: true,
+        icon: SPARKLE_SVG, minPlan: 'free', pageHref: '#rb-dash-agents',
         upgradeText: null, upgradeHref: null, upgradePlan: null
       },
       viabilitycheck: {
@@ -1673,37 +1673,6 @@
     var quotaEl  = document.getElementById('rb-ts-quota');
     if (!btn || !popEl || !designEl || !results) return;
 
-    // Auth guard — only on the standalone topicscout.html page (not the dashboard)
-    if (!document.getElementById('rb-dash')) {
-      document.addEventListener('DOMContentLoaded', function () {
-        if (typeof rbRequireAuth !== 'function') return;
-        rbRequireAuth().then(function (session) {
-          if (!session) return;
-          document.body.style.visibility = 'visible';
-
-          var name = (session.user.user_metadata && session.user.user_metadata.full_name)
-            ? session.user.user_metadata.full_name
-            : session.user.email;
-          var usernameEl = document.querySelector('.rb-dash-nav__username');
-          if (usernameEl) usernameEl.textContent = name.split(' ')[0];
-          var avatarEl = document.querySelector('.rb-dash-nav__avatar');
-          if (avatarEl) avatarEl.textContent = name.charAt(0).toUpperCase();
-
-          rbSupabase.from('payments')
-            .select('status, plan')
-            .eq('user_id', session.user.id)
-            .eq('status', 'approved')
-            .order('created_at', { ascending: false })
-            .limit(1)
-            .then(function (result) {
-              var payment = result.data && result.data.length ? result.data[0] : null;
-              rbDashboardPlan = payment ? (payment.plan || 'free') : 'free';
-              loadQuota();
-            });
-        });
-      });
-    }
-
     function escHtml(str) {
       return String(str || '')
         .replace(/&/g, '&amp;').replace(/</g, '&lt;')
@@ -1851,24 +1820,13 @@
       }, 2500);
 
       try {
-        var reqBody = { population: population, intervention: intervention || '', studyDesign: studyDesign, userId: userId, plan: rbDashboardPlan };
-        console.log('[TopicScout] POST /api/generate-topics', reqBody);
-
         var res = await fetch('/api/generate-topics', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(reqBody)
+          body: JSON.stringify({ population: population, intervention: intervention || '', studyDesign: studyDesign, userId: userId, plan: rbDashboardPlan })
         });
 
-        var rawText = await res.text();
-        console.log('[TopicScout] HTTP', res.status, 'Raw response:', rawText);
-
-        var data;
-        try {
-          data = JSON.parse(rawText);
-        } catch (parseErr) {
-          throw new Error('Server returned non-JSON (HTTP ' + res.status + '): ' + (rawText.slice(0, 300) || '(empty body)'));
-        }
+        var data = await res.json();
 
         if (res.status === 429) {
           clearInterval(tsInterval);
@@ -1880,7 +1838,7 @@
           return;
         }
 
-        if (!res.ok || (!data.success && !Array.isArray(data.candidates))) throw new Error(data.error || ('HTTP ' + res.status + ': ' + rawText.slice(0, 200)));
+        if (!res.ok || (!data.success && !Array.isArray(data.candidates))) throw new Error(data.error || 'Unknown error');
 
         if (data.usage) renderQuota(data.usage.count, data.usage.limit);
 
