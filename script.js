@@ -1381,6 +1381,9 @@
         var isScholar = (plan !== 'pro');
         var planDisplayName = isScholar ? 'Scholar Plan' : 'Pro Plan';
 
+        var agentsCta = document.getElementById('rb-agents-section-cta');
+        if (agentsCta && !isScholar) agentsCta.textContent = 'View more agents →';
+
         if (planLabel) planLabel.innerHTML = 'You\'re on the <strong>' + planDisplayName + '</strong>';
 
         if (welcomeSub) {
