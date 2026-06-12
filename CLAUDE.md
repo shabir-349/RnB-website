@@ -26,3 +26,9 @@ Early-career clinical researchers, mostly medical students preparing for US resi
 ## Design system
 
 ### Color tokens (CSS custom properties on :root)
+
+After every task, always run:
+
+git add -A && git commit -m "[description]" && git push origin main
+
+Never stop at commit without pushing.
