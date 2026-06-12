@@ -1130,6 +1130,7 @@
     rbRequireAuth().then(function (session) {
       if (!session) return;
       document.body.style.visibility = 'visible';
+      var _sk = document.getElementById('welcome-skeleton'); if (_sk) _sk.style.display = 'none';
 
       var name = (session.user.user_metadata && session.user.user_metadata.full_name)
         ? session.user.user_metadata.full_name
@@ -2347,6 +2348,7 @@
       rbRequireAuth().then(function (session) {
         if (!session) return;
         document.body.style.visibility = 'visible';
+        var _sk = document.getElementById('welcome-skeleton'); if (_sk) _sk.style.display = 'none';
         vcUserId = session.user.id;
 
         var name = (session.user.user_metadata && session.user.user_metadata.full_name)

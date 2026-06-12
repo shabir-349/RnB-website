@@ -7,14 +7,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://eoxgkcoiucbuqdkdkfjg.supabase.co" crossorigin>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Dashboard — R&amp;B Research and Beyond</title>
   <meta name="description" content="Your R&B research dashboard." />
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap"></noscript>
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" type="image/jpeg" href="./logo.jpg" />
-  <style>/* critical */body{margin:0;background:#141414;color:#e0e0e0}</style>
+  <style>/* critical */body{margin:0;background:#141414;color:#e0e0e0}#welcome-skeleton{height:80px;background:#1e1e1e;border-radius:8px;margin-bottom:16px}</style>
 </head>
 <body style="visibility: hidden;">
 
@@ -97,7 +97,7 @@
 
       <div class="rb-dash__sidebar-footer" id="rb-dash-sidebar-footer">
         <a href="payment.html?plan=scholar" class="rb-btn rb-btn--amber rb-btn--full">Upgrade to Scholar</a>
-        <p class="rb-dash__plan-label">You are on the <strong>Free plan</strong></p>
+        <p class="rb-dash__plan-label" style="min-height:28px;display:block">You are on the <strong>Free plan</strong></p>
       </div>
 
     </aside>
@@ -132,11 +132,13 @@
         <a href="payment.html?plan=scholar" class="rb-dash-upgrade-banner__cta">Upgrade to Scholar &rarr;</a>
       </div>
 
+      <div id="welcome-skeleton" aria-hidden="true"></div>
+
       <!-- Welcome -->
       <div class="rb-dash__welcome" style="min-height:80px">
         <div>
           <h1 class="rb-dash__welcome-heading">Welcome back, Ahmed</h1>
-          <p class="rb-dash__welcome-sub">Your research journey starts here. 3 free lessons available to begin.</p>
+          <p class="rb-dash__welcome-sub" style="min-height:24px">Your research journey starts here. 3 free lessons available to begin.</p>
         </div>
       </div>
 
@@ -547,8 +549,8 @@
     </a>
   </nav>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script src="supabase.js"></script>
-  <script src="script.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script defer src="supabase.js"></script>
+  <script defer src="script.js"></script>
 </body>
 </html>
