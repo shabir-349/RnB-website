@@ -184,7 +184,7 @@
           </div>
           <h3 class="rb-dash-qs-card__title">Find a Research Topic</h3>
           <p class="rb-dash-qs-card__sub">Use TopicScout to generate publication-grade ideas</p>
-          <a href="#rb-agent-panel" class="rb-btn rb-btn--amber rb-dash-qs-card__btn">Open TopicScout &rarr;</a>
+          <a href="#rb-dash-agents" class="rb-btn rb-btn--amber rb-dash-qs-card__btn">Open TopicScout &rarr;</a>
         </div>
 
         <div class="rb-dash-qs-card">
@@ -227,70 +227,6 @@
         </div>
       </div>
 
-      <!-- Agent Panel -->
-      <section class="rb-agent-panel" id="rb-agent-panel">
-        <div class="rb-agent-panel__header">
-          <div class="rb-agent-panel__title-row">
-            <div class="rb-agent-panel__icon-box" id="rb-agent-panel-icon-box">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>
-            </div>
-            <div>
-              <div class="rb-agent-panel__name" id="rb-agent-panel-name">TopicScout AI</div>
-              <div class="rb-agent-panel__meta" id="rb-agent-panel-meta"><em>Find novel research topics</em></div>
-            </div>
-          </div>
-          <span class="rb-agent-panel__counter" id="rb-agent-panel-counter" aria-live="polite"></span>
-        </div>
-        <div class="rb-agent-panel__body">
-          <div id="rb-topicscout-form-inner">
-            <div class="rb-topicscout__form">
-              <div class="rb-topicscout__controls">
-                <div class="rb-topicscout__field">
-                  <label class="rb-topicscout__label" for="rb-ts-population">Population</label>
-                  <input type="text" id="rb-ts-population" class="rb-topicscout__input" placeholder="e.g. diabetic patients over 60, pregnant women in rural areas" autocomplete="off" />
-                  <span id="rb-ts-pop-err" class="rb-ts-field-err" hidden>Population is required.</span>
-                </div>
-                <div class="rb-topicscout__field">
-                  <label class="rb-topicscout__label" for="rb-ts-intervention">Intervention <span class="rb-topicscout__label-opt">(optional)</span></label>
-                  <input type="text" id="rb-ts-intervention" class="rb-topicscout__input" placeholder="e.g. telemedicine, metformin, CBT" autocomplete="off" />
-                </div>
-                <div class="rb-topicscout__field rb-topicscout__field--full">
-                  <label class="rb-topicscout__label" for="rb-ts-study-design">Study Design</label>
-                  <select id="rb-ts-study-design" class="rb-topicscout__select">
-                    <option value="">Select a study design&hellip;</option>
-                    <option value="letter_to_editor">LTE</option>
-                    <option value="narrative_review">Narrative review</option>
-                    <option value="cross_sectional">Cross-sectional study</option>
-                    <option value="cohort">Cohort study</option>
-                    <option value="case_control">Case control study</option>
-                    <option value="rct">RCT</option>
-                    <option value="systematic_review_meta_analysis">Systematic review and meta-analysis</option>
-                    <option value="network_meta_analysis">Network meta-analysis</option>
-                  </select>
-                  <span id="rb-ts-design-err" class="rb-ts-field-err" hidden>Study Design is required.</span>
-                </div>
-              </div>
-              <button type="button" id="rb-ts-btn" class="rb-btn rb-btn--amber">
-                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>
-                Generate Topics
-              </button>
-              <p id="rb-ts-quota" class="rb-ts-quota" hidden aria-live="polite"></p>
-            </div>
-            <div id="rb-ts-results" class="rb-topicscout__results" hidden></div>
-          </div>
-          <div id="rb-agent-upgrade-prompt" class="rb-agent-upgrade-prompt" hidden>
-            <div class="rb-agent-upgrade-prompt__inner">
-              <div class="rb-agent-upgrade-prompt__icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              </div>
-              <h3 class="rb-agent-upgrade-prompt__title">This agent is locked</h3>
-              <p class="rb-agent-upgrade-prompt__text" id="rb-agent-upgrade-text">Upgrade to unlock this AI agent and accelerate your research.</p>
-              <a href="payment.html?plan=scholar" class="rb-btn rb-btn--amber rb-agent-upgrade-prompt__cta" id="rb-agent-upgrade-cta">Upgrade to Scholar &rarr;</a>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <!-- AI Agents -->
       <section class="rb-dash-section" id="rb-dash-agents">
         <div class="rb-dash-section__head">
@@ -314,7 +250,7 @@
             </div>
           </div>
 
-          <div class="rb-agent-preview-card rb-agent-preview-card--locked" data-agent="viabilitycheck" data-min-plan="scholar" role="button" tabindex="0" aria-label="ViabilityCheck — Scholar required">
+          <div class="rb-agent-preview-card rb-agent-preview-card--locked" data-agent="viabilitycheck" data-min-plan="scholar" role="button" tabindex="0" aria-label="ViabilityCheck — open agent">
             <div class="rb-agent-preview-card__top">
               <div class="rb-agent-preview-card__icon-wrap">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
@@ -325,7 +261,7 @@
             <div class="rb-agent-preview-card__subtitle"><em>Feasibility analysis</em></div>
             <p class="rb-agent-preview-card__desc">Assess whether your research idea is feasible before investing months of effort.</p>
             <div class="rb-agent-preview-card__footer">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Locked"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <span class="rb-agent-preview-card__open">Open &rarr;</span>
             </div>
           </div>
 
