@@ -166,6 +166,14 @@
     max-height: 100px;
     padding-bottom: 8px;
   }
+  .acc-indicator {
+    margin-left: auto;
+    font-size: 18px;
+    font-weight: 300;
+    color: #E8601A;
+    flex-shrink: 0;
+    line-height: 1;
+  }
 }
 </style>
 </head>
@@ -840,26 +848,36 @@
 if(window.innerWidth <= 768){
   var modeCards = document.querySelectorAll('.rb-mode-card');
   modeCards.forEach(function(card, i){
-    var chev = document.createElement('i');
-    chev.className = 'ti ti-chevron-down mode-chevron';
-    card.appendChild(chev);
+    var ind = document.createElement('span');
+    ind.className = 'acc-indicator';
+    ind.textContent = (i === 0) ? '−' : '+';
+    card.appendChild(ind);
     if(i === 0) card.classList.add('open');
     card.addEventListener('click', function(){
       var isOpen = card.classList.contains('open');
-      modeCards.forEach(function(c){ c.classList.remove('open'); });
-      if(!isOpen) card.classList.add('open');
+      modeCards.forEach(function(c){
+        c.classList.remove('open');
+        var ci = c.querySelector('.acc-indicator');
+        if(ci) ci.textContent = '+';
+      });
+      if(!isOpen){ card.classList.add('open'); ind.textContent = '−'; }
     });
   });
   var phaseCards = document.querySelectorAll('.rb-phase-card');
   phaseCards.forEach(function(card, i){
-    var chev = document.createElement('i');
-    chev.className = 'ti ti-chevron-down journey-chevron';
-    card.appendChild(chev);
+    var ind = document.createElement('span');
+    ind.className = 'acc-indicator';
+    ind.textContent = (i === 0) ? '−' : '+';
+    card.appendChild(ind);
     if(i === 0) card.classList.add('open');
     card.addEventListener('click', function(){
       var isOpen = card.classList.contains('open');
-      phaseCards.forEach(function(c){ c.classList.remove('open'); });
-      if(!isOpen) card.classList.add('open');
+      phaseCards.forEach(function(c){
+        c.classList.remove('open');
+        var ci = c.querySelector('.acc-indicator');
+        if(ci) ci.textContent = '+';
+      });
+      if(!isOpen){ card.classList.add('open'); ind.textContent = '−'; }
     });
   });
 }
