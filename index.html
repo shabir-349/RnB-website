@@ -64,33 +64,33 @@
     cursor: pointer;
     border-radius: 10px;
     overflow: hidden;
+    position: relative;
   }
-  .rb-mode-card .mode-body {
+  .rb-mode-card .rb-mode-card__desc {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.25s ease, padding 0.2s;
     padding: 0 12px;
   }
-  .rb-mode-card.open .mode-body {
+  .rb-mode-card.open .rb-mode-card__desc {
     max-height: 100px;
     padding: 0 12px 12px;
   }
-  .rb-mode-card .mode-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 11px 12px;
-  }
   .rb-mode-card .mode-chevron {
-    margin-left: auto;
+    position: absolute;
+    right: 12px;
+    top: 14px;
     font-size: 12px;
     color: #444;
     transition: transform 0.2s;
-    flex-shrink: 0;
   }
   .rb-mode-card.open .mode-chevron {
     transform: rotate(180deg);
     color: #E8601A;
+  }
+  .rb-mode-card .rb-mode-card__badge {
+    display: inline-block !important;
+    visibility: visible !important;
   }
 }
 </style>
