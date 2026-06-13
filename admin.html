@@ -51,6 +51,43 @@
       <!-- Stats cards -->
       <div class="rb-admin-stats" id="rb-admin-stats" aria-label="Payment statistics"></div>
 
+      <!-- ── Revenue Overview ───────────────────────────────── -->
+      <section class="rb-revenue-section" id="rb-revenue" aria-label="Revenue Overview">
+
+        <div class="rb-admin-section-divider">
+          <h2 class="rb-admin-section-title">Revenue Overview</h2>
+        </div>
+
+        <!-- Summary cards -->
+        <div class="rb-revenue-cards" id="rb-revenue-cards"></div>
+
+        <!-- Bar chart + Plan breakdown -->
+        <div class="rb-revenue-charts">
+          <div class="rb-revenue-chart-wrap">
+            <canvas id="rb-revenue-chart" aria-label="Monthly revenue bar chart"></canvas>
+          </div>
+          <div class="rb-revenue-breakdown" id="rb-revenue-breakdown"></div>
+        </div>
+
+        <!-- Monthly table -->
+        <div class="rb-admin-table-wrap">
+          <table class="rb-admin-table" id="rb-revenue-table" aria-label="Monthly revenue breakdown">
+            <thead>
+              <tr>
+                <th scope="col">Month</th>
+                <th scope="col">Scholar Users</th>
+                <th scope="col">Pro Users</th>
+                <th scope="col">Total Revenue</th>
+                <th scope="col">Growth</th>
+              </tr>
+            </thead>
+            <tbody id="rb-revenue-tbody"></tbody>
+          </table>
+          <p class="rb-admin-empty" id="rb-revenue-empty" style="display:none">No approved payments yet.</p>
+        </div>
+
+      </section>
+
       <!-- Filter tabs -->
       <div class="rb-admin-filters" role="tablist" aria-label="Filter payments by status">
         <button class="rb-admin-tab rb-admin-tab--active" data-filter="all"      role="tab" aria-selected="true">All</button>

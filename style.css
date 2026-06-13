@@ -6272,3 +6272,172 @@ p { line-height: 1.7; }
   color: #ffffff;
   font-weight: 500;
 }
+
+/* ============================================================
+   REVENUE OVERVIEW — admin.html
+   ============================================================ */
+
+/* ── Cards grid ──────────────────────────────────────────── */
+.rb-revenue-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+@media (min-width: 560px) {
+  .rb-revenue-cards { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 900px) {
+  .rb-revenue-cards { grid-template-columns: repeat(5, 1fr); }
+}
+
+.rb-admin-stat--rev .rb-admin-stat__value {
+  font-size: 1rem;
+  word-break: break-all;
+}
+.rb-admin-stat--rev-total     { border-top-color: #E8601A; }
+.rb-admin-stat--rev-thismonth { border-top-color: #E8601A; }
+.rb-admin-stat--rev-mrr       { border-top-color: #E8601A; }
+.rb-admin-stat--rev-users     { border-top-color: #38A169; }
+.rb-admin-stat--rev-lastmonth { border-top-color: var(--border); }
+
+.rb-revenue-stat__sub {
+  display: block;
+  font-size: 0.6875rem;
+  color: #38A169;
+  margin-top: var(--space-1);
+  font-weight: 500;
+}
+[data-theme="dark"] .rb-revenue-stat__sub { color: #6EE7B7; }
+
+/* ── Charts row ──────────────────────────────────────────── */
+.rb-revenue-charts {
+  display: flex;
+  gap: var(--space-6);
+  margin-bottom: var(--space-6);
+  align-items: stretch;
+}
+@media (max-width: 720px) {
+  .rb-revenue-charts { flex-direction: column; }
+}
+
+.rb-revenue-chart-wrap {
+  flex: 1 1 0;
+  min-width: 0;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2);
+  padding: var(--space-4);
+}
+
+#rb-revenue-chart {
+  display: block;
+  width: 100%;
+}
+
+/* ── Plan breakdown ──────────────────────────────────────── */
+.rb-revenue-breakdown {
+  flex: 0 0 280px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+}
+@media (max-width: 720px) {
+  .rb-revenue-breakdown { flex: none; }
+}
+
+.rb-revenue-breakdown__title {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: var(--space-4);
+}
+
+.rb-revenue-breakdown__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex: 1;
+}
+
+.rb-revenue-breakdown__bars {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.rb-revenue-breakdown__row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.rb-revenue-breakdown__plan-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.rb-revenue-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.rb-revenue-dot--scholar { background: #E8601A; }
+.rb-revenue-dot--pro     { background: #4a9edd; }
+
+.rb-revenue-plan-name {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.rb-revenue-bar-track {
+  height: 8px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.rb-revenue-bar {
+  height: 100%;
+  border-radius: 4px;
+  min-width: 3px;
+}
+.rb-revenue-bar--scholar { background: #E8601A; }
+.rb-revenue-bar--pro     { background: #4a9edd; }
+
+.rb-revenue-plan-stat {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+}
+
+.rb-revenue-donut {
+  flex-shrink: 0;
+}
+
+/* ── Growth badges in monthly table ─────────────────────── */
+.rb-revenue-growth {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.rb-revenue-growth--up   { color: #38A169; }
+.rb-revenue-growth--down { color: #E53E3E; }
+
+[data-theme="dark"] .rb-revenue-growth--up   { color: #6EE7B7; }
+[data-theme="dark"] .rb-revenue-growth--down { color: #FCA5A5; }
+
+/* ── Small phone override ────────────────────────────────── */
+@media (max-width: 479px) {
+  .rb-revenue-cards { grid-template-columns: repeat(2, 1fr); }
+  .rb-revenue-breakdown__inner { flex-direction: column; }
+}

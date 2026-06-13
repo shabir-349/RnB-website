@@ -59,6 +59,7 @@
     }
     allPayments = result.data || [];
     renderStats();
+    renderRevenue();
     renderTable(currentFilter);
     showMain();
   }
@@ -712,6 +713,263 @@
         + (type === 'success' ? ' rb-admin-settings-msg--success' : '');
     }
   })();
+
+  /* ── Revenue Overview ───────────────────────────────────── */
+  function renderRevenue() {
+    var SCHOLAR_PRICE = 6000;
+    var PRO_PRICE     = 10000;
+
+    function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+    function fmtPKR(n) { return 'PKR ' + Number(n).toLocaleString('en-US'); }
+    function fmtK(n) {
+      if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+      if (n >= 1000)    return Math.round(n / 1000) + 'K';
+      return '' + n;
+    }
+
+    var approved = allPayments.filter(function(p) { return p.status === 'approved'; });
+
+    var now   = new Date();
+    var thisY = now.getFullYear();
+    var thisM = now.getMonth();
+
+    function mkKey(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1); }
+    var thisKey = mkKey(now);
+    var lastKey = mkKey(new Date(thisY, thisM - 1, 1));
+
+    /* Group approved payments by month */
+    var monthMap = {};
+    approved.forEach(function(p) {
+      var d   = new Date(p.created_at);
+      var key = mkKey(d);
+      if (!monthMap[key]) {
+        monthMap[key] = {
+          scholar: 0, pro: 0,
+          label: d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+        };
+      }
+      if (p.plan === 'scholar')      monthMap[key].scholar++;
+      else if (p.plan === 'pro')     monthMap[key].pro++;
+    });
+
+    /* Overall totals */
+    var totalScholar = 0, totalPro = 0;
+    approved.forEach(function(p) {
+      if (p.plan === 'scholar')  totalScholar++;
+      else if (p.plan === 'pro') totalPro++;
+    });
+    var totalRevenue = totalScholar * SCHOLAR_PRICE + totalPro * PRO_PRICE;
+    var thisData     = monthMap[thisKey] || { scholar: 0, pro: 0 };
+    var lastData     = monthMap[lastKey] || { scholar: 0, pro: 0 };
+    var thisMonthRev = thisData.scholar * SCHOLAR_PRICE + thisData.pro * PRO_PRICE;
+    var lastMonthRev = lastData.scholar * SCHOLAR_PRICE + lastData.pro * PRO_PRICE;
+
+    /* Unique paying users */
+    var uniqueSet = {}, thisSet = {};
+    approved.forEach(function(p) {
+      var uid = p.user_id || p.email || ('' + p.id);
+      uniqueSet[uid] = true;
+      if (mkKey(new Date(p.created_at)) === thisKey) thisSet[uid] = true;
+    });
+    var payingUsers  = Object.keys(uniqueSet).length;
+    var newThisMonth = Object.keys(thisSet).length;
+
+    /* ── Summary cards ─────────────────────────────────────── */
+    var cardsEl = document.getElementById('rb-revenue-cards');
+    if (cardsEl) {
+      var cardDefs = [
+        { label: 'Total Revenue', value: fmtPKR(totalRevenue), mod: 'total'     },
+        { label: 'This Month',    value: fmtPKR(thisMonthRev), mod: 'thismonth' },
+        { label: 'Last Month',    value: fmtPKR(lastMonthRev), mod: 'lastmonth' },
+        { label: 'MRR',           value: fmtPKR(thisMonthRev), mod: 'mrr'       },
+        { label: 'Paying Users',  value: '' + payingUsers,     mod: 'users',
+          sub: '↑ ' + newThisMonth + ' new this month' }
+      ];
+      cardsEl.innerHTML = cardDefs.map(function(c) {
+        return '<div class="rb-admin-stat rb-admin-stat--rev rb-admin-stat--rev-' + c.mod + '">'
+          + '<span class="rb-admin-stat__value">' + c.value + '</span>'
+          + '<span class="rb-admin-stat__label">' + c.label + '</span>'
+          + (c.sub ? '<span class="rb-revenue-stat__sub">' + eh(c.sub) + '</span>' : '')
+          + '</div>';
+      }).join('');
+    }
+
+    /* ── Last 6 months array for chart ─────────────────────── */
+    var last6 = [];
+    for (var i = 5; i >= 0; i--) {
+      var d6 = new Date(thisY, thisM - i, 1);
+      var k6 = mkKey(d6);
+      var m6 = monthMap[k6] || { scholar: 0, pro: 0 };
+      last6.push({
+        label:   d6.toLocaleDateString('en-US', { month: 'short' }) + '’' + ('' + d6.getFullYear()).slice(2),
+        scholar: m6.scholar,
+        pro:     m6.pro
+      });
+    }
+
+    /* ── Plan breakdown ─────────────────────────────────────── */
+    var breakdownEl = document.getElementById('rb-revenue-breakdown');
+    if (breakdownEl) {
+      var sRev = totalScholar * SCHOLAR_PRICE;
+      var pRev = totalPro     * PRO_PRICE;
+      var maxR = Math.max(sRev, pRev, 1);
+
+      breakdownEl.innerHTML =
+          '<h3 class="rb-revenue-breakdown__title">Plan Breakdown</h3>'
+        + '<div class="rb-revenue-breakdown__inner">'
+        +   '<div class="rb-revenue-breakdown__bars">'
+        +     buildBreakdownRow('Scholar', 'scholar', totalScholar, 6, sRev, Math.round(sRev / maxR * 100))
+        +     buildBreakdownRow('Pro',     'pro',     totalPro,    10, pRev, Math.round(pRev / maxR * 100))
+        +   '</div>'
+        +   '<div class="rb-revenue-donut">' + buildDonutSvg(sRev, pRev) + '</div>'
+        + '</div>';
+    }
+
+    function buildBreakdownRow(name, mod, count, kPrice, rev, barPct) {
+      return '<div class="rb-revenue-breakdown__row">'
+        + '<div class="rb-revenue-breakdown__plan-label">'
+        +   '<span class="rb-revenue-dot rb-revenue-dot--' + mod + '"></span>'
+        +   '<span class="rb-revenue-plan-name">' + name + '</span>'
+        + '</div>'
+        + '<div class="rb-revenue-bar-track">'
+        +   '<div class="rb-revenue-bar rb-revenue-bar--' + mod + '" style="width:' + barPct + '%"></div>'
+        + '</div>'
+        + '<span class="rb-revenue-plan-stat">' + count + ' × PKR ' + kPrice + 'K = ' + fmtPKR(rev) + '</span>'
+        + '</div>';
+    }
+
+    function buildDonutSvg(sRev, pRev) {
+      var total = sRev + pRev;
+      var r = 45, cx = 60, cy = 60, sw = 14;
+      var circ  = 2 * Math.PI * r;
+      var out   = '<svg width="120" height="120" viewBox="0 0 120 120" role="img" aria-label="Plan revenue split">';
+      out += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none"'
+           + ' stroke="var(--border)" stroke-width="' + sw + '"/>';
+      if (total > 0) {
+        var sDash  = sRev / total * circ;
+        var pDash  = circ - sDash;
+        var pStart = -90 + sRev / total * 360;
+        out += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none"'
+             + ' stroke="#E8601A" stroke-width="' + sw + '"'
+             + ' stroke-dasharray="' + sDash.toFixed(2) + ' ' + pDash.toFixed(2) + '"'
+             + ' stroke-dashoffset="0" transform="rotate(-90 ' + cx + ' ' + cy + ')"/>';
+        out += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none"'
+             + ' stroke="#4a9edd" stroke-width="' + sw + '"'
+             + ' stroke-dasharray="' + pDash.toFixed(2) + ' ' + sDash.toFixed(2) + '"'
+             + ' stroke-dashoffset="0" transform="rotate(' + pStart.toFixed(1) + ' ' + cx + ' ' + cy + ')"/>';
+      }
+      var cLabel = total > 0 ? Math.round(sRev / total * 100) + '%' : '—';
+      out += '<text x="' + cx + '" y="' + cy + '" text-anchor="middle" dominant-baseline="middle"'
+           + ' font-size="14" font-weight="700" fill="currentColor">' + cLabel + '</text>';
+      out += '<text x="' + cx + '" y="' + (cy + 16) + '" text-anchor="middle"'
+           + ' font-size="9" opacity="0.6" fill="currentColor">Scholar</text>';
+      out += '</svg>';
+      return out;
+    }
+
+    /* ── Monthly table ──────────────────────────────────────── */
+    var monthKeys = Object.keys(monthMap).sort().reverse();
+    var revTbody  = document.getElementById('rb-revenue-tbody');
+    var revEmpty  = document.getElementById('rb-revenue-empty');
+    var revTable  = document.getElementById('rb-revenue-table');
+
+    if (revTable && revEmpty) {
+      if (!monthKeys.length) {
+        revTable.style.display = 'none';
+        revEmpty.style.display = 'block';
+      } else {
+        revTable.style.display = '';
+        revEmpty.style.display = 'none';
+        if (revTbody) {
+          revTbody.innerHTML = monthKeys.map(function(key, idx) {
+            var m        = monthMap[key];
+            var rev      = m.scholar * SCHOLAR_PRICE + m.pro * PRO_PRICE;
+            var prevKey  = monthKeys[idx + 1];
+            var growthCell = '—';
+            if (prevKey) {
+              var prev    = monthMap[prevKey];
+              var prevRev = prev.scholar * SCHOLAR_PRICE + prev.pro * PRO_PRICE;
+              if (prevRev > 0) {
+                var pct = Math.round((rev - prevRev) / prevRev * 100);
+                if      (pct > 0) growthCell = '<span class="rb-revenue-growth rb-revenue-growth--up">↑ '   + pct           + '%</span>';
+                else if (pct < 0) growthCell = '<span class="rb-revenue-growth rb-revenue-growth--down">↓ ' + Math.abs(pct) + '%</span>';
+                else              growthCell = '<span class="rb-revenue-growth">0%</span>';
+              } else if (rev > 0) {
+                growthCell = '<span class="rb-revenue-growth rb-revenue-growth--up">New</span>';
+              }
+            }
+            return '<tr>'
+              + '<td data-label="Month">'        + eh(m.label)   + '</td>'
+              + '<td data-label="Scholar Users">' + m.scholar     + '</td>'
+              + '<td data-label="Pro Users">'     + m.pro         + '</td>'
+              + '<td data-label="Total Revenue">' + fmtPKR(rev)   + '</td>'
+              + '<td data-label="Growth">'        + growthCell     + '</td>'
+              + '</tr>';
+          }).join('');
+        }
+      }
+    }
+
+    /* ── Bar chart (deferred until layout is complete) ──────── */
+    requestAnimationFrame(function() {
+      var canvas = document.getElementById('rb-revenue-chart');
+      if (!canvas || !canvas.getContext) return;
+      var wrap = canvas.parentElement;
+      var W    = (wrap ? wrap.clientWidth : 0) || 480;
+      var H    = 240;
+      canvas.width  = W;
+      canvas.height = H;
+
+      var ctx     = canvas.getContext('2d');
+      var isDark  = document.documentElement.getAttribute('data-theme') === 'dark';
+      var textClr = isDark ? '#cbd5e1' : '#4b5563';
+      var gridClr = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)';
+      var S_CLR   = '#E8601A', P_CLR = '#4a9edd';
+      var pL = 60, pR = 16, pT = 16, pB = 44;
+      var cW = W - pL - pR, cH = H - pT - pB;
+
+      var maxV = 0;
+      last6.forEach(function(m) {
+        var t = m.scholar * SCHOLAR_PRICE + m.pro * PRO_PRICE;
+        if (t > maxV) maxV = t;
+      });
+      if (!maxV) maxV = 10000;
+      var mag = Math.pow(10, Math.floor(Math.log10(maxV)));
+      maxV = Math.ceil(maxV / mag) * mag;
+
+      ctx.clearRect(0, 0, W, H);
+
+      for (var g = 0; g <= 4; g++) {
+        var yPct = g / 4;
+        var gy   = pT + cH * (1 - yPct);
+        ctx.beginPath(); ctx.strokeStyle = gridClr; ctx.lineWidth = 1;
+        ctx.moveTo(pL, gy); ctx.lineTo(W - pR, gy); ctx.stroke();
+        ctx.fillStyle = textClr; ctx.font = '10px Inter,sans-serif'; ctx.textAlign = 'right';
+        ctx.fillText(fmtK(Math.round(yPct * maxV)), pL - 5, gy + 3.5);
+      }
+
+      var grpW = cW / last6.length;
+      var bW   = Math.min(Math.floor(grpW * 0.28), 18);
+      var bgap = Math.max(Math.floor(bW * 0.3), 2);
+
+      last6.forEach(function(m, i) {
+        var gx = pL + i * grpW + grpW / 2;
+        var sH = m.scholar * SCHOLAR_PRICE / maxV * cH;
+        var pH = m.pro     * PRO_PRICE     / maxV * cH;
+        if (sH > 0) { ctx.fillStyle = S_CLR; ctx.fillRect(Math.floor(gx - bgap / 2 - bW), Math.floor(pT + cH - sH), bW, Math.ceil(sH)); }
+        if (pH > 0) { ctx.fillStyle = P_CLR; ctx.fillRect(Math.floor(gx + bgap / 2),       Math.floor(pT + cH - pH), bW, Math.ceil(pH)); }
+        ctx.fillStyle = textClr; ctx.font = '10px Inter,sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText(m.label, gx, H - pB + 14);
+      });
+
+      var lX = pL + cW / 2 - 58, lY = H - 8;
+      ctx.fillStyle = S_CLR; ctx.fillRect(lX, lY - 9, 10, 9);
+      ctx.fillStyle = textClr; ctx.font = '10px Inter,sans-serif'; ctx.textAlign = 'left';
+      ctx.fillText('Scholar', lX + 14, lY);
+      ctx.fillStyle = P_CLR; ctx.fillRect(lX + 72, lY - 9, 10, 9);
+      ctx.fillStyle = textClr; ctx.fillText('Pro', lX + 86, lY);
+    });
+  }
 
   /* ── Boot ────────────────────────────────────────────────── */
   init();
