@@ -64,33 +64,48 @@
     cursor: pointer;
     border-radius: 10px;
     overflow: hidden;
-    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px 0;
   }
-  .rb-mode-card .rb-mode-card__desc {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.25s ease, padding 0.2s;
-    padding: 0 12px;
+  .rb-mode-card .rb-mode-card__badge {
+    flex-basis: 100%;
+    display: inline-block !important;
+    visibility: visible !important;
   }
-  .rb-mode-card.open .rb-mode-card__desc {
-    max-height: 100px;
-    padding: 0 12px 12px;
+  .rb-mode-card .rb-mode-card__icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+  .rb-mode-card .rb-mode-card__name {
+    font-size: 12px;
+    font-weight: 500;
   }
   .rb-mode-card .mode-chevron {
-    position: absolute;
-    right: 12px;
-    top: 14px;
-    font-size: 12px;
+    margin-left: auto;
+    font-size: 13px;
     color: #444;
     transition: transform 0.2s;
+    flex-shrink: 0;
   }
   .rb-mode-card.open .mode-chevron {
     transform: rotate(180deg);
     color: #E8601A;
   }
-  .rb-mode-card .rb-mode-card__badge {
-    display: inline-block !important;
-    visibility: visible !important;
+  .rb-mode-card .rb-mode-card__desc {
+    flex-basis: 100%;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease, padding 0.2s;
+    padding: 0;
+    margin: 0;
+  }
+  .rb-mode-card.open .rb-mode-card__desc {
+    max-height: 100px;
+    padding-bottom: 10px;
   }
   /* Research Journey accordion */
   .rb-phases__scroll-outer,
@@ -110,29 +125,46 @@
     cursor: pointer;
     border-radius: 10px;
     overflow: hidden;
-    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 12px;
+  }
+  .rb-phase-card .rb-phase-card__num {
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+  .rb-phase-card .rb-phase-card__name {
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .rb-phase-card .rb-phase-card__agent {
+    font-size: 10px;
+    font-style: italic;
+    color: #E8601A;
+    margin-left: auto;
+  }
+  .rb-phase-card .journey-chevron {
+    font-size: 13px;
+    color: #444;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .rb-phase-card.open .journey-chevron {
+    transform: rotate(180deg);
+    color: #E8601A;
   }
   .rb-phase-card .rb-phase-card__desc {
+    flex-basis: 100%;
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.25s ease, padding 0.2s;
-    padding: 0 12px;
+    padding: 0;
   }
   .rb-phase-card.open .rb-phase-card__desc {
     max-height: 100px;
-    padding: 0 12px 12px;
-  }
-  .rb-phase-card .mode-chevron {
-    position: absolute;
-    right: 12px;
-    top: 14px;
-    font-size: 12px;
-    color: #444;
-    transition: transform 0.2s;
-  }
-  .rb-phase-card.open .mode-chevron {
-    transform: rotate(180deg);
-    color: #E8601A;
+    padding-bottom: 8px;
   }
 }
 </style>
@@ -229,7 +261,7 @@
       <div class="rb-phases__scroll-outer">
       <div class="rb-phases__scroll-wrap" role="list" aria-label="Research phases">
         <div class="rb-phases__track">
-          <article class="rb-phase-card" role="listitem">
+          <article class="rb-phase-card open" role="listitem">
             <span class="rb-phase-card__num">01</span>
             <h3 class="rb-phase-card__name">Mentor &amp; Goal Match</h3>
             <p class="rb-phase-card__agent">Compass</p>
@@ -320,7 +352,7 @@
         <h2 class="rb-section-heading" id="rb-modes-heading">Pick the journey that fits your paper</h2>
         <p class="rb-section-subhead">Whether it's your first case report or your tenth meta-analysis, R&amp;B has a Mode for it.</p>
         <div class="rb-modes__grid">
-          <article class="rb-mode-card rb-mode-card--featured">
+          <article class="rb-mode-card rb-mode-card--featured open">
             <div class="rb-mode-card__badge">Most popular</div>
             <div class="rb-mode-card__icon">
               <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
@@ -806,28 +838,27 @@
   <script src="script.js"></script>
   <script>
 if(window.innerWidth <= 768){
-  document.querySelectorAll('.rb-mode-card').forEach(function(card){
-    var header = card.querySelector('.mode-header') || card;
-    var chev = document.createElement('i');
-    chev.className = 'ti ti-chevron-down mode-chevron';
-    header.appendChild(chev);
-    header.addEventListener('click', function(){
-      var isOpen = card.classList.contains('open');
-      document.querySelectorAll('.rb-mode-card').forEach(function(c){
-        c.classList.remove('open');
-      });
-      if(!isOpen) card.classList.add('open');
-    });
-  });
-  document.querySelectorAll('.rb-phase-card').forEach(function(card){
+  var modeCards = document.querySelectorAll('.rb-mode-card');
+  modeCards.forEach(function(card, i){
     var chev = document.createElement('i');
     chev.className = 'ti ti-chevron-down mode-chevron';
     card.appendChild(chev);
+    if(i === 0) card.classList.add('open');
     card.addEventListener('click', function(){
       var isOpen = card.classList.contains('open');
-      document.querySelectorAll('.rb-phase-card').forEach(function(c){
-        c.classList.remove('open');
-      });
+      modeCards.forEach(function(c){ c.classList.remove('open'); });
+      if(!isOpen) card.classList.add('open');
+    });
+  });
+  var phaseCards = document.querySelectorAll('.rb-phase-card');
+  phaseCards.forEach(function(card, i){
+    var chev = document.createElement('i');
+    chev.className = 'ti ti-chevron-down journey-chevron';
+    card.appendChild(chev);
+    if(i === 0) card.classList.add('open');
+    card.addEventListener('click', function(){
+      var isOpen = card.classList.contains('open');
+      phaseCards.forEach(function(c){ c.classList.remove('open'); });
       if(!isOpen) card.classList.add('open');
     });
   });
