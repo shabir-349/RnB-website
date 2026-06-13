@@ -16,6 +16,84 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" type="image/jpeg" href="./logo.jpg" />
+<style>
+@media (max-width: 768px) {
+  .rb-agents__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    overflow: unset;
+    scroll-snap-type: unset;
+    padding-bottom: 0;
+  }
+  .rb-agent-card {
+    width: unset;
+    min-width: unset;
+    scroll-snap-align: unset;
+  }
+  .rb-agent-card .icon-wrap {
+    width: 28px;
+    height: 28px;
+    font-size: 13px;
+    border-radius: 7px;
+  }
+  .rb-agent-card .agent-name {
+    font-size: 12px;
+  }
+  .rb-agent-card .agent-type {
+    font-size: 10px;
+    margin-bottom: 4px;
+  }
+  .rb-agent-card .agent-desc {
+    font-size: 10px;
+    margin-bottom: 8px;
+  }
+  .rb-agent-card .open-btn {
+    font-size: 10px;
+  }
+  .rb-agent-card .plan-badge {
+    font-size: 9px;
+    padding: 2px 6px;
+  }
+  .rb-modes__grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .rb-mode-card {
+    cursor: pointer;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .rb-mode-card .mode-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease, padding 0.2s;
+    padding: 0 12px;
+  }
+  .rb-mode-card.open .mode-body {
+    max-height: 100px;
+    padding: 0 12px 12px;
+  }
+  .rb-mode-card .mode-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 12px;
+  }
+  .rb-mode-card .mode-chevron {
+    margin-left: auto;
+    font-size: 12px;
+    color: #444;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .rb-mode-card.open .mode-chevron {
+    transform: rotate(180deg);
+    color: #E8601A;
+  }
+}
+</style>
 </head>
 <body>
 
@@ -684,5 +762,22 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="supabase.js"></script>
   <script src="script.js"></script>
+  <script>
+if(window.innerWidth <= 768){
+  document.querySelectorAll('.rb-mode-card').forEach(function(card){
+    var header = card.querySelector('.mode-header') || card;
+    var chev = document.createElement('i');
+    chev.className = 'ti ti-chevron-down mode-chevron';
+    header.appendChild(chev);
+    header.addEventListener('click', function(){
+      var isOpen = card.classList.contains('open');
+      document.querySelectorAll('.rb-mode-card').forEach(function(c){
+        c.classList.remove('open');
+      });
+      if(!isOpen) card.classList.add('open');
+    });
+  });
+}
+  </script>
 </body>
 </html>
